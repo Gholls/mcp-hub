@@ -19,7 +19,7 @@ Interactive micro-tools for humans **and** AI agents, served from
 
 ## Stack
 
-Vite · React 19 · TypeScript · Tailwind CSS v4 · `@mcp-ui/*` · Cloudflare Pages + Functions.
+Vite · React 19 · TypeScript · Tailwind CSS v4 · `@mcp-ui/*` · Cloudflare Workers + static assets.
 
 ## Development
 
@@ -29,28 +29,28 @@ pnpm dev          # site at http://localhost:5173
 pnpm build        # production build to dist/
 pnpm lint
 pnpm typecheck
-pnpm pages:dev    # build output + Pages Functions via wrangler
+pnpm dev:worker   # build + serve dist and the Worker locally (wrangler dev)
 ```
 
-## Deployment (Cloudflare Pages)
+## Deployment (Cloudflare)
 
-1. Create a Pages project connected to this repository.
-2. Build command: `pnpm build`. Output directory: `dist`.
-3. Environment: Node 20+. Pages Functions under `functions/` deploy automatically
-   (they provide `/mcp` and `/mcp/sse`).
-4. Add the custom domain `mcp.gholl.com` under **Custom domains**.
+The project deploys as a **Worker with static assets** (`wrangler.jsonc`):
+
+- `main` → `worker/index.ts` handles `/mcp`, `/mcp/sse` and `/.well-known/mcp.json`.
+- `assets.directory` → `./dist` (the Vite build), with
+  `not_found_handling: "single-page-application"` for client-side routing.
+
+Build command `pnpm build`, deploy command `pnpm exec wrangler deploy`
+(or click **Deploy** in the Cloudflare dashboard with the repo connected).
+Bind the custom domain `mcp.gholl.com` to the Worker.
+
+```bash
+pnpm deploy        # pnpm build && wrangler deploy
+```
 
 `llms.txt`, `sitemap.xml` and `robots.txt` are generated at build time from the
 tool registry in `shared/tools.ts`. `/.well-known/mcp.json` is served by the
-Pages Function fallback (`functions/[[path]].ts`) from the same registry, so it
-stays in sync and avoids Cloudflare's dot-directory asset quirks.
-
-For manual deploys:
-
-```bash
-pnpm build
-pnpm pages:deploy   # wrangler pages deploy dist
-```
+Worker from the same registry, so it always stays in sync.
 
 See [`docs/integrations.md`](docs/integrations.md) for connecting the server to
 Claude, Cursor, VS Code, LibreChat, Dify, FastGPT and more. Server metadata for

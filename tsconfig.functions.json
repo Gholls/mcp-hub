@@ -17,5 +17,5 @@
       "@shared/*": ["./shared/*"]
     }
   },
-  "include": ["functions", "shared/mcp", "shared/tools.ts", "shared/types.ts", "shared/calc"]
+  "include": ["worker", "shared/mcp", "shared/tools.ts", "shared/types.ts", "shared/calc"]
 }

@@ -1,5 +1,5 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
-import { createMcpServer } from '../../shared/mcp/server.ts'
+import { createMcpServer } from './server.ts'
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -19,30 +19,25 @@ function withCors(response: Response): Response {
   })
 }
 
-function json(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
-  })
-}
-
 /**
- * MCP endpoint. `/mcp` and `/mcp/sse` both speak Streamable HTTP (the modern,
- * stateless-friendly transport that runs on Cloudflare's edge). A fresh server
- * and transport are created per request.
+ * MCP endpoint handler. `/mcp` and `/mcp/sse` both speak Streamable HTTP (the
+ * modern, stateless-friendly transport). A fresh server + transport are created
+ * per request so it runs anywhere on the edge.
  */
-export const onRequest: PagesFunction = async ({ request }) => {
+export async function handleMcpRequest(request: Request): Promise<Response> {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS })
   }
 
   const url = new URL(request.url)
   if (url.pathname.endsWith('/health')) {
-    return json({ status: 'ok', server: 'mcp.gholl.com' })
+    return new Response(JSON.stringify({ status: 'ok', server: 'mcp.gholl.com' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+    })
   }
 
-  const origin = url.origin
-  const server = createMcpServer(origin)
+  const server = createMcpServer(url.origin)
   const transport = new WebStandardStreamableHTTPServerTransport({ enableJsonResponse: true })
 
   await server.connect(transport)

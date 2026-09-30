@@ -9,11 +9,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
+    "dev:worker": "wrangler dev",
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
     "typecheck:functions": "tsc -p tsconfig.functions.json --noEmit",
-    "pages:dev": "wrangler pages dev dist --compatibility-date=2024-11-01",
-    "pages:deploy": "wrangler pages deploy dist"
+    "deploy": "pnpm build && wrangler deploy",
+    "types:worker": "wrangler types"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -26,29 +27,29 @@
   "dependencies": {
     "@mcp-ui/client": "^7.1.1",
     "@mcp-ui/server": "^6.1.0",
+    "@modelcontextprotocol/ext-apps": "^1.7.5",
     "@modelcontextprotocol/sdk": "^1.31.0",
+    "lunar-typescript": "^1.8.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.0",
-    "@modelcontextprotocol/ext-apps": "^1.7.5",
-    "lunar-typescript": "^1.8.6"
+    "react-router-dom": "^7.6.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",
+    "@eslint/js": "^9.18.0",
     "@tailwindcss/vite": "^4.1.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@eslint/js": "^9.18.0",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.18.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
     "tailwindcss": "^4.1.0",
-    "typescript-eslint": "^8.20.0",
     "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0",
     "vite": "^6.0.11",
     "vite-plugin-singlefile": "^2.3.3",
-    "wrangler": "^3.101.0"
+    "wrangler": "^4.145.0"
   }
 }

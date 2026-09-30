@@ -1,7 +1,12 @@
- {
-    "name": "mcp-hub",
-    "compatibility_date": "2026-09-30",
-    "assets": {
-      "directory": "./dist"
-    }
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mcp-hub",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
   }
+}
