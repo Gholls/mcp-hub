@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { App } from '@modelcontextprotocol/ext-apps'
 import type { McpUiHostContext } from '@modelcontextprotocol/ext-apps'
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js'
@@ -102,4 +102,24 @@ export function useMcpApp(): McpAppBridge {
   }, [])
 
   return { connected, embedded, hostContext, toolInput, callTool, sendMessage, openLink }
+}
+
+/** Inert bridge used outside an MCP host so widgets never branch on null. */
+export const NOOP_BRIDGE: McpAppBridge = {
+  connected: false,
+  embedded: false,
+  callTool: async () => {
+    throw new Error('Not running inside an MCP host')
+  },
+  sendMessage: async () => undefined,
+  openLink: async (url) => {
+    window.open(url, '_blank', 'noopener')
+  },
+}
+
+export const McpBridgeContext = createContext<McpAppBridge>(NOOP_BRIDGE)
+
+/** Read the bridge provided by {@link EmbedPage} (or the inert default). */
+export function useMcp(): McpAppBridge {
+  return useContext(McpBridgeContext)
 }

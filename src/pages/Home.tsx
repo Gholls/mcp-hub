@@ -1,7 +1,9 @@
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { TOOLS } from '@shared/tools.ts'
-import type { ToolMeta } from '@shared/types.ts'
+import { SITE_ORIGIN, type ToolMeta } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
+import { useSeo } from '../lib/seo.ts'
 
 function ToolCard({ tool }: { tool: ToolMeta }) {
   const { t, pick } = useI18n()
@@ -35,6 +37,24 @@ function ToolCard({ tool }: { tool: ToolMeta }) {
 
 export default function Home() {
   const { t } = useI18n()
+
+  const seo = useMemo(
+    () => ({
+      title: 'mcp.gholl.com — Interactive micro-tools for humans & AI agents',
+      description:
+        'Fast, login-free interactive micro-tools. Use them in the browser or let your AI agent call them through the Model Context Protocol (MCP Apps).',
+      path: '/',
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'mcp.gholl.com',
+        url: SITE_ORIGIN,
+        description: 'Interactive micro-tools for humans and AI agents, served over MCP.',
+      },
+    }),
+    [],
+  )
+  useSeo(seo)
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5">

@@ -2,13 +2,14 @@ import { useEffect, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import type { Locale } from '@shared/types.ts'
 import { getWidget } from '../widgets/registry.ts'
-import { useMcpApp } from '../lib/mcp-app.ts'
+import { McpBridgeContext, useMcpApp } from '../lib/mcp-app.ts'
 
 export default function EmbedPage() {
   const { widgetId = '' } = useParams()
   const [search] = useSearchParams()
   const Widget = getWidget(widgetId)
-  const { hostContext, toolInput } = useMcpApp()
+  const bridge = useMcpApp()
+  const { hostContext, toolInput } = bridge
 
   const queryLocale = search.get('locale')
   const hostLocale = hostContext?.locale
@@ -41,8 +42,10 @@ export default function EmbedPage() {
   }
 
   return (
-    <div className="min-h-screen p-3">
-      <Widget locale={locale} initial={initial} />
-    </div>
+    <McpBridgeContext.Provider value={bridge}>
+      <div className="min-h-screen p-3">
+        <Widget locale={locale} initial={initial} />
+      </div>
+    </McpBridgeContext.Provider>
   )
 }

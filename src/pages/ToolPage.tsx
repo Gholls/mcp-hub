@@ -1,6 +1,9 @@
+import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getTool } from '@shared/tools.ts'
+import { SITE_ORIGIN } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
+import { useSeo } from '../lib/seo.ts'
 import { getWidget } from '../widgets/registry.ts'
 import CopyButton from '../components/CopyButton.tsx'
 
@@ -9,6 +12,35 @@ export default function ToolPage() {
   const tool = getTool(widgetId)
   const Widget = getWidget(widgetId)
   const { t, pick, locale } = useI18n()
+
+  const seo = useMemo(
+    () =>
+      tool
+        ? {
+            title: `${pick(tool.title)} · mcp.gholl.com`,
+            description: pick(tool.description),
+            path: tool.pagePath,
+            jsonLd: {
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: tool.name,
+              applicationCategory: 'DeveloperApplication',
+              operatingSystem: 'Any',
+              description: tool.mcpDescription,
+              url: `${SITE_ORIGIN}${tool.pagePath}`,
+              offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+            },
+          }
+        : null,
+    [tool, pick],
+  )
+  useSeo(
+    seo ?? {
+      title: 'Tool not found · mcp.gholl.com',
+      description: 'Interactive micro-tools for humans and AI agents.',
+      path: '/',
+    },
+  )
 
   if (!tool) {
     return (

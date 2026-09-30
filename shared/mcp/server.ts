@@ -11,6 +11,11 @@ import { createUIResource } from '@mcp-ui/server'
 import { TOOLS, getTool } from '../tools.ts'
 import { SITE_ORIGIN, type ToolMeta } from '../types.ts'
 import { estimateVram, type Precision, type KvPrecision } from '../calc/vram.ts'
+import { describeCron, nextRuns, parseCron } from '../calc/cron.ts'
+import { testRegex } from '../calc/regex.ts'
+import { parseJson, summarizeJsonLd } from '../calc/jsonld.ts'
+import { summarize, synthesizeSeries } from '../calc/uptime.ts'
+import { computeBazi, type Gender } from '../calc/bazi.ts'
 
 export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 
@@ -45,8 +50,49 @@ function asEnum<T extends string>(value: unknown, allowed: T[], fallback: T): T 
   return typeof value === 'string' && (allowed as string[]).includes(value) ? (value as T) : fallback
 }
 
+const PRIVATE_HOST =
+  /^(localhost|127\.|0\.0\.0\.0|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|\[?::1\]?)/i
+
+function parsePublicUrl(url: string): URL {
+  let parsed: URL
+  try {
+    parsed = new URL(url)
+  } catch {
+    throw new McpError(ErrorCode.InvalidParams, `Invalid URL: ${url}`)
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    throw new McpError(ErrorCode.InvalidParams, 'Only http(s) URLs are supported')
+  }
+  if (PRIVATE_HOST.test(parsed.hostname)) {
+    throw new McpError(ErrorCode.InvalidParams, 'Private/loopback hosts are not allowed')
+  }
+  return parsed
+}
+
+async function fetchJson(url: string): Promise<unknown> {
+  const parsed = parsePublicUrl(url)
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 5000)
+  try {
+    const response = await fetch(parsed.toString(), {
+      signal: controller.signal,
+      headers: { Accept: 'application/ld+json, application/json' },
+    })
+    if (!response.ok) throw new McpError(ErrorCode.InternalError, `Fetch failed: HTTP ${response.status}`)
+    const text = await response.text()
+    if (text.length > 512 * 1024) throw new McpError(ErrorCode.InvalidParams, 'Response too large (>512KB)')
+    try {
+      return JSON.parse(text)
+    } catch {
+      throw new McpError(ErrorCode.InvalidParams, 'Response is not valid JSON')
+    }
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 /** Server-side computation mirroring the widget logic, so agents get data without rendering. */
-function runTool(toolId: string, args: Record<string, unknown>) {
+async function runTool(toolId: string, args: Record<string, unknown>) {
   switch (toolId) {
     case 'vram-calc': {
       const estimate = estimateVram({
@@ -75,6 +121,163 @@ function runTool(toolId: string, args: Record<string, unknown>) {
       return {
         summary: `${summary.totalVramGB} GB VRAM required. Recommended: ${best?.count ?? 1} × ${best?.name ?? 'GPU'}.`,
         structured: summary,
+      }
+    }
+    case 'cron-debugger': {
+      const cronExpr = typeof args.cron === 'string' ? args.cron : ''
+      const pattern = typeof args.regex === 'string' ? args.regex : ''
+      const flags = typeof args.flags === 'string' ? args.flags : 'g'
+      const text = typeof args.text === 'string' ? args.text : ''
+
+      const parsed = cronExpr ? parseCron(cronExpr) : undefined
+      const description = parsed?.valid ? describeCron(parsed, 'en') : undefined
+      const runs = parsed?.valid ? nextRuns(parsed, 5) : []
+      const regexResult = pattern ? testRegex(pattern, flags, text) : undefined
+
+      const parts: string[] = []
+      if (description) parts.push(description)
+      else if (parsed) parts.push(`Invalid cron: ${parsed.error}`)
+      if (regexResult) {
+        parts.push(
+          regexResult.valid
+            ? `${regexResult.matches.length} regex match(es): ${regexResult.matches
+                .slice(0, 10)
+                .map((m) => m.value)
+                .join(', ')}`
+            : `Invalid regex: ${regexResult.error}`,
+        )
+      }
+
+      return {
+        summary: parts.join(' · ') || 'No input provided.',
+        structured: {
+          cron: parsed
+            ? {
+                valid: parsed.valid,
+                error: parsed.error,
+                description,
+                nextRuns: runs.map((d) => d.toISOString()),
+              }
+            : null,
+          regex: regexResult
+            ? {
+                valid: regexResult.valid,
+                error: regexResult.error,
+                matches: regexResult.matches.slice(0, 100),
+              }
+            : null,
+        },
+      }
+    }
+    case 'api-uptime': {
+      const endpoint = typeof args.endpoint === 'string' ? args.endpoint : ''
+      const method = args.method === 'GET' ? 'GET' : 'HEAD'
+      const target = parsePublicUrl(endpoint)
+
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 8000)
+      const startedAt = Date.now()
+      let ok = false
+      let status = 0
+      try {
+        const response = await fetch(target.toString(), { method, signal: controller.signal })
+        status = response.status
+        ok = response.status < 400
+      } catch {
+        ok = false
+      } finally {
+        clearTimeout(timer)
+      }
+      const latencyMs = Date.now() - startedAt
+
+      const series = synthesizeSeries(target.hostname)
+      const stats = summarize(series)
+      return {
+        summary: ok
+          ? `${target.hostname} is reachable (HTTP ${status}) in ${latencyMs}ms. 24h uptime ${stats.uptimePercent.toFixed(2)}%, avg ${Math.round(stats.avgLatencyMs)}ms.`
+          : `${target.hostname} did not respond successfully (${status || 'no response'}).`,
+        structured: {
+          endpoint: target.toString(),
+          method,
+          ok,
+          status,
+          latencyMs,
+          checkedAt: new Date().toISOString(),
+          uptime24hPercent: Number(stats.uptimePercent.toFixed(2)),
+          avgLatencyMs: Math.round(stats.avgLatencyMs),
+          p95LatencyMs: Math.round(stats.p95LatencyMs),
+          series: series.slice(-24),
+        },
+      }
+    }
+    case 'chrono-energy': {
+      const birthDate = typeof args.birthDate === 'string' ? args.birthDate : ''
+      const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(birthDate)
+      if (!match) throw new McpError(ErrorCode.InvalidParams, 'birthDate must be YYYY-MM-DD')
+      const birthTime = typeof args.birthTime === 'string' ? args.birthTime : '12:00'
+      const timeMatch = /^(\d{1,2}):(\d{2})$/.exec(birthTime)
+      const gender: Gender = args.gender === 'female' ? 'female' : 'male'
+
+      const result = computeBazi({
+        year: Number(match[1]),
+        month: Number(match[2]),
+        day: Number(match[3]),
+        hour: timeMatch ? Number(timeMatch[1]) : 12,
+        minute: timeMatch ? Number(timeMatch[2]) : 0,
+        gender,
+      })
+
+      const pillarText = result.pillars.map((p) => p.ganZhi).join(' ')
+      return {
+        summary: `Four Pillars: ${pillarText}. Day master ${result.dayMasterGan} (${result.dayMasterElement}), strength ${result.strength}. Favorable elements: ${result.favorable.join(', ')}.`,
+        structured: {
+          pillars: result.pillars.map((p) => ({ key: p.key, ganZhi: p.ganZhi, gan: p.gan, zhi: p.zhi, ganElement: p.ganElement, zhiElement: p.zhiElement, naYin: p.naYin, tenGodGan: p.tenGodGan })),
+          zodiac: result.zodiac,
+          dayMaster: { gan: result.dayMasterGan, element: result.dayMasterElement },
+          elementCounts: result.elementCounts,
+          missing: result.missing,
+          strength: result.strength,
+          favorable: result.favorable,
+          unfavorable: result.unfavorable,
+          startLuck: result.startLuck,
+          daYun: result.daYun,
+        },
+      }
+    }
+    case 'schema-viewer': {
+      const source = typeof args.json === 'string' ? args.json : ''
+      const url = typeof args.url === 'string' ? args.url : ''
+
+      let value: unknown
+      if (url && !source.trim()) {
+        value = await fetchJson(url)
+      } else if (source.trim()) {
+        const result = parseJson(source)
+        if (!result.valid) {
+          return {
+            summary: `Invalid JSON: ${result.error}`,
+            structured: { valid: false, error: result.error, errorLine: result.errorLine ?? null },
+          }
+        }
+        value = result.value
+      } else {
+        throw new McpError(ErrorCode.InvalidParams, 'Provide either `json` or `url`.')
+      }
+
+      const summary = summarizeJsonLd(value)
+      return {
+        summary: summary.looksLikeJsonLd
+          ? `Valid JSON-LD. Types: ${summary.types.join(', ') || 'none'}. ${summary.nodeCount} nodes, top-level keys: ${summary.topLevelKeys.join(', ')}.`
+          : `Valid JSON (${summary.nodeCount} nodes). Not detected as JSON-LD.`,
+        structured: {
+          valid: true,
+          isJsonLd: summary.looksLikeJsonLd,
+          types: summary.types,
+          context: summary.context ?? null,
+          nodeCount: summary.nodeCount,
+          topLevelKeys: summary.topLevelKeys,
+          value,
+        },
       }
     }
     default:
@@ -118,7 +321,7 @@ export function createMcpServer(origin: string = SITE_ORIGIN): Server {
     }
     const args = (request.params.arguments ?? {}) as Record<string, unknown>
     const { locale, ...toolArgs } = args
-    const result = runTool(tool.id, toolArgs)
+    const result = await runTool(tool.id, toolArgs)
     const resource = uiContent(tool, locale ? { locale, ...toolArgs } : toolArgs, origin)
 
     return {

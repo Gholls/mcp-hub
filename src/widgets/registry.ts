@@ -1,6 +1,10 @@
 import type { ComponentType } from 'react'
 import type { Locale } from '@shared/types.ts'
 import VramCalcWidget from './vram-calc/index.tsx'
+import CronDebuggerWidget from './cron-debugger/index.tsx'
+import SchemaViewerWidget from './schema-viewer/index.tsx'
+import ApiUptimeWidget from './api-uptime/index.tsx'
+import ChronoEnergyWidget from './chrono-energy/index.tsx'
 
 /** Props every embeddable widget receives from the host. */
 export interface WidgetProps {
@@ -18,6 +22,10 @@ export type WidgetComponent = ComponentType<WidgetProps>
  */
 export const WIDGETS: Record<string, WidgetComponent> = {
   'vram-calc': VramCalcWidget,
+  'cron-debugger': CronDebuggerWidget,
+  'schema-viewer': SchemaViewerWidget,
+  'api-uptime': ApiUptimeWidget,
+  'chrono-energy': ChronoEnergyWidget,
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {

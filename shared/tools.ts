@@ -65,6 +65,189 @@ export const vramCalcTool: ToolMeta = {
   },
 }
 
+export const cronDebuggerTool: ToolMeta = {
+  id: 'cron-debugger',
+  name: 'Cron & Regex Debugger',
+  title: {
+    en: 'Cron & Regex Debugger',
+    zh: 'Cron / 正则调试器',
+  },
+  description: {
+    en: 'Translate a cron schedule into plain language, preview the next runs, and test regular expressions with live highlighting.',
+    zh: '把 Cron 表达式翻译成自然语言，预览未来执行时间，并实时高亮测试正则表达式。',
+  },
+  mcpDescription:
+    'Explain a cron expression in plain language and compute its next 5 fire times, or test a regular expression against sample text and return the matches. Inputs: `cron` (a standard 5-field cron expression) and/or `regex` with optional `flags` and `text`. Use this when a user asks when a cron schedule runs, wants to verify a cron format, or wants to test/debug a regex.',
+  category: 'Developer',
+  icon: '⏱️',
+  tags: ['cron', 'regex', 'schedule', 'developer'],
+  status: 'stable',
+  embedPath: '/embed/cron-debugger',
+  pagePath: '/tools/cron-debugger',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      cron: {
+        type: 'string',
+        description: 'A standard 5-field cron expression, e.g. "*/5 * * * *".',
+        default: '*/5 * * * *',
+      },
+      regex: {
+        type: 'string',
+        description: 'A JavaScript regular expression pattern to test.',
+      },
+      flags: {
+        type: 'string',
+        description: 'Regex flags, e.g. "gi".',
+        default: 'g',
+      },
+      text: {
+        type: 'string',
+        description: 'Sample text to run the regex against.',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+  },
+}
+
+export const schemaViewerTool: ToolMeta = {
+  id: 'schema-viewer',
+  name: 'JSON-LD & Schema Viewer',
+  title: {
+    en: 'JSON-LD / Schema Viewer',
+    zh: 'JSON-LD / Schema 可视化',
+  },
+  description: {
+    en: 'Inspect, validate and explore structured JSON / JSON-LD with a collapsible tree, syntax checks and JSON-LD detection.',
+    zh: '用可折叠树视图检查、校验并浏览结构化 JSON / JSON-LD，提供语法检查与 JSON-LD 识别。',
+  },
+  mcpDescription:
+    'Parse, validate and summarize a structured JSON or JSON-LD document. Accepts a JSON string (`json`) or a URL to fetch (`url`). Returns syntax validity, JSON-LD signals (@context, @type), node count, top-level keys, and the parsed structure. Use this when a user pastes structured data / schema.org markup and wants it checked, explained or cleaned up.',
+  category: 'Data',
+  icon: '🧩',
+  tags: ['json', 'json-ld', 'schema', 'seo'],
+  status: 'stable',
+  embedPath: '/embed/schema-viewer',
+  pagePath: '/tools/schema-viewer',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      json: {
+        type: 'string',
+        description: 'The JSON or JSON-LD document as a string.',
+      },
+      url: {
+        type: 'string',
+        description: 'Optional public http(s) URL to fetch JSON/JSON-LD from.',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+  },
+}
+
+export const apiUptimeTool: ToolMeta = {
+  id: 'api-uptime',
+  name: 'API Health & Latency Dashboard',
+  title: {
+    en: 'API Health & Latency',
+    zh: 'API 健康度与延迟看板',
+  },
+  description: {
+    en: 'Probe an API endpoint, measure live latency, and view a 24h uptime and latency dashboard.',
+    zh: '探测 API 接口，测量实时延迟，并查看 24 小时可用率与延迟看板。',
+  },
+  mcpDescription:
+    'Run a live health check against a public API endpoint and return its reachability, HTTP status and round-trip latency, along with a 24h uptime/latency summary. Inputs: `endpoint` (public http(s) URL, required) and `method` (GET or HEAD). Use this when a user wants to check whether an API or website is up, or compare response latency.',
+  category: 'Monitoring',
+  icon: '📡',
+  tags: ['api', 'uptime', 'latency', 'monitoring'],
+  status: 'stable',
+  embedPath: '/embed/api-uptime',
+  pagePath: '/tools/api-uptime',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      endpoint: {
+        type: 'string',
+        description: 'Public http(s) URL to probe.',
+        default: 'https://api.github.com/',
+      },
+      method: {
+        type: 'string',
+        enum: ['GET', 'HEAD'],
+        description: 'HTTP method used for the probe.',
+        default: 'HEAD',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+    required: ['endpoint'],
+  },
+}
+
+export const chronoEnergyTool: ToolMeta = {
+  id: 'chrono-energy',
+  name: 'BaZi Chrono-Energy Wheel',
+  title: {
+    en: 'BaZi Chrono-Energy Wheel',
+    zh: '玄学八字与 Chrono 能量盘',
+  },
+  description: {
+    en: 'Compute the Four Pillars (BaZi) from a birth date/time and explore the five-element energy wheel and luck cycles.',
+    zh: '根据出生年月日时推算八字四柱，可视化五行能量分布与人生大运。',
+  },
+  mcpDescription:
+    'Compute a BaZi (Chinese Four Pillars) chart from a birth date, time and gender. Returns the year/month/day/hour pillars with heavenly stems and earthly branches, the five-element (Wu Xing) distribution, day-master strength, favorable/missing elements, and the decade luck (大运) cycles. Use this for Chinese metaphysics / fortune-telling requests that need a birth-chart analysis. Cultural and entertainment purposes only.',
+  category: 'Culture',
+  icon: '☯️',
+  tags: ['bazi', 'wuxing', 'chinese', 'metaphysics'],
+  status: 'beta',
+  embedPath: '/embed/chrono-energy',
+  pagePath: '/tools/chrono-energy',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      birthDate: {
+        type: 'string',
+        description: 'Birth date in ISO format YYYY-MM-DD.',
+        default: '1990-06-15',
+      },
+      birthTime: {
+        type: 'string',
+        description: 'Birth time in 24h HH:mm. Defaults to 12:00 when unknown.',
+        default: '10:30',
+      },
+      gender: {
+        type: 'string',
+        enum: ['male', 'female'],
+        description: 'Gender, required to order the luck cycles (大运).',
+        default: 'male',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+    required: ['birthDate'],
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -73,7 +256,13 @@ export const vramCalcTool: ToolMeta = {
  *   2. the sandboxed widget iframes (`/embed/:id`)
  *   3. the MCP server tool list + `/.well-known/mcp.json` discovery document
  */
-export const TOOLS: ToolMeta[] = [vramCalcTool]
+export const TOOLS: ToolMeta[] = [
+  vramCalcTool,
+  cronDebuggerTool,
+  schemaViewerTool,
+  apiUptimeTool,
+  chronoEnergyTool,
+]
 
 export function getTool(id: string): ToolMeta | undefined {
   return TOOLS.find((t) => t.id === id)
