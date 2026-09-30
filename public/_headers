@@ -1,0 +1,19 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Allow MCP clients / AI agents to read discovery + widget endpoints.
+/mcp/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization, Mcp-Session-Id, Accept, Mcp-Protocol-Version
+  Access-Control-Expose-Headers: Mcp-Session-Id
+
+/.well-known/*
+  Access-Control-Allow-Origin: *
+  Content-Type: application/json
+
+/embed/*
+  Content-Security-Policy: frame-ancestors *;
+  X-Frame-Options: ALLOWALL

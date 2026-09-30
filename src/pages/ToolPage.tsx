@@ -1,0 +1,83 @@
+import { Link, useParams } from 'react-router-dom'
+import { getTool } from '@shared/tools.ts'
+import { useI18n } from '../lib/i18n.tsx'
+import { getWidget } from '../widgets/registry.ts'
+import CopyButton from '../components/CopyButton.tsx'
+
+export default function ToolPage() {
+  const { widgetId = '' } = useParams()
+  const tool = getTool(widgetId)
+  const Widget = getWidget(widgetId)
+  const { t, pick } = useI18n()
+
+  if (!tool) {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-5 py-24 text-center">
+        <h1 className="text-2xl font-semibold text-white">{t('tool.notFound')}</h1>
+        <Link to="/" className="mt-4 inline-block text-brand-400 hover:text-brand-300">
+          {t('tool.backHome')}
+        </Link>
+      </div>
+    )
+  }
+
+  const mcpConfig = JSON.stringify(
+    { mcpServers: { gholl: { url: 'https://mcp.gholl.com/mcp' } } },
+    null,
+    2,
+  )
+
+  return (
+    <div className="mx-auto w-full max-w-6xl px-5 py-10">
+      <nav className="mb-6 text-sm text-slate-500">
+        <Link to="/" className="hover:text-slate-300">
+          {t('nav.tools')}
+        </Link>
+        <span className="mx-2">/</span>
+        <span className="text-slate-300">{pick(tool.title)}</span>
+      </nav>
+
+      <header className="flex items-start gap-4">
+        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-ink-700 text-2xl">
+          {tool.icon}
+        </span>
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">{pick(tool.title)}</h1>
+          <p className="mt-2 max-w-2xl text-slate-400">{pick(tool.description)}</p>
+        </div>
+      </header>
+
+      <section className="mt-8 overflow-hidden rounded-2xl border border-white/8 bg-ink-800/40">
+        {Widget ? (
+          <Widget locale="en" initial={{}} />
+        ) : (
+          <div className="p-12 text-center text-slate-400">{t('common.comingSoon')}</div>
+        )}
+      </section>
+
+      <section className="mt-12 grid gap-6 lg:grid-cols-2">
+        <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-6">
+          <h2 className="font-semibold text-white">{t('tool.usageWeb')}</h2>
+          <p className="mt-1 text-sm text-slate-400">{t('tool.usageWebDesc')}</p>
+          <div className="mt-4 flex items-center gap-2">
+            <code className="flex-1 truncate rounded-lg bg-ink-900 px-3 py-2 font-mono text-xs text-slate-300">
+              https://mcp.gholl.com{tool.embedPath}
+            </code>
+            <CopyButton value={`https://mcp.gholl.com${tool.embedPath}`} />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-6">
+          <h2 className="font-semibold text-white">{t('tool.usageMcp')}</h2>
+          <p className="mt-1 text-sm text-slate-400">{t('tool.usageMcpDesc')}</p>
+          <div className="mt-4 flex items-start gap-2">
+            <pre className="flex-1 overflow-x-auto rounded-lg bg-ink-900 px-3 py-2 font-mono text-xs text-slate-300">
+              {mcpConfig}
+            </pre>
+            <CopyButton value={mcpConfig} />
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}

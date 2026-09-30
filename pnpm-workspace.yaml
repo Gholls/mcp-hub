@@ -1,0 +1,5 @@
+onlyBuiltDependencies:
+  - '@modelcontextprotocol/ext-apps'
+  - esbuild
+  - sharp
+  - workerd
