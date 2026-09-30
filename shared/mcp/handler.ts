@@ -24,7 +24,7 @@ function withCors(response: Response): Response {
  * modern, stateless-friendly transport). A fresh server + transport are created
  * per request so it runs anywhere on the edge.
  */
-export async function handleMcpRequest(request: Request): Promise<Response> {
+export async function handleMcpRequest(request: Request, appHtml?: string): Promise<Response> {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: CORS_HEADERS })
   }
@@ -37,7 +37,7 @@ export async function handleMcpRequest(request: Request): Promise<Response> {
     })
   }
 
-  const server = createMcpServer(url.origin)
+  const server = createMcpServer(url.origin, appHtml)
   const transport = new WebStandardStreamableHTTPServerTransport({ enableJsonResponse: true })
 
   await server.connect(transport)

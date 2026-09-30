@@ -89,12 +89,25 @@ const I18nContext = createContext<I18nValue | null>(null)
 
 const STORAGE_KEY = 'gholl.locale'
 
+/** localStorage throws in sandboxed (opaque-origin) iframes, so guard it. */
+function safeStorage(action: 'get' | 'set', value?: string): string | null {
+  try {
+    if (action === 'get') return window.localStorage.getItem(STORAGE_KEY)
+    if (value !== undefined) window.localStorage.setItem(STORAGE_KEY, value)
+  } catch {
+    /* storage unavailable */
+  }
+  return null
+}
+
 function detectLocale(): Locale {
   if (typeof window === 'undefined') return defaultLocale
+  const injected = window.__GHOLL__?.locale
+  if (injected === 'zh' || injected === 'en') return injected
   const params = new URLSearchParams(window.location.search)
   const fromQuery = params.get('locale')
   if (fromQuery === 'zh' || fromQuery === 'en') return fromQuery
-  const stored = window.localStorage.getItem(STORAGE_KEY)
+  const stored = safeStorage('get')
   if (stored === 'zh' || stored === 'en') return stored
   const nav = window.navigator.language || ''
   return nav.toLowerCase().startsWith('zh') ? 'zh' : 'en'
@@ -105,7 +118,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = locale === 'zh' ? 'zh' : 'en'
-    window.localStorage.setItem(STORAGE_KEY, locale)
+    safeStorage('set', locale)
   }, [locale])
 
   const setLocale = useCallback((next: Locale) => setLocaleState(next), [])

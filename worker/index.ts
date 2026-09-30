@@ -11,6 +11,20 @@ const JSON_HEADERS = {
   'Cache-Control': 'public, max-age=300',
 }
 
+/** Single-file widget HTML, cached for the lifetime of the Worker isolate. */
+let appHtmlCache: string | undefined
+
+async function getAppHtml(request: Request, env: Env): Promise<string | undefined> {
+  if (appHtmlCache !== undefined) return appHtmlCache
+  try {
+    const response = await env.ASSETS.fetch(new Request(new URL('/index.html', request.url)))
+    if (response.ok) appHtmlCache = await response.text()
+  } catch {
+    /* fall back to external-URL resources */
+  }
+  return appHtmlCache
+}
+
 /**
  * Cloudflare Worker entrypoint for mcp.gholl.com.
  *
@@ -24,7 +38,7 @@ export default {
     const url = new URL(request.url)
 
     if (url.pathname === '/mcp' || url.pathname.startsWith('/mcp/')) {
-      return handleMcpRequest(request)
+      return handleMcpRequest(request, await getAppHtml(request, env))
     }
 
     if (url.pathname === '/.well-known/mcp.json') {

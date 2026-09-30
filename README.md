@@ -21,6 +21,15 @@ Interactive micro-tools for humans **and** AI agents, served from
 
 Vite · React 19 · TypeScript · Tailwind CSS v4 · `@mcp-ui/*` · Cloudflare Workers + static assets.
 
+## How the UI cards are delivered
+
+Each MCP tool returns a small text + `structuredContent` result and points at a
+UI resource (`_meta.ui.resourceUri` = `ui://gholl/<tool>`). Hosts fetch the card
+HTML via `resources/read`; the worker returns the built single-file app with a
+`window.__GHOLL__` bootstrap injected so it renders that specific widget and
+speaks the MCP Apps protocol over `postMessage`. The same widgets are also
+available as regular pages (`/tools/:id`) and iframes (`/embed/:id`).
+
 ## Development
 
 ```bash

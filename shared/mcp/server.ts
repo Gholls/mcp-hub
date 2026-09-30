@@ -295,19 +295,41 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
   }
 }
 
-function uiContent(tool: ToolMeta, args: Record<string, unknown>, origin: string) {
-  return createUIResource({
-    uri: resourceUri(tool.id),
-    content: { type: 'externalUrl', iframeUrl: embedUrl(origin, tool, args) },
-    encoding: 'text',
-  })
+/** Inject the widget bootstrap before the app bundle so it renders the right widget. */
+function injectBootstrap(html: string, widgetId: string, params: Record<string, unknown>): string {
+  const payload = JSON.stringify({ widgetId, params }).replace(/</g, '\\u003c')
+  const script = `<script>window.__GHOLL__=${payload}</script>`
+  return html.includes('</head>') ? html.replace('</head>', `${script}</head>`) : `${script}${html}`
+}
+
+/**
+ * Builds the UI resource for a tool.
+ *
+ * When the built app HTML is available we inline it (`rawHtml`) because MCP Apps
+ * hosts (and `@mcp-ui/client` v7) render the resource's `text` as HTML — an
+ * external URL would not work. We fall back to an external-URL resource for
+ * classic MCP-UI hosts when the HTML is unavailable.
+ */
+function uiContent(
+  tool: ToolMeta,
+  args: Record<string, unknown>,
+  origin: string,
+  appHtml?: string,
+) {
+  const content = appHtml
+    ? { type: 'rawHtml' as const, htmlString: injectBootstrap(appHtml, tool.id, args) }
+    : { type: 'externalUrl' as const, iframeUrl: embedUrl(origin, tool, args) }
+  return createUIResource({ uri: resourceUri(tool.id), content, encoding: 'text' })
 }
 
 /**
  * Builds a fresh MCP server. Instances are cheap and the transport is stateless,
  * so a new server is created per HTTP request on Cloudflare's edge.
+ *
+ * @param origin Origin used for fallback external-URL resources.
+ * @param appHtml Built single-file widget HTML to inline as the UI resource.
  */
-export function createMcpServer(origin: string = SITE_ORIGIN): Server {
+export function createMcpServer(origin: string = SITE_ORIGIN, appHtml?: string): Server {
   const server = new Server(SERVER_INFO, {
     capabilities: { tools: {}, resources: {} },
     instructions:
@@ -330,12 +352,13 @@ export function createMcpServer(origin: string = SITE_ORIGIN): Server {
       throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`)
     }
     const args = (request.params.arguments ?? {}) as Record<string, unknown>
-    const { locale, ...toolArgs } = args
+    const toolArgs = args as Record<string, unknown>
     const result = await runTool(tool.id, toolArgs)
-    const resource = uiContent(tool, locale ? { locale, ...toolArgs } : toolArgs, origin)
 
+    // The UI HTML is served via `resources/read` (the MCP Apps / @mcp-ui v7 flow)
+    // rather than inlined here, which keeps tool results small.
     return {
-      content: [{ type: 'text', text: result.summary }, resource],
+      content: [{ type: 'text', text: result.summary }],
       structuredContent: result.structured,
       _meta: { ui: { resourceUri: resourceUri(tool.id) } },
     }
@@ -356,7 +379,7 @@ export function createMcpServer(origin: string = SITE_ORIGIN): Server {
     if (!tool) {
       throw new McpError(ErrorCode.InvalidParams, `Unknown resource: ${request.params.uri}`)
     }
-    const resource = uiContent(tool, {}, origin)
+    const resource = uiContent(tool, {}, origin, appHtml)
     return { contents: [{ ...resource.resource, _meta: { ui: { resourceUri: resourceUri(tool.id) } } }] }
   })
 
