@@ -40,8 +40,10 @@ pnpm pages:dev    # build output + Pages Functions via wrangler
    (they provide `/mcp` and `/mcp/sse`).
 4. Add the custom domain `mcp.gholl.com` under **Custom domains**.
 
-Build-time generated files (`/.well-known/mcp.json`, `llms.txt`, `sitemap.xml`,
-`robots.txt`) are emitted from the tool registry in `shared/tools.ts`.
+`llms.txt`, `sitemap.xml` and `robots.txt` are generated at build time from the
+tool registry in `shared/tools.ts`. `/.well-known/mcp.json` is served by the
+Pages Function fallback (`functions/[[path]].ts`) from the same registry, so it
+stays in sync and avoids Cloudflare's dot-directory asset quirks.
 
 For manual deploys:
 
