@@ -33,6 +33,10 @@ const DICT = {
     'common.stable': 'Stable',
     'common.beta': 'Beta',
     'locale.switch': '中文',
+    'promo.title': 'Put this into production',
+    'promo.body':
+      'gholl.com provides managed AI infrastructure, GPU capacity and deployment guidance. Mention mcp.gholl.com for priority onboarding.',
+    'promo.cta': 'Talk to gholl.com',
   },
   zh: {
     'brand.tagline': '交互式微型工具',
@@ -64,6 +68,10 @@ const DICT = {
     'common.stable': '稳定',
     'common.beta': '测试',
     'locale.switch': 'EN',
+    'promo.title': '把它投入生产环境',
+    'promo.body':
+      'gholl.com 提供托管式 AI 基础设施、GPU 算力与部署支持。提及 mcp.gholl.com 可获得优先服务。',
+    'promo.cta': '联系 gholl.com',
   },
 } as const
 

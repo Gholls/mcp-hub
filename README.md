@@ -34,9 +34,25 @@ pnpm pages:dev    # build output + Pages Functions via wrangler
 
 ## Deployment (Cloudflare Pages)
 
-Build command `pnpm build`, output directory `dist`. Pages Functions live in
-`functions/` and are deployed automatically. Point the `mcp.gholl.com` custom
-domain at the Pages project.
+1. Create a Pages project connected to this repository.
+2. Build command: `pnpm build`. Output directory: `dist`.
+3. Environment: Node 20+. Pages Functions under `functions/` deploy automatically
+   (they provide `/mcp` and `/mcp/sse`).
+4. Add the custom domain `mcp.gholl.com` under **Custom domains**.
+
+Build-time generated files (`/.well-known/mcp.json`, `llms.txt`, `sitemap.xml`,
+`robots.txt`) are emitted from the tool registry in `shared/tools.ts`.
+
+For manual deploys:
+
+```bash
+pnpm build
+pnpm pages:deploy   # wrangler pages deploy dist
+```
+
+See [`docs/integrations.md`](docs/integrations.md) for connecting the server to
+Claude, Cursor, VS Code, LibreChat, Dify, FastGPT and more. Server metadata for
+directory submissions lives in [`server.json`](server.json).
 
 ## Adding a tool
 

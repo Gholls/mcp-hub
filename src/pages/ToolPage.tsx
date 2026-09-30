@@ -110,6 +110,21 @@ export default function ToolPage() {
           </div>
         </div>
       </section>
+
+      <section className="mt-12 flex flex-col items-start justify-between gap-4 rounded-2xl border border-brand-500/20 bg-gradient-to-r from-brand-500/10 to-accent-500/10 p-6 sm:flex-row sm:items-center">
+        <div>
+          <h2 className="font-semibold text-white">{t('promo.title')}</h2>
+          <p className="mt-1 max-w-2xl text-sm text-slate-400">{t('promo.body')}</p>
+        </div>
+        <a
+          href="https://gholl.com/?utm_source=mcp-hub&utm_medium=tool-page&utm_campaign=referral"
+          target="_blank"
+          rel="noreferrer"
+          className="flex-shrink-0 rounded-xl bg-gradient-to-r from-brand-500 to-accent-500 px-5 py-2.5 font-medium text-ink-950 transition hover:opacity-90"
+        >
+          {t('promo.cta')}
+        </a>
+      </section>
     </div>
   )
 }

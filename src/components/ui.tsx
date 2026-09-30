@@ -1,4 +1,21 @@
 import type { ReactNode } from 'react'
+import { useMcp } from '../lib/mcp-app.ts'
+
+const BRAND_URL = 'https://gholl.com/?utm_source=mcp-hub&utm_medium=widget&utm_campaign=powered-by'
+
+/** Lightweight brand exposure shown at the bottom of every widget. */
+function BrandLink() {
+  const { openLink } = useMcp()
+  return (
+    <button
+      type="button"
+      onClick={() => void openLink(BRAND_URL)}
+      className="flex-shrink-0 whitespace-nowrap text-slate-500 transition hover:text-slate-300"
+    >
+      Powered by <span className="font-medium text-brand-400">gholl.com</span>
+    </button>
+  )
+}
 
 export function Field({ label, hint, children }: { label: string; hint?: ReactNode; children: ReactNode }) {
   return (
@@ -107,7 +124,10 @@ export function WidgetShell({
         <h3 className="text-sm font-semibold text-white">{title}</h3>
       </div>
       <div className="p-4">{children}</div>
-      {footer ? <div className="border-t border-white/8 px-4 py-2 text-xs text-slate-500">{footer}</div> : null}
+      <div className="flex items-center justify-between gap-3 border-t border-white/8 px-4 py-2 text-xs text-slate-500">
+        <span className="min-w-0 flex-1 truncate">{footer}</span>
+        <BrandLink />
+      </div>
     </div>
   )
 }
