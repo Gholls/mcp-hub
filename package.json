@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.10.0",
   "description": "mcp.gholl.com - interactive micro-tool hub for humans and AI agents (MCP Apps)",
   "scripts": {
     "dev": "vite",
