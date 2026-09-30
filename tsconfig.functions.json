@@ -12,10 +12,10 @@
     "noEmit": true,
     "strict": true,
     "types": ["@cloudflare/workers-types"],
-    "baseUrl": "..",
+    "baseUrl": ".",
     "paths": {
       "@shared/*": ["./shared/*"]
     }
   },
-  "include": ["../functions", "../shared"]
+  "include": ["functions", "shared/mcp", "shared/tools.ts", "shared/types.ts", "shared/calc"]
 }

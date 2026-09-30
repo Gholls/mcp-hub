@@ -10,11 +10,17 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc -b --noEmit",
+    "typecheck:functions": "tsc -p tsconfig.functions.json --noEmit",
     "pages:dev": "wrangler pages dev dist --compatibility-date=2024-11-01",
     "pages:deploy": "wrangler pages deploy dist"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@modelcontextprotocol/ext-apps", "esbuild", "sharp", "workerd"]
+    "onlyBuiltDependencies": [
+      "@modelcontextprotocol/ext-apps",
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   },
   "dependencies": {
     "@mcp-ui/client": "^7.1.1",
@@ -22,7 +28,8 @@
     "@modelcontextprotocol/sdk": "^1.31.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.0"
+    "react-router-dom": "^7.6.0",
+    "@modelcontextprotocol/ext-apps": "^1.7.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250101.0",

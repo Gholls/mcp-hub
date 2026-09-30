@@ -8,7 +8,7 @@ export default function ToolPage() {
   const { widgetId = '' } = useParams()
   const tool = getTool(widgetId)
   const Widget = getWidget(widgetId)
-  const { t, pick } = useI18n()
+  const { t, pick, locale } = useI18n()
 
   if (!tool) {
     return (
@@ -49,7 +49,7 @@ export default function ToolPage() {
 
       <section className="mt-8 overflow-hidden rounded-2xl border border-white/8 bg-ink-800/40">
         {Widget ? (
-          <Widget locale="en" initial={{}} />
+          <Widget locale={locale} initial={{}} />
         ) : (
           <div className="p-12 text-center text-slate-400">{t('common.comingSoon')}</div>
         )}
