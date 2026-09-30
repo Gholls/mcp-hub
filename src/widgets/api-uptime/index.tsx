@@ -104,7 +104,7 @@ export default function ApiUptimeWidget({ locale, initial }: WidgetProps) {
   const [samples, setSamples] = useState<UptimeSample[]>(() =>
     synthesizeSeries(readString(initial, 'endpoint', 'https://api.github.com/')),
   )
-  const [ping, setPing] = useState<{ ok: boolean; latencyMs: number } | null>(null)
+  const [ping, setPing] = useState<{ ok: boolean; reachable: boolean; latencyMs: number } | null>(null)
   const [pinging, setPinging] = useState(false)
 
   const valid = isValidHttpUrl(endpoint)
@@ -117,13 +117,14 @@ export default function ApiUptimeWidget({ locale, initial }: WidgetProps) {
       if (mcp.connected) {
         const result = await mcp.callTool('api-uptime', { endpoint, method, locale })
         const structured = result.structuredContent as
-          | { ok?: boolean; latencyMs?: number }
+          | { ok?: boolean; reachable?: boolean; latencyMs?: number }
           | undefined
         if (structured && typeof structured.latencyMs === 'number') {
-          setPing({ ok: !!structured.ok, latencyMs: structured.latencyMs })
+          const reachable = structured.reachable ?? !!structured.ok
+          setPing({ ok: !!structured.ok, reachable, latencyMs: structured.latencyMs })
           setSamples((prev) => [
             ...prev.slice(1),
-            { t: Date.now(), latencyMs: structured.latencyMs as number, ok: !!structured.ok },
+            { t: Date.now(), latencyMs: structured.latencyMs as number, ok: reachable },
           ])
           return
         }
@@ -136,7 +137,7 @@ export default function ApiUptimeWidget({ locale, initial }: WidgetProps) {
         ok = false
       }
       const latencyMs = Math.round(performance.now() - start)
-      setPing({ ok, latencyMs })
+      setPing({ ok, reachable: ok, latencyMs })
       setSamples((prev) => [...prev.slice(1), { t: Date.now(), latencyMs, ok }])
     } finally {
       setPinging(false)
@@ -198,10 +199,14 @@ export default function ApiUptimeWidget({ locale, initial }: WidgetProps) {
         {ping ? (
           <div
             className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm ${
-              ping.ok ? 'bg-emerald-500/10 text-emerald-300' : 'bg-rose-500/10 text-rose-300'
+              ping.ok
+                ? 'bg-emerald-500/10 text-emerald-300'
+                : ping.reachable
+                  ? 'bg-amber-500/10 text-amber-300'
+                  : 'bg-rose-500/10 text-rose-300'
             }`}
           >
-            <span>{ping.ok ? d.reachable : d.unreachable}</span>
+            <span>{ping.reachable ? d.reachable : d.unreachable}</span>
             <span className="font-mono">
               {d.last}: {ping.latencyMs}ms
             </span>

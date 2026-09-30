@@ -22,4 +22,9 @@ export default tseslint.config(
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
+  {
+    // Provider and hook intentionally live together.
+    files: ['src/lib/i18n.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
 )

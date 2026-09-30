@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import type { Locale } from '@shared/types.ts'
 import { getWidget } from '../widgets/registry.ts'
 import { McpBridgeContext, useMcpApp } from '../lib/mcp-app.ts'
+import WidgetErrorBoundary from '../components/WidgetErrorBoundary.tsx'
 
 export default function EmbedPage() {
   const { widgetId = '' } = useParams()
@@ -44,7 +45,9 @@ export default function EmbedPage() {
   return (
     <McpBridgeContext.Provider value={bridge}>
       <div className="min-h-screen p-3">
-        <Widget locale={locale} initial={initial} />
+        <WidgetErrorBoundary>
+          <Widget locale={locale} initial={initial} />
+        </WidgetErrorBoundary>
       </div>
     </McpBridgeContext.Provider>
   )

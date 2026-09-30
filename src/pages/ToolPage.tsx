@@ -6,6 +6,7 @@ import { useI18n } from '../lib/i18n.tsx'
 import { useSeo } from '../lib/seo.ts'
 import { getWidget } from '../widgets/registry.ts'
 import CopyButton from '../components/CopyButton.tsx'
+import WidgetErrorBoundary from '../components/WidgetErrorBoundary.tsx'
 
 export default function ToolPage() {
   const { widgetId = '' } = useParams()
@@ -81,7 +82,9 @@ export default function ToolPage() {
 
       <section className="mt-8 overflow-hidden rounded-2xl border border-white/8 bg-ink-800/40">
         {Widget ? (
-          <Widget locale={locale} initial={{}} />
+          <WidgetErrorBoundary>
+            <Widget locale={locale} initial={{}} />
+          </WidgetErrorBoundary>
         ) : (
           <div className="p-12 text-center text-slate-400">{t('common.comingSoon')}</div>
         )}

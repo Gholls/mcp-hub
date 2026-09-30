@@ -53,6 +53,8 @@ function asEnum<T extends string>(value: unknown, allowed: T[], fallback: T): T 
 const PRIVATE_HOST =
   /^(localhost|127\.|0\.0\.0\.0|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|\[?::1\]?)/i
 
+const PROBE_USER_AGENT = 'gholl-mcp-hub/0.1 (+https://mcp.gholl.com/mcp)'
+
 function parsePublicUrl(url: string): URL {
   let parsed: URL
   try {
@@ -76,7 +78,8 @@ async function fetchJson(url: string): Promise<unknown> {
   try {
     const response = await fetch(parsed.toString(), {
       signal: controller.signal,
-      headers: { Accept: 'application/ld+json, application/json' },
+      redirect: 'follow',
+      headers: { Accept: 'application/ld+json, application/json', 'User-Agent': PROBE_USER_AGENT },
     })
     if (!response.ok) throw new McpError(ErrorCode.InternalError, `Fetch failed: HTTP ${response.status}`)
     const text = await response.text()
@@ -177,29 +180,36 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       const controller = new AbortController()
       const timer = setTimeout(() => controller.abort(), 8000)
       const startedAt = Date.now()
-      let ok = false
+      let reachable = false
       let status = 0
       try {
-        const response = await fetch(target.toString(), { method, signal: controller.signal })
+        const response = await fetch(target.toString(), {
+          method,
+          signal: controller.signal,
+          redirect: 'follow',
+          headers: { 'User-Agent': PROBE_USER_AGENT, Accept: '*/*' },
+        })
         status = response.status
-        ok = response.status < 400
+        reachable = true
       } catch {
-        ok = false
+        reachable = false
       } finally {
         clearTimeout(timer)
       }
       const latencyMs = Date.now() - startedAt
+      const ok = reachable && status < 400
 
       const series = synthesizeSeries(target.hostname)
       const stats = summarize(series)
       return {
-        summary: ok
+        summary: reachable
           ? `${target.hostname} is reachable (HTTP ${status}) in ${latencyMs}ms. 24h uptime ${stats.uptimePercent.toFixed(2)}%, avg ${Math.round(stats.avgLatencyMs)}ms.`
-          : `${target.hostname} did not respond successfully (${status || 'no response'}).`,
+          : `${target.hostname} did not respond (timeout or network error).`,
         structured: {
           endpoint: target.toString(),
           method,
           ok,
+          reachable,
           status,
           latencyMs,
           checkedAt: new Date().toISOString(),
