@@ -7,7 +7,7 @@
   "description": "mcp.gholl.com - interactive micro-tool hub for humans and AI agents (MCP Apps)",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/build-embeds.mjs",
+    "build": "tsc -b && vite build && node scripts/build-embeds.mjs && node scripts/build-og.mjs",
     "build:web": "tsc -b && vite build",
     "preview": "vite preview",
     "dev:worker": "wrangler dev",
@@ -48,6 +48,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0",

@@ -44,6 +44,7 @@ export default function Home() {
       description:
         'Fast, login-free interactive micro-tools. Use them in the browser or let your AI agent call them through the Model Context Protocol (MCP Apps).',
       path: '/',
+      image: '/og/site.png',
       jsonLd: {
         '@context': 'https://schema.org',
         '@type': 'WebSite',

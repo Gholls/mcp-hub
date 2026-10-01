@@ -21,6 +21,7 @@ export default function ToolPage() {
             title: `${pick(tool.title)} · mcp.gholl.com`,
             description: pick(tool.description),
             path: tool.pagePath,
+            image: `/og/${tool.id}.png`,
             jsonLd: {
               '@context': 'https://schema.org',
               '@type': 'SoftwareApplication',

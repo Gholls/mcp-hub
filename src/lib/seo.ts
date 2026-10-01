@@ -5,6 +5,8 @@ interface SeoOptions {
   title: string
   description: string
   path: string
+  /** Absolute or root-relative Open Graph image path. */
+  image?: string
   jsonLd?: Record<string, unknown>
 }
 
@@ -29,7 +31,7 @@ function setCanonical(href: string) {
 }
 
 /** Applies per-route document metadata for SEO + social sharing. */
-export function useSeo({ title, description, path, jsonLd }: SeoOptions) {
+export function useSeo({ title, description, path, image, jsonLd }: SeoOptions) {
   useEffect(() => {
     const url = `${SITE_ORIGIN}${path}`
     document.title = title
@@ -40,6 +42,14 @@ export function useSeo({ title, description, path, jsonLd }: SeoOptions) {
     setMeta('property', 'og:url', url)
     setMeta('name', 'twitter:title', title)
     setMeta('name', 'twitter:description', description)
+    setMeta('name', 'twitter:card', 'summary_large_image')
+    if (image) {
+      const absolute = image.startsWith('http') ? image : `${SITE_ORIGIN}${image}`
+      setMeta('property', 'og:image', absolute)
+      setMeta('property', 'og:image:width', '1200')
+      setMeta('property', 'og:image:height', '630')
+      setMeta('name', 'twitter:image', absolute)
+    }
 
     let script: HTMLScriptElement | null = null
     if (jsonLd) {
@@ -51,5 +61,5 @@ export function useSeo({ title, description, path, jsonLd }: SeoOptions) {
     return () => {
       if (script) document.head.removeChild(script)
     }
-  }, [title, description, path, jsonLd])
+  }, [title, description, path, image, jsonLd])
 }

@@ -30,7 +30,12 @@ function discoveryPlugin(): Plugin {
       writeFileSync(
         new URL('./.embed/tools.json', import.meta.url),
         JSON.stringify(
-          TOOLS.map((tool) => ({ id: tool.id })),
+          TOOLS.map((tool) => ({
+            id: tool.id,
+            title: tool.title.en,
+            description: tool.description.en,
+            category: tool.category,
+          })),
           null,
           2,
         ),
