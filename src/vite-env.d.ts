@@ -1,12 +1,11 @@
 /// <reference types="vite/client" />
 
-interface GhollBootstrap {
-  widgetId?: string
-  params?: Record<string, unknown>
-  locale?: 'en' | 'zh'
-}
+/** Replaced at build time by `scripts/build-embeds.mjs` for per-widget bundles. */
+declare const __GHOLL_WIDGET_ID__: string
 
-interface Window {
-  /** Injected into the HTML when a widget is inlined as an MCP Apps resource. */
-  __GHOLL__?: GhollBootstrap
+/** Aliased per widget by `scripts/build-embeds.mjs`. */
+declare module 'virtual:gholl-widget' {
+  import type { WidgetComponent } from './widgets/registry.ts'
+  const Widget: WidgetComponent
+  export default Widget
 }

@@ -295,20 +295,12 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
   }
 }
 
-/** Inject the widget bootstrap before the app bundle so it renders the right widget. */
-function injectBootstrap(html: string, widgetId: string, params: Record<string, unknown>): string {
-  const payload = JSON.stringify({ widgetId, params }).replace(/</g, '\\u003c')
-  const script = `<script>window.__GHOLL__=${payload}</script>`
-  return html.includes('</head>') ? html.replace('</head>', `${script}</head>`) : `${script}${html}`
-}
-
 /**
  * Builds the UI resource for a tool.
  *
- * When the built app HTML is available we inline it (`rawHtml`) because MCP Apps
- * hosts (and `@mcp-ui/client` v7) render the resource's `text` as HTML — an
- * external URL would not work. We fall back to an external-URL resource for
- * classic MCP-UI hosts when the HTML is unavailable.
+ * MCP Apps hosts (and `@mcp-ui/client` v7) render the resource's `text` as HTML,
+ * so we serve the pre-built single-file widget HTML (`rawHtml`). When it is not
+ * available we fall back to an external-URL resource for classic MCP-UI hosts.
  */
 function uiContent(
   tool: ToolMeta,
@@ -317,19 +309,25 @@ function uiContent(
   appHtml?: string,
 ) {
   const content = appHtml
-    ? { type: 'rawHtml' as const, htmlString: injectBootstrap(appHtml, tool.id, args) }
+    ? { type: 'rawHtml' as const, htmlString: appHtml }
     : { type: 'externalUrl' as const, iframeUrl: embedUrl(origin, tool, args) }
   return createUIResource({ uri: resourceUri(tool.id), content, encoding: 'text' })
 }
+
+/** Resolves the pre-built single-file HTML for a tool's widget. */
+export type AppHtmlResolver = (toolId: string) => Promise<string | undefined>
 
 /**
  * Builds a fresh MCP server. Instances are cheap and the transport is stateless,
  * so a new server is created per HTTP request on Cloudflare's edge.
  *
  * @param origin Origin used for fallback external-URL resources.
- * @param appHtml Built single-file widget HTML to inline as the UI resource.
+ * @param resolveAppHtml Resolver for the widget HTML served via `resources/read`.
  */
-export function createMcpServer(origin: string = SITE_ORIGIN, appHtml?: string): Server {
+export function createMcpServer(
+  origin: string = SITE_ORIGIN,
+  resolveAppHtml?: AppHtmlResolver,
+): Server {
   const server = new Server(SERVER_INFO, {
     capabilities: { tools: {}, resources: {} },
     instructions:
@@ -379,7 +377,8 @@ export function createMcpServer(origin: string = SITE_ORIGIN, appHtml?: string):
     if (!tool) {
       throw new McpError(ErrorCode.InvalidParams, `Unknown resource: ${request.params.uri}`)
     }
-    const resource = uiContent(tool, {}, origin, appHtml)
+    const html = resolveAppHtml ? await resolveAppHtml(tool.id) : undefined
+    const resource = uiContent(tool, {}, origin, html)
     return { contents: [{ ...resource.resource, _meta: { ui: { resourceUri: resourceUri(tool.id) } } }] }
   })
 

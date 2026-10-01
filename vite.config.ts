@@ -1,5 +1,7 @@
+import { mkdirSync, writeFileSync } from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, type Plugin } from 'vite'
+import { TOOLS } from './shared/tools.ts'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { viteSingleFile } from 'vite-plugin-singlefile'
@@ -20,6 +22,19 @@ function discoveryPlugin(): Plugin {
       this.emitFile({ type: 'asset', fileName: 'llms.txt', source: buildLlmsTxt() })
       this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: buildSitemap() })
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: buildRobots() })
+    },
+    closeBundle() {
+      // Hand the tool list to the per-widget embed build (scripts/build-embeds.mjs).
+      const dir = fileURLToPath(new URL('./.embed', import.meta.url))
+      mkdirSync(dir, { recursive: true })
+      writeFileSync(
+        new URL('./.embed/tools.json', import.meta.url),
+        JSON.stringify(
+          TOOLS.map((tool) => ({ id: tool.id })),
+          null,
+          2,
+        ),
+      )
     },
   }
 }

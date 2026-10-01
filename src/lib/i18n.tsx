@@ -102,8 +102,6 @@ function safeStorage(action: 'get' | 'set', value?: string): string | null {
 
 function detectLocale(): Locale {
   if (typeof window === 'undefined') return defaultLocale
-  const injected = window.__GHOLL__?.locale
-  if (injected === 'zh' || injected === 'en') return injected
   const params = new URLSearchParams(window.location.search)
   const fromQuery = params.get('locale')
   if (fromQuery === 'zh' || fromQuery === 'en') return fromQuery

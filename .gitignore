@@ -8,6 +8,7 @@ dist
 dist-ssr
 .wrangler
 .mf
+.embed
 
 # local docs (never commit)
 local_docs/
