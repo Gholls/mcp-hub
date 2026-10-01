@@ -30,6 +30,18 @@ Agent index    https://mcp.gholl.com/llms.txt
 - **Stateless**: no `Mcp-Session-Id` needed; each request is independent.
 - CORS is open (`Access-Control-Allow-Origin: *`) for browser-based hosts.
 
+`GET /mcp` is **not** a JSON-RPC call. Behavior by `Accept`:
+
+| Request | Response |
+| --- | --- |
+| `POST /mcp` + JSON-RPC body | JSON-RPC (the only real protocol path) |
+| `GET /mcp` `Accept: text/event-stream` | SSE stream (per Streamable HTTP) |
+| `GET /mcp` `Accept: text/html` | HTML help page |
+| `GET /mcp` anything else (e.g. `*/*`) | the discovery JSON (same as `/.well-known/mcp.json`) |
+
+So probing the endpoint URL with a bare `GET` yields the discovery document;
+`POST` is the transport. Do not treat a plain `GET` as a tool call.
+
 Minimal client config:
 
 ```jsonc

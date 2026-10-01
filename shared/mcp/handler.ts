@@ -1,5 +1,6 @@
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
 import { createMcpServer, type AppHtmlResolver } from './server.ts'
+import { buildDiscoveryDocument } from './discovery.ts'
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -93,11 +94,27 @@ export async function handleMcpRequest(
   }
 
   const accept = request.headers.get('accept') ?? ''
-  const wantsHtml = accept.includes('text/html') && !accept.includes('text/event-stream')
-  if (request.method === 'GET' && wantsHtml) {
-    return new Response(landingPage(url.origin), {
+  const wantsSse = accept.includes('text/event-stream')
+
+  // A plain GET (a browser, or an agent probing the configured URL) is not a
+  // JSON-RPC request. Serve the discovery document, or an HTML help page for
+  // browsers. `GET` with `Accept: text/event-stream` falls through to the
+  // transport (SSE), as the spec requires.
+  if (request.method === 'GET' && !wantsSse) {
+    const discoveryLink = `<${url.origin}/.well-known/mcp.json>; rel="describedby"`
+    if (accept.includes('text/html')) {
+      return new Response(landingPage(url.origin), {
+        status: 200,
+        headers: { 'Content-Type': 'text/html; charset=utf-8', Link: discoveryLink, ...CORS_HEADERS },
+      })
+    }
+    return new Response(JSON.stringify(buildDiscoveryDocument(), null, 2), {
       status: 200,
-      headers: { 'Content-Type': 'text/html; charset=utf-8', ...CORS_HEADERS },
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        Link: discoveryLink,
+        ...CORS_HEADERS,
+      },
     })
   }
 
