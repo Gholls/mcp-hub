@@ -248,6 +248,123 @@ export const chronoEnergyTool: ToolMeta = {
   },
 }
 
+export const jwtDecoderTool: ToolMeta = {
+  id: 'jwt-decoder',
+  name: 'JWT Decoder',
+  title: {
+    en: 'JWT Decoder',
+    zh: 'JWT 解析器',
+  },
+  description: {
+    en: 'Decode a JWT into its header, payload and claims, and check whether it is expired.',
+    zh: '将 JWT 解析为头部、载荷与声明，并检查是否已过期。',
+  },
+  mcpDescription:
+    'Decode a JSON Web Token (JWT) without verifying the signature. Returns the decoded header, payload, and standard claims (iss, sub, aud, exp, iat, nbf), plus whether the token is expired and how long until expiry. Use this when a user pastes a JWT and wants to inspect its contents.',
+  category: 'Developer',
+  icon: '🔑',
+  tags: ['jwt', 'auth', 'token', 'decode'],
+  status: 'stable',
+  embedPath: '/embed/jwt-decoder',
+  pagePath: '/tools/jwt-decoder',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      token: {
+        type: 'string',
+        description: 'The JWT string (header.payload.signature).',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+    required: ['token'],
+  },
+}
+
+export const hashGeneratorTool: ToolMeta = {
+  id: 'hash-generator',
+  name: 'Hash Generator',
+  title: {
+    en: 'Hash Generator',
+    zh: '哈希生成器',
+  },
+  description: {
+    en: 'Compute SHA-1 / SHA-256 / SHA-512 digests of text as hex and base64, entirely in your browser.',
+    zh: '在浏览器本地计算文本的 SHA-1 / SHA-256 / SHA-512 摘要（hex 与 base64）。',
+  },
+  mcpDescription:
+    'Compute cryptographic hash digests (SHA-1, SHA-256, SHA-512) of a text string, returned as hex and base64. Use this when a user wants to hash a value, verify a checksum, or generate a digest. The text is hashed with the Web Crypto API.',
+  category: 'Developer',
+  icon: '🔐',
+  tags: ['hash', 'sha256', 'crypto', 'checksum'],
+  status: 'stable',
+  embedPath: '/embed/hash-generator',
+  pagePath: '/tools/hash-generator',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      text: {
+        type: 'string',
+        description: 'The text to hash.',
+      },
+      algorithms: {
+        type: 'array',
+        items: { type: 'string', enum: ['SHA-1', 'SHA-256', 'SHA-512'] },
+        description: 'Hash algorithms to compute. Defaults to all.',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+    required: ['text'],
+  },
+}
+
+export const colorStudioTool: ToolMeta = {
+  id: 'color-studio',
+  name: 'Color Studio & Contrast',
+  title: {
+    en: 'Color Studio & Contrast',
+    zh: '颜色工具与对比度',
+  },
+  description: {
+    en: 'Convert between hex/RGB/HSL, generate tints and shades, and check WCAG contrast against black and white.',
+    zh: '在 hex/RGB/HSL 之间转换，生成深浅色阶，并检查与黑白两色的 WCAG 对比度。',
+  },
+  mcpDescription:
+    'Analyze a color given as hex, rgb() or hsl(). Returns its hex/RGB/HSL values, relative luminance, WCAG contrast ratios against white and black (with AA/AAA pass flags), the recommended text color, and a tint/shade scale. Use this when a user asks to convert a color or to check color accessibility/contrast.',
+  category: 'Design',
+  icon: '🎨',
+  tags: ['color', 'contrast', 'wcag', 'design'],
+  status: 'stable',
+  embedPath: '/embed/color-studio',
+  pagePath: '/tools/color-studio',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      color: {
+        type: 'string',
+        description: 'A color as hex (#6366f1), rgb(99,102,241) or hsl(239,84%,67%).',
+        default: '#6366f1',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+    required: ['color'],
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -262,6 +379,9 @@ export const TOOLS: ToolMeta[] = [
   schemaViewerTool,
   apiUptimeTool,
   chronoEnergyTool,
+  jwtDecoderTool,
+  hashGeneratorTool,
+  colorStudioTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

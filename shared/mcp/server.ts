@@ -16,6 +16,9 @@ import { testRegex } from '../calc/regex.ts'
 import { parseJson, summarizeJsonLd } from '../calc/jsonld.ts'
 import { summarize, synthesizeSeries } from '../calc/uptime.ts'
 import { computeBazi, type Gender } from '../calc/bazi.ts'
+import { decodeJwt } from '../calc/jwt.ts'
+import { HASH_ALGORITHMS, hashText, type HashAlgorithm } from '../calc/hash.ts'
+import { analyzeColor, parseColor, scaleColor } from '../calc/color.ts'
 
 export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 
@@ -287,6 +290,76 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           nodeCount: summary.nodeCount,
           topLevelKeys: summary.topLevelKeys,
           value,
+        },
+      }
+    }
+    case 'jwt-decoder': {
+      const token = typeof args.token === 'string' ? args.token : ''
+      const result = decodeJwt(token)
+      if (!result.valid) {
+        return {
+          summary: `Invalid JWT: ${result.error}`,
+          structured: { valid: false, error: result.error },
+        }
+      }
+      const status = result.expired
+        ? `expired at ${result.expiresAt}`
+        : result.expiresAt
+          ? `valid until ${result.expiresAt}`
+          : 'no expiry claim'
+      return {
+        summary: `Decoded JWT (alg ${String(result.header?.alg ?? 'unknown')}), ${status}.`,
+        structured: {
+          valid: true,
+          header: result.header,
+          payload: result.payload,
+          claims: result.claims,
+          expired: result.expired ?? null,
+          expiresAt: result.expiresAt ?? null,
+          expiresInSeconds: result.expiresInSeconds ?? null,
+        },
+      }
+    }
+    case 'hash-generator': {
+      const text = typeof args.text === 'string' ? args.text : ''
+      const requested = Array.isArray(args.algorithms)
+        ? (args.algorithms.filter((a): a is HashAlgorithm =>
+            HASH_ALGORITHMS.includes(a as HashAlgorithm),
+          ) as HashAlgorithm[])
+        : HASH_ALGORITHMS
+      const algorithms = requested.length > 0 ? requested : HASH_ALGORITHMS
+      const results = await hashText(text, algorithms)
+      return {
+        summary: results.map((r) => `${r.algorithm}: ${r.hex}`).join('\n'),
+        structured: { bytes: new TextEncoder().encode(text).length, hashes: results },
+      }
+    }
+    case 'color-studio': {
+      const color = typeof args.color === 'string' ? args.color : ''
+      const info = analyzeColor(color)
+      if (!info.valid) {
+        return { summary: `Invalid color: ${info.error}`, structured: { valid: false, error: info.error } }
+      }
+      const rgb = parseColor(color)
+      const scale = rgb ? scaleColor(rgb, 4) : []
+      return {
+        summary: `${info.hex} · RGB ${info.rgb?.r},${info.rgb?.g},${info.rgb?.b} · HSL ${info.hsl?.h}°,${info.hsl?.s}%,${info.hsl?.l}%. Contrast vs white ${info.contrastWhite}:1 (${info.aaWhite ? 'AA pass' : 'AA fail'}), vs black ${info.contrastBlack}:1 (${info.aaBlack ? 'AA pass' : 'AA fail'}).`,
+        structured: {
+          valid: true,
+          hex: info.hex,
+          rgb: info.rgb,
+          hsl: info.hsl,
+          luminance: info.luminance,
+          contrastWhite: info.contrastWhite,
+          contrastBlack: info.contrastBlack,
+          wcag: {
+            aaWhite: info.aaWhite,
+            aaaWhite: info.aaaWhite,
+            aaBlack: info.aaBlack,
+            aaaBlack: info.aaaBlack,
+          },
+          bestTextColor: info.bestTextColor,
+          scale,
         },
       }
     }

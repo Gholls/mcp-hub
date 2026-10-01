@@ -5,6 +5,9 @@ import CronDebuggerWidget from './cron-debugger/index.tsx'
 import SchemaViewerWidget from './schema-viewer/index.tsx'
 import ApiUptimeWidget from './api-uptime/index.tsx'
 import ChronoEnergyWidget from './chrono-energy/index.tsx'
+import JwtDecoderWidget from './jwt-decoder/index.tsx'
+import HashGeneratorWidget from './hash-generator/index.tsx'
+import ColorStudioWidget from './color-studio/index.tsx'
 
 /** Props every embeddable widget receives from the host. */
 export interface WidgetProps {
@@ -26,6 +29,9 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'schema-viewer': SchemaViewerWidget,
   'api-uptime': ApiUptimeWidget,
   'chrono-energy': ChronoEnergyWidget,
+  'jwt-decoder': JwtDecoderWidget,
+  'hash-generator': HashGeneratorWidget,
+  'color-studio': ColorStudioWidget,
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {
