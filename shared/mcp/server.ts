@@ -25,6 +25,23 @@ export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 export const UI_URI_PREFIX = 'ui://gholl/'
 const RESOURCE_MIME = 'text/html;profile=mcp-app'
 
+/**
+ * UI resource metadata (`McpUiResourceMeta`). Widgets are fully self-contained
+ * (inline JS/CSS, no external requests), so we declare a deny-all CSP and ask
+ * for a visible border.
+ */
+const RESOURCE_UI_META = {
+  ui: {
+    prefersBorder: true,
+    csp: {
+      connectDomains: [],
+      resourceDomains: [],
+      frameDomains: [],
+      baseUriDomains: [],
+    },
+  },
+} as const
+
 export type UiUri = `ui://${string}`
 
 export function resourceUri(toolId: string): UiUri {
@@ -441,6 +458,7 @@ export function createMcpServer(
       name: tool.name,
       description: tool.description.en,
       mimeType: RESOURCE_MIME,
+      _meta: RESOURCE_UI_META,
     })),
   }))
 
@@ -452,7 +470,7 @@ export function createMcpServer(
     }
     const html = resolveAppHtml ? await resolveAppHtml(tool.id) : undefined
     const resource = uiContent(tool, {}, origin, html)
-    return { contents: [{ ...resource.resource, _meta: { ui: { resourceUri: resourceUri(tool.id) } } }] }
+    return { contents: [{ ...resource.resource, _meta: RESOURCE_UI_META }] }
   })
 
   return server

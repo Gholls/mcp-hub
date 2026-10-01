@@ -62,8 +62,11 @@ tool registry in `shared/tools.ts`. `/.well-known/mcp.json` is served by the
 Worker from the same registry, so it always stays in sync.
 
 See [`docs/integrations.md`](docs/integrations.md) for connecting the server to
-Claude, Cursor, VS Code, LibreChat, Dify, FastGPT and more. Server metadata for
-directory submissions lives in [`server.json`](server.json).
+Claude, Cursor, VS Code, LibreChat, Dify, FastGPT and more. If you are building
+an MCP **host**, [`docs/host-integration.md`](docs/host-integration.md) is the
+implementation checklist (transport requirements, the `resources/read` UI flow,
+and the full MCP Apps `postMessage` method table). Server metadata for directory
+submissions lives in [`server.json`](server.json).
 
 ## Adding a tool
 
