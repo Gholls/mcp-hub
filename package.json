@@ -7,7 +7,7 @@
   "description": "mcp.gholl.com - interactive micro-tool hub for humans and AI agents (MCP Apps)",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && node scripts/build-embeds.mjs && node scripts/build-og.mjs",
+    "build": "tsc -b && vite build && node scripts/build-embeds.mjs && node scripts/build-og.mjs && node scripts/prerender.mjs",
     "build:web": "tsc -b && vite build",
     "preview": "vite preview",
     "dev:worker": "wrangler dev",

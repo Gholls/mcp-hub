@@ -37,36 +37,57 @@ export function buildDiscoveryDocument() {
 /** Agent-readable index served at `/llms.txt`. */
 export function buildLlmsTxt(): string {
   const tools = buildDiscoveryDocument().tools
+  const params = (schema: { properties?: Record<string, unknown>; required?: string[] }) =>
+    Object.entries(schema.properties ?? {})
+      .map(([name, raw]) => {
+        const prop = raw as { type?: string; enum?: unknown[]; description?: string }
+        const required = schema.required?.includes(name) ? ', required' : ''
+        const type = Array.isArray(prop.enum) ? prop.enum.join('|') : (prop.type ?? 'any')
+        return `${name} (${type}${required})`
+      })
+      .join(', ')
+
   return [
     '# mcp.gholl.com',
     '',
     '> Interactive micro-tools for humans and AI agents. Every tool renders a sandboxed UI card inside MCP-compatible clients and works standalone in the browser.',
     '',
+    '## Key facts',
+    '',
+    `- ${tools.length} free micro-tools. No login, no API key.`,
+    `- MCP server (Streamable HTTP / JSON-RPC): ${SITE_ORIGIN}/mcp`,
+    `- Discovery document: ${SITE_ORIGIN}/.well-known/mcp.json`,
+    '- UI delivered as MCP Apps resources (`text/html;profile=mcp-app`) via `resources/read`.',
+    `- Source code: https://github.com/Gholls/mcp-hub`,
+    '',
     '## MCP server',
     '',
-    `- Endpoint (Streamable HTTP): ${SITE_ORIGIN}/mcp`,
-    `- Discovery document: ${SITE_ORIGIN}/.well-known/mcp.json`,
-    '- Protocol: Model Context Protocol (MCP Apps UI resources)',
+    '- Transport: Streamable HTTP (stateless). Add the URL above to any MCP client.',
+    '- Tool results include a text summary plus `structuredContent`.',
+    '- Host implementation checklist: https://github.com/Gholls/mcp-hub/blob/main/docs/host-integration.md',
     '',
     '## Tools',
     '',
     ...tools.flatMap((tool) => [
       `### ${tool.title}`,
       `- id: \`${tool.name}\``,
+      `- category: ${tool.category}`,
       `- page: ${tool.ui.pageUrl}`,
       `- embed: ${tool.ui.embedUrl}`,
       `- description: ${tool.description}`,
+      `- parameters: ${params(tool.inputSchema)}`,
       '',
     ]),
   ].join('\n')
 }
 
 export function buildSitemap(): string {
+  const lastmod = new Date().toISOString().slice(0, 10)
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...['/', ...TOOLS.map((t) => t.pagePath)].map(
-      (path) => `  <url><loc>${SITE_ORIGIN}${path}</loc></url>`,
+      (path) => `  <url><loc>${SITE_ORIGIN}${path}</loc><lastmod>${lastmod}</lastmod></url>`,
     ),
     '</urlset>',
     '',

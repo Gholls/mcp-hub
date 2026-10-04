@@ -26,19 +26,8 @@ function discoveryPlugin(): Plugin {
       // Hand the tool list to the per-widget embed build (scripts/build-embeds.mjs).
       const dir = fileURLToPath(new URL('./.embed', import.meta.url))
       mkdirSync(dir, { recursive: true })
-      writeFileSync(
-        new URL('./.embed/tools.json', import.meta.url),
-        JSON.stringify(
-          TOOLS.map((tool) => ({
-            id: tool.id,
-            title: tool.title.en,
-            description: tool.description.en,
-            category: tool.category,
-          })),
-          null,
-          2,
-        ),
-      )
+      // Full metadata (serializable) for the per-widget, OG and prerender builds.
+      writeFileSync(new URL('./.embed/tools.json', import.meta.url), JSON.stringify(TOOLS, null, 2))
     },
   }
 }

@@ -13,6 +13,7 @@ const JSON_HEADERS = {
 }
 
 const EMBED_PATH = /^\/embed\/([a-z0-9-]+)\/?$/
+const TOOL_PATH = /^\/tools\/([a-z0-9-]+)\/?$/
 
 /**
  * Cloudflare Worker entrypoint for mcp.gholl.com.
@@ -22,6 +23,7 @@ const EMBED_PATH = /^\/embed\/([a-z0-9-]+)\/?$/
  *   - `/mcp` and `/mcp/sse` → MCP Streamable HTTP
  *   - `/.well-known/mcp.json` → agent discovery document
  *   - `/embed/:id` → pre-built, single-widget HTML (also used by MCP resources)
+ *   - `/tools/:id` → prerendered, crawler-visible landing page (SPA-enhanced)
  */
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -38,6 +40,15 @@ export default {
       appUrl.search = url.search
       const asset = await env.ASSETS.fetch(new Request(appUrl, request))
       if (asset.status !== 404) return asset
+    }
+
+    // Prerendered tool landing page (full content for non-JS crawlers).
+    const tool = TOOL_PATH.exec(url.pathname)
+    if (tool && (request.method === 'GET' || request.method === 'HEAD')) {
+      const page = await env.ASSETS.fetch(
+        new Request(new URL(`/tools/${tool[1]}/index.html`, request.url)),
+      )
+      if (page.status !== 404) return page
     }
 
     if (url.pathname === '/mcp' || url.pathname.startsWith('/mcp/')) {

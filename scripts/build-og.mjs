@@ -107,8 +107,8 @@ async function main() {
       name: tool.id,
       svg: svg({
         kicker: tool.category,
-        title: tool.title,
-        description: tool.description,
+        title: tool.title.en,
+        description: tool.description.en,
         footer: `https://mcp.gholl.com/tools/${tool.id}`,
       }),
     })),
