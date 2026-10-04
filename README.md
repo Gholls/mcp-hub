@@ -1,3 +1,5 @@
+**English** | [中文](./README.zh.md)
+
 # mcp-hub
 
 [![CI](https://github.com/Gholls/mcp-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/Gholls/mcp-hub/actions/workflows/ci.yml)
