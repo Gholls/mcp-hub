@@ -1,44 +1,15 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { TOOLS } from '@shared/tools.ts'
-import { SITE_ORIGIN, type ToolMeta } from '@shared/types.ts'
+import { SITE_ORIGIN } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
 import { useSeo } from '../lib/seo.ts'
 import CopyButton from '../components/CopyButton.tsx'
+import ToolCard from '../components/ToolCard.tsx'
 
 const MCP_URL = 'https://mcp.gholl.com/mcp'
 const REPO_URL = 'https://github.com/Gholls/mcp-hub'
 const HOST_DOC = `${REPO_URL}/blob/main/docs/host-integration.md`
-
-function ToolCard({ tool }: { tool: ToolMeta }) {
-  const { t, pick } = useI18n()
-  return (
-    <Link
-      to={`/tools/${tool.id}`}
-      className="group flex flex-col gap-3 rounded-2xl border border-white/8 bg-ink-800/50 p-5 transition hover:-translate-y-0.5 hover:border-brand-400/50 hover:bg-ink-800 focus-visible:border-brand-400 focus-visible:outline-none"
-    >
-      <div className="flex items-center justify-between">
-        <span className="grid h-11 w-11 place-items-center rounded-xl bg-ink-700 text-xl">
-          {tool.icon}
-        </span>
-        <span className="rounded-full border border-white/10 px-2 py-0.5 text-[11px] uppercase tracking-wide text-slate-400">
-          {tool.status === 'beta' ? t('common.beta') : t('common.stable')}
-        </span>
-      </div>
-      <div>
-        <h3 className="font-semibold text-white group-hover:text-brand-300">{pick(tool.title)}</h3>
-        <p className="mt-1 line-clamp-2 text-sm text-slate-400">{pick(tool.description)}</p>
-      </div>
-      <div className="mt-auto flex flex-wrap gap-1.5">
-        {tool.tags.slice(0, 3).map((tag) => (
-          <span key={tag} className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] text-slate-400">
-            {tag}
-          </span>
-        ))}
-      </div>
-    </Link>
-  )
-}
 
 function Stat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
@@ -56,11 +27,25 @@ export default function Home() {
   const { hash } = useLocation()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('all')
+  const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!hash || !/^#[\w-]+$/.test(hash)) return
     document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }, [hash])
+
+  useEffect(() => {
+    function onKey(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null
+      const typing = target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)
+      if (event.key === '/' && !typing) {
+        event.preventDefault()
+        searchRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   const categories = useMemo(
     () => ['all', ...Array.from(new Set(TOOLS.map((tool) => tool.category)))],
@@ -181,10 +166,11 @@ export default function Home() {
 
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
+            ref={searchRef}
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={t('home.search.placeholder')}
+            placeholder={`${t('home.search.placeholder')}  /`}
             aria-label={t('home.search.placeholder')}
             className="w-full rounded-xl border border-white/10 bg-ink-800/60 px-4 py-2.5 text-sm text-slate-200 outline-none placeholder:text-slate-500 focus:border-brand-400 sm:max-w-xs"
           />

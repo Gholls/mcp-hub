@@ -1,12 +1,23 @@
 import { useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getTool } from '@shared/tools.ts'
-import { SITE_ORIGIN } from '@shared/types.ts'
+import { TOOLS, getTool } from '@shared/tools.ts'
+import { SITE_ORIGIN, type JsonSchema } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
 import { useSeo } from '../lib/seo.ts'
 import { getWidget } from '../widgets/registry.ts'
 import CopyButton from '../components/CopyButton.tsx'
+import ToolCard from '../components/ToolCard.tsx'
+import ParamTable from '../components/ParamTable.tsx'
 import WidgetErrorBoundary from '../components/WidgetErrorBoundary.tsx'
+
+function schemaDefaults(schema: JsonSchema): Record<string, unknown> {
+  const args: Record<string, unknown> = {}
+  for (const [key, raw] of Object.entries(schema.properties ?? {})) {
+    const prop = raw as { default?: unknown }
+    if (prop.default !== undefined) args[key] = prop.default
+  }
+  return args
+}
 
 export default function ToolPage() {
   const { widgetId = '' } = useParams()
@@ -61,6 +72,11 @@ export default function ToolPage() {
     null,
     2,
   )
+  const callParams = { name: tool.id, arguments: schemaDefaults(tool.inputSchema) }
+  const rpc = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: callParams }, null, 2)
+  const curl = `curl -s ${SITE_ORIGIN}/mcp \\\n  -H 'Content-Type: application/json' \\\n  -H 'Accept: application/json, text/event-stream' \\\n  -d '${JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: callParams })}'`
+
+  const related = TOOLS.filter((item) => item.category === tool.category && item.id !== tool.id)
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-10">
@@ -133,6 +149,10 @@ export default function ToolPage() {
         </section>
       ) : null}
 
+      <div className="mt-6">
+        <ParamTable schema={tool.inputSchema} />
+      </div>
+
       <section className="mt-6 grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-6">
           <h2 className="font-semibold text-white">{t('tool.usageWeb')}</h2>
@@ -156,6 +176,36 @@ export default function ToolPage() {
           </div>
         </div>
       </section>
+
+      <section className="mt-6 rounded-2xl border border-white/8 bg-ink-800/40 p-6">
+        <h2 className="font-semibold text-white">{t('tool.api')}</h2>
+        <p className="mt-1 text-sm text-slate-400">{t('tool.apiDesc')}</p>
+        <div className="mt-4 grid gap-3 lg:grid-cols-2">
+          <div className="flex items-start gap-2">
+            <pre className="flex-1 overflow-x-auto rounded-lg bg-ink-900 px-3 py-2 font-mono text-[11px] leading-relaxed text-slate-300">
+              {curl}
+            </pre>
+            <CopyButton value={curl} />
+          </div>
+          <div className="flex items-start gap-2">
+            <pre className="flex-1 overflow-x-auto rounded-lg bg-ink-900 px-3 py-2 font-mono text-[11px] leading-relaxed text-slate-300">
+              {rpc}
+            </pre>
+            <CopyButton value={rpc} />
+          </div>
+        </div>
+      </section>
+
+      {related.length > 0 ? (
+        <section className="mt-10">
+          <h2 className="mb-4 text-lg font-semibold text-white">{t('tool.related')}</h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((item) => (
+              <ToolCard key={item.id} tool={item} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-brand-500/20 bg-gradient-to-r from-brand-500/10 to-accent-500/10 p-6 sm:flex-row sm:items-center">
         <div>
