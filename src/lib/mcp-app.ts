@@ -17,6 +17,10 @@ export interface McpAppBridge {
   sendMessage: (text: string) => Promise<void>
   /** Ask the host to open a URL in the user's browser. */
   openLink: (url: string) => Promise<void>
+  /** True when the host can run `sampling/createMessage` (its own LLM). */
+  canSample: boolean
+  /** Ask the host's LLM for a completion (returns the text content). */
+  sample: (prompt: string, opts?: { maxTokens?: number; system?: string }) => Promise<string>
 }
 
 function isEmbedded(): boolean {
@@ -35,6 +39,7 @@ function isEmbedded(): boolean {
 export function useMcpApp(): McpAppBridge {
   const appRef = useRef<App | null>(null)
   const [connected, setConnected] = useState(false)
+  const [canSample, setCanSample] = useState(false)
   const [hostContext, setHostContext] = useState<McpUiHostContext>()
   const [toolInput, setToolInput] = useState<Record<string, unknown>>()
   const [embedded] = useState(isEmbedded)
@@ -62,6 +67,7 @@ export function useMcpApp(): McpAppBridge {
       .then(() => {
         if (cancelled) return
         setConnected(true)
+        setCanSample(Boolean(app.getHostCapabilities()?.sampling))
         setHostContext(app.getHostContext())
         const initial = app.getHostContext()?.toolInfo
         if (initial && 'arguments' in initial) {
@@ -101,14 +107,46 @@ export function useMcpApp(): McpAppBridge {
     await app.openLink({ url })
   }, [])
 
-  return { connected, embedded, hostContext, toolInput, callTool, sendMessage, openLink }
+  const sample = useCallback<McpAppBridge['sample']>(async (prompt, opts) => {
+    const app = appRef.current
+    if (!app) throw new Error('Not connected to an MCP host')
+    const result = await app.createSamplingMessage({
+      messages: [{ role: 'user', content: { type: 'text', text: prompt } }],
+      maxTokens: opts?.maxTokens ?? 32,
+      systemPrompt: opts?.system,
+    })
+    const content = result.content
+    if (Array.isArray(content)) {
+      return content
+        .map((block) => (block.type === 'text' ? block.text : ''))
+        .join('')
+        .trim()
+    }
+    return content.type === 'text' ? content.text.trim() : ''
+  }, [])
+
+  return {
+    connected,
+    canSample,
+    embedded,
+    hostContext,
+    toolInput,
+    callTool,
+    sendMessage,
+    openLink,
+    sample,
+  }
 }
 
 /** Inert bridge used outside an MCP host so widgets never branch on null. */
 export const NOOP_BRIDGE: McpAppBridge = {
   connected: false,
+  canSample: false,
   embedded: false,
   callTool: async () => {
+    throw new Error('Not running inside an MCP host')
+  },
+  sample: async () => {
     throw new Error('Not running inside an MCP host')
   },
   sendMessage: async () => undefined,

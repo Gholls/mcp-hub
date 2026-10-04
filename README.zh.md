@@ -35,6 +35,7 @@
 | `hash-generator` | 哈希生成器 | Developer | SHA-1 / SHA-256 / SHA-512 摘要（hex + base64），本地计算 |
 | `color-studio` | 颜色工具与对比度 | Design | hex/RGB/HSL 转换、深浅色阶、WCAG 对比度检查 |
 | `chrono-energy` | 玄学八字与 Chrono 能量盘 | Culture | 四柱八字、五行雷达、大运时间轴（beta） |
+| `gomoku` | 五子棋 · 与 AI 对战 | Games | 与宿主 AI 下五子棋（棋盘与规则在卡片内完成） |
 
 ## 路由
 

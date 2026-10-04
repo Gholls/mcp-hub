@@ -35,6 +35,7 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 | `hash-generator` | Hash Generator | Developer | SHA-1 / SHA-256 / SHA-512 digests (hex + base64), local |
 | `color-studio` | Color Studio & Contrast | Design | hex/RGB/HSL conversion, tints/shades, WCAG contrast checks |
 | `chrono-energy` | BaZi Chrono-Energy Wheel | Culture | Four Pillars, five-element radar and luck cycles (beta) |
+| `gomoku` | Gomoku · Play vs AI | Games | Five-in-a-row against the host's own AI (board + rules live in the card) |
 
 ## Routes
 

@@ -19,6 +19,7 @@ import { computeBazi, type Gender } from '../calc/bazi.ts'
 import { decodeJwt } from '../calc/jwt.ts'
 import { HASH_ALGORITHMS, hashText, type HashAlgorithm } from '../calc/hash.ts'
 import { analyzeColor, parseColor, scaleColor } from '../calc/color.ts'
+import { boardToText, gameState, rcToCoord } from '../calc/gomoku.ts'
 
 export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 
@@ -377,6 +378,35 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           },
           bestTextColor: info.bestTextColor,
           scale,
+        },
+      }
+    }
+    case 'gomoku': {
+      const size = Math.min(19, Math.max(9, Math.round(asNumber(args.size, 15))))
+      const moves = typeof args.moves === 'string' ? args.moves : ''
+      const humanColor = args.humanColor === 'white' ? 'white' : 'black'
+      const state = gameState(moves, size)
+
+      const summary = state.error
+        ? `Gomoku: ${state.error}`
+        : state.winner
+          ? `Gomoku (${size}x${size}) over after ${state.moves.length} moves. Winner: ${state.winner}.`
+          : state.isDraw
+            ? `Gomoku (${size}x${size}) is a draw after ${state.moves.length} moves.`
+            : `Gomoku (${size}x${size}), ${state.moves.length} moves played. Next to move: ${state.nextColor}.`
+
+      return {
+        summary,
+        structured: {
+          size,
+          humanColor,
+          moves: state.moves.map((mv) => rcToCoord(mv.r, mv.c)),
+          nextColor: state.nextColor,
+          winner: state.winner,
+          isDraw: state.isDraw,
+          gameOver: state.gameOver,
+          error: state.error ?? null,
+          board: boardToText(state.board, state.lastMove),
         },
       }
     }

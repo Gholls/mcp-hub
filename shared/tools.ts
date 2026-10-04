@@ -397,6 +397,57 @@ export const colorStudioTool: ToolMeta = {
   },
 }
 
+export const gomokuTool: ToolMeta = {
+  id: 'gomoku',
+  name: 'Gomoku (Five in a Row)',
+  title: {
+    en: 'Gomoku · Play vs AI',
+    zh: '五子棋 · 与 AI 对战',
+  },
+  description: {
+    en: 'Play Gomoku (five-in-a-row) against your host AI. The card provides the board, move rules and win detection.',
+    zh: '与你的宿主 AI 下五子棋。卡片负责任意棋盘、落子规则与胜负判定。',
+  },
+  mcpDescription:
+    'Gomoku (five in a row) board game. This tool provides the board, move validation and win detection; the opponent moves are made by the host application\'s own AI. Inputs: `moves` (comma-separated coordinates in play order, black first, e.g. "H8,H9,I9"), `humanColor` ("black" or "white", default "black") and `size` (board size, default 15). Returns the board state, whose turn it is, and the winner if the game has ended. Use this when a user wants to play five-in-a-row against the assistant.',
+  category: 'Games',
+  icon: '⚫',
+  tags: ['game', 'gomoku', 'five-in-a-row', 'board'],
+  status: 'beta',
+  embedPath: '/embed/gomoku',
+  pagePath: '/tools/gomoku',
+  examples: [
+    { en: "Let's play Gomoku — start a board, I'll go first as Black.", zh: '我们下五子棋吧——开个棋盘，我执黑先行。' },
+    { en: 'Start a Gomoku game where I play White and you move first.', zh: '开始一局五子棋，我执白，你先走。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      moves: {
+        type: 'string',
+        description: 'Comma-separated coordinates in play order (black first), e.g. "H8,H9,I9".',
+      },
+      humanColor: {
+        type: 'string',
+        enum: ['black', 'white'],
+        description: 'Which color the human plays.',
+        default: 'black',
+      },
+      size: {
+        type: 'integer',
+        description: 'Board size (9-19).',
+        default: 15,
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -414,6 +465,7 @@ export const TOOLS: ToolMeta[] = [
   jwtDecoderTool,
   hashGeneratorTool,
   colorStudioTool,
+  gomokuTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

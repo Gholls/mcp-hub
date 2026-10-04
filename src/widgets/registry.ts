@@ -25,6 +25,7 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'jwt-decoder': lazy(() => import('./jwt-decoder/index.tsx')),
   'hash-generator': lazy(() => import('./hash-generator/index.tsx')),
   'color-studio': lazy(() => import('./color-studio/index.tsx')),
+  gomoku: lazy(() => import('./gomoku/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {
