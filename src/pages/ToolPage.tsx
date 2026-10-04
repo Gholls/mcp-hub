@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { TOOLS, getTool } from '@shared/tools.ts'
 import { SITE_ORIGIN, type JsonSchema } from '@shared/types.ts'
@@ -8,6 +8,7 @@ import { getWidget } from '../widgets/registry.ts'
 import CopyButton from '../components/CopyButton.tsx'
 import ToolCard from '../components/ToolCard.tsx'
 import ParamTable from '../components/ParamTable.tsx'
+import { WidgetSkeleton } from '../components/ui.tsx'
 import WidgetErrorBoundary from '../components/WidgetErrorBoundary.tsx'
 
 function schemaDefaults(schema: JsonSchema): Record<string, unknown> {
@@ -122,7 +123,9 @@ export default function ToolPage() {
       <section className="mt-8">
         {Widget ? (
           <WidgetErrorBoundary>
-            <Widget locale={locale} initial={{}} />
+            <Suspense fallback={<WidgetSkeleton />}>
+              <Widget locale={locale} initial={{}} />
+            </Suspense>
           </WidgetErrorBoundary>
         ) : (
           <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-12 text-center text-slate-400">

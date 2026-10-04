@@ -107,6 +107,22 @@ export function StatCard({
   )
 }
 
+/** Placeholder shown while a lazily-loaded widget chunk is fetched. */
+export function WidgetSkeleton() {
+  return (
+    <div className="animate-pulse overflow-hidden rounded-2xl border border-white/10 bg-ink-800/60">
+      <div className="border-b border-white/8 px-4 py-3">
+        <div className="h-3 w-40 rounded bg-white/10" />
+      </div>
+      <div className="space-y-3 p-4">
+        <div className="h-3 w-2/3 rounded bg-white/10" />
+        <div className="h-3 w-1/2 rounded bg-white/10" />
+        <div className="h-24 rounded bg-white/5" />
+      </div>
+    </div>
+  )
+}
+
 export function WidgetShell({
   title,
   icon,

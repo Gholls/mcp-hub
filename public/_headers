@@ -17,3 +17,11 @@
 # Widgets must be embeddable by any MCP host / iframe.
 /embed/*
   Content-Security-Policy: frame-ancestors *;
+
+# Vite emits content-hashed files under /assets — safe to cache forever.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Generated Open Graph images.
+/og/*
+  Cache-Control: public, max-age=86400

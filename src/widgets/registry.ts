@@ -1,13 +1,6 @@
+import { lazy } from 'react'
 import type { ComponentType } from 'react'
 import type { Locale } from '@shared/types.ts'
-import VramCalcWidget from './vram-calc/index.tsx'
-import CronDebuggerWidget from './cron-debugger/index.tsx'
-import SchemaViewerWidget from './schema-viewer/index.tsx'
-import ApiUptimeWidget from './api-uptime/index.tsx'
-import ChronoEnergyWidget from './chrono-energy/index.tsx'
-import JwtDecoderWidget from './jwt-decoder/index.tsx'
-import HashGeneratorWidget from './hash-generator/index.tsx'
-import ColorStudioWidget from './color-studio/index.tsx'
 
 /** Props every embeddable widget receives from the host. */
 export interface WidgetProps {
@@ -19,19 +12,19 @@ export interface WidgetProps {
 export type WidgetComponent = ComponentType<WidgetProps>
 
 /**
- * Maps a tool id to its interactive component. Widgets are intentionally
- * framework-local so the same component renders both on the site (`/tools/:id`)
- * and inside the MCP sandbox iframe (`/embed/:id`).
+ * Lazily-loaded widget components, keyed by tool id. Each `import()` becomes its
+ * own chunk, so the home gallery never downloads widget code it isn't showing.
+ * The per-widget embed bundles inject `virtual:gholl-widget` instead.
  */
 export const WIDGETS: Record<string, WidgetComponent> = {
-  'vram-calc': VramCalcWidget,
-  'cron-debugger': CronDebuggerWidget,
-  'schema-viewer': SchemaViewerWidget,
-  'api-uptime': ApiUptimeWidget,
-  'chrono-energy': ChronoEnergyWidget,
-  'jwt-decoder': JwtDecoderWidget,
-  'hash-generator': HashGeneratorWidget,
-  'color-studio': ColorStudioWidget,
+  'vram-calc': lazy(() => import('./vram-calc/index.tsx')),
+  'cron-debugger': lazy(() => import('./cron-debugger/index.tsx')),
+  'schema-viewer': lazy(() => import('./schema-viewer/index.tsx')),
+  'api-uptime': lazy(() => import('./api-uptime/index.tsx')),
+  'chrono-energy': lazy(() => import('./chrono-energy/index.tsx')),
+  'jwt-decoder': lazy(() => import('./jwt-decoder/index.tsx')),
+  'hash-generator': lazy(() => import('./hash-generator/index.tsx')),
+  'color-studio': lazy(() => import('./color-studio/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {

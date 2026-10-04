@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
+import { Suspense, useMemo } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import WidgetHost from '../components/WidgetHost.tsx'
+import { WidgetSkeleton } from '../components/ui.tsx'
 import { getWidget } from '../widgets/registry.ts'
 
 export default function EmbedPage() {
@@ -25,11 +26,13 @@ export default function EmbedPage() {
   }
 
   return (
-    <WidgetHost
-      widgetId={widgetId}
-      component={Widget}
-      params={params}
-      localeHint={search.get('locale') === 'zh' ? 'zh' : 'en'}
-    />
+    <Suspense fallback={<div className="p-3"><WidgetSkeleton /></div>}>
+      <WidgetHost
+        widgetId={widgetId}
+        component={Widget}
+        params={params}
+        localeHint={search.get('locale') === 'zh' ? 'zh' : 'en'}
+      />
+    </Suspense>
   )
 }

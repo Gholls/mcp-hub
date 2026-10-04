@@ -4,7 +4,6 @@ import { defineConfig, type Plugin } from 'vite'
 import { TOOLS } from './shared/tools.ts'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { viteSingleFile } from 'vite-plugin-singlefile'
 import { buildLlmsTxt, buildRobots, buildSitemap } from './shared/mcp/discovery.ts'
 
 /**
@@ -45,7 +44,10 @@ function discoveryPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), viteSingleFile(), discoveryPlugin()],
+  // The main site is code-split (small first paint, lazy widgets); the
+  // per-widget `dist/app/<id>` bundles are built separately as single files by
+  // `scripts/build-embeds.mjs` for MCP Apps / iframe use.
+  plugins: [react(), tailwindcss(), discoveryPlugin()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
@@ -54,8 +56,14 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    cssCodeSplit: false,
-    assetsInlineLimit: 100_000_000,
+    cssCodeSplit: true,
     chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
   },
 })
