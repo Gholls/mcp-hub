@@ -55,8 +55,9 @@ export default function ToolPage() {
     )
   }
 
+  const embedUrl = `${SITE_ORIGIN}${tool.embedPath}`
   const mcpConfig = JSON.stringify(
-    { mcpServers: { gholl: { url: 'https://mcp.gholl.com/mcp' } } },
+    { mcpServers: { gholl: { type: 'http', url: `${SITE_ORIGIN}/mcp` } } },
     null,
     2,
   )
@@ -71,35 +72,76 @@ export default function ToolPage() {
         <span className="text-slate-300">{pick(tool.title)}</span>
       </nav>
 
-      <header className="flex items-start gap-4">
-        <span className="grid h-14 w-14 place-items-center rounded-2xl bg-ink-700 text-2xl">
-          {tool.icon}
-        </span>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">{pick(tool.title)}</h1>
-          <p className="mt-2 max-w-2xl text-slate-400">{pick(tool.description)}</p>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-start gap-4">
+          <span className="grid h-14 w-14 flex-shrink-0 place-items-center rounded-2xl bg-ink-700 text-2xl">
+            {tool.icon}
+          </span>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-white">{pick(tool.title)}</h1>
+            <p className="mt-2 max-w-2xl text-slate-400">{pick(tool.description)}</p>
+          </div>
         </div>
+        <a
+          href={tool.embedPath}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-shrink-0 rounded-xl border border-white/10 bg-ink-800/60 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-brand-400/60 hover:text-white"
+        >
+          {t('tool.openWidget')} ↗
+        </a>
       </header>
 
-      <section className="mt-8 overflow-hidden rounded-2xl border border-white/8 bg-ink-800/40">
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        <span className="rounded-md bg-brand-500/10 px-2 py-0.5 text-[11px] text-brand-300">
+          {tool.category}
+        </span>
+        {tool.tags.map((tag) => (
+          <span key={tag} className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] text-slate-400">
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      <section className="mt-8">
         {Widget ? (
           <WidgetErrorBoundary>
             <Widget locale={locale} initial={{}} />
           </WidgetErrorBoundary>
         ) : (
-          <div className="p-12 text-center text-slate-400">{t('common.comingSoon')}</div>
+          <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-12 text-center text-slate-400">
+            {t('common.comingSoon')}
+          </div>
         )}
       </section>
 
-      <section className="mt-12 grid gap-6 lg:grid-cols-2">
+      {tool.examples && tool.examples.length > 0 ? (
+        <section className="mt-6 rounded-2xl border border-white/8 bg-ink-800/40 p-5">
+          <h2 className="text-sm font-semibold text-white">{t('tool.examples')}</h2>
+          <ul className="mt-3 space-y-2">
+            {tool.examples.map((example, i) => {
+              const text = pick(example)
+              return (
+                <li key={i} className="flex items-center gap-2">
+                  <span className="text-slate-600">“</span>
+                  <span className="flex-1 text-sm text-slate-300">{text}</span>
+                  <CopyButton value={text} />
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className="mt-6 grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-6">
           <h2 className="font-semibold text-white">{t('tool.usageWeb')}</h2>
           <p className="mt-1 text-sm text-slate-400">{t('tool.usageWebDesc')}</p>
           <div className="mt-4 flex items-center gap-2">
             <code className="flex-1 truncate rounded-lg bg-ink-900 px-3 py-2 font-mono text-xs text-slate-300">
-              https://mcp.gholl.com{tool.embedPath}
+              {embedUrl}
             </code>
-            <CopyButton value={`https://mcp.gholl.com${tool.embedPath}`} />
+            <CopyButton value={embedUrl} />
           </div>
         </div>
 
@@ -115,7 +157,7 @@ export default function ToolPage() {
         </div>
       </section>
 
-      <section className="mt-12 flex flex-col items-start justify-between gap-4 rounded-2xl border border-brand-500/20 bg-gradient-to-r from-brand-500/10 to-accent-500/10 p-6 sm:flex-row sm:items-center">
+      <section className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-brand-500/20 bg-gradient-to-r from-brand-500/10 to-accent-500/10 p-6 sm:flex-row sm:items-center">
         <div>
           <h2 className="font-semibold text-white">{t('promo.title')}</h2>
           <p className="mt-1 max-w-2xl text-sm text-slate-400">{t('promo.body')}</p>

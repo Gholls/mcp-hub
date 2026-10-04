@@ -31,6 +31,8 @@ export interface ToolMeta {
   icon: string
   tags: string[]
   status: ToolStatus
+  /** Example prompts to try in an AI agent, shown on the landing page. */
+  examples?: LocalizedText[]
   inputSchema: JsonSchema
   /** Path to the sandboxed iframe view. */
   embedPath: string

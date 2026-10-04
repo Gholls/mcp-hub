@@ -65,11 +65,12 @@ export function Segmented<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="flex rounded-lg border border-white/10 bg-ink-900/70 p-0.5">
+    <div role="group" className="flex rounded-lg border border-white/10 bg-ink-900/70 p-0.5">
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
+          aria-pressed={value === option.value}
           onClick={() => onChange(option.value)}
           className={`flex-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition ${
             value === option.value

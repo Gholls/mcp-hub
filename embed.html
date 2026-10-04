@@ -5,9 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
     <title>mcp.gholl.com · widget</title>
+    <style>
+      #gholl-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 120px;
+        color: #64748b;
+        font: 13px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      #gholl-loading .spin {
+        width: 16px;
+        height: 16px;
+        border-radius: 9999px;
+        border: 2px solid rgba(99, 102, 241, 0.25);
+        border-top-color: #6366f1;
+        animation: gholl-spin 0.7s linear infinite;
+      }
+      @keyframes gholl-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="gholl-loading"><span class="spin"></span><span>Loading widget…</span></div>
+    </div>
     <script type="module" src="/src/embed/entry.tsx"></script>
   </body>
 </html>

@@ -1,16 +1,21 @@
-import { useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { TOOLS } from '@shared/tools.ts'
 import { SITE_ORIGIN, type ToolMeta } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
 import { useSeo } from '../lib/seo.ts'
+import CopyButton from '../components/CopyButton.tsx'
+
+const MCP_URL = 'https://mcp.gholl.com/mcp'
+const REPO_URL = 'https://github.com/Gholls/mcp-hub'
+const HOST_DOC = `${REPO_URL}/blob/main/docs/host-integration.md`
 
 function ToolCard({ tool }: { tool: ToolMeta }) {
   const { t, pick } = useI18n()
   return (
     <Link
       to={`/tools/${tool.id}`}
-      className="group flex flex-col gap-3 rounded-2xl border border-white/8 bg-ink-800/50 p-5 transition hover:-translate-y-0.5 hover:border-brand-400/50 hover:bg-ink-800"
+      className="group flex flex-col gap-3 rounded-2xl border border-white/8 bg-ink-800/50 p-5 transition hover:-translate-y-0.5 hover:border-brand-400/50 hover:bg-ink-800 focus-visible:border-brand-400 focus-visible:outline-none"
     >
       <div className="flex items-center justify-between">
         <span className="grid h-11 w-11 place-items-center rounded-xl bg-ink-700 text-xl">
@@ -35,8 +40,44 @@ function ToolCard({ tool }: { tool: ToolMeta }) {
   )
 }
 
+function Stat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
+  return (
+    <div className="rounded-2xl border border-white/8 bg-ink-800/40 px-4 py-3">
+      <div className={`font-mono text-2xl font-bold ${accent ? 'text-accent-400' : 'text-white'}`}>
+        {value}
+      </div>
+      <div className="mt-0.5 text-xs text-slate-400">{label}</div>
+    </div>
+  )
+}
+
 export default function Home() {
   const { t } = useI18n()
+  const { hash } = useLocation()
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('all')
+
+  useEffect(() => {
+    if (!hash || !/^#[\w-]+$/.test(hash)) return
+    document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [hash])
+
+  const categories = useMemo(
+    () => ['all', ...Array.from(new Set(TOOLS.map((tool) => tool.category)))],
+    [],
+  )
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return TOOLS.filter((tool) => {
+      if (category !== 'all' && tool.category !== category) return false
+      if (!q) return true
+      const haystack = [tool.name, tool.title.en, tool.title.zh, tool.description.en, ...tool.tags]
+        .join(' ')
+        .toLowerCase()
+      return haystack.includes(q)
+    })
+  }, [query, category])
 
   const seo = useMemo(
     () => ({
@@ -57,9 +98,12 @@ export default function Home() {
   )
   useSeo(seo)
 
+  const cli = `claude mcp add --transport http gholl ${MCP_URL}`
+  const config = JSON.stringify({ mcpServers: { gholl: { type: 'http', url: MCP_URL } } }, null, 2)
+
   return (
     <div className="mx-auto w-full max-w-6xl px-5">
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-20">
         <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
           <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
           MCP Apps · Model Context Protocol
@@ -71,30 +115,105 @@ export default function Home() {
         <div className="mt-8 flex flex-wrap gap-3">
           <a
             href="#tools"
-            className="rounded-xl bg-gradient-to-r from-brand-500 to-accent-500 px-5 py-3 font-medium text-ink-950 transition hover:opacity-90"
+            className="rounded-xl bg-gradient-to-r from-brand-500 to-accent-500 px-5 py-3 font-medium text-ink-950 transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
           >
             {t('home.hero.cta')}
           </a>
-          <code className="rounded-xl border border-white/10 bg-ink-800/60 px-5 py-3 font-mono text-sm text-slate-300">
-            https://mcp.gholl.com/mcp
-          </code>
+          <a
+            href="#connect"
+            className="rounded-xl border border-white/10 bg-ink-800/60 px-5 py-3 font-medium text-slate-200 transition hover:border-brand-400/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+          >
+            {t('home.hero.ctaMcp')}
+          </a>
+        </div>
+
+        <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
+          <Stat value={String(TOOLS.length)} label={t('home.stats.tools')} accent />
+          <Stat value={String(categories.length - 1)} label={t('home.stats.categories')} />
+          <Stat value={t('home.stats.open')} label={t('home.stats.auth')} />
         </div>
       </section>
 
-      <section id="tools" className="pb-20">
-        <div className="mb-6 flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-white">{t('home.tools.title')}</h2>
-            <p className="mt-1 text-sm text-slate-400">{t('home.tools.subtitle')}</p>
+      <section id="connect" className="scroll-mt-24 pb-16">
+        <div className="rounded-3xl border border-white/8 bg-gradient-to-br from-ink-800/60 to-ink-900/60 p-6 sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="lg:max-w-sm">
+              <h2 className="text-xl font-semibold text-white">{t('home.connect.title')}</h2>
+              <p className="mt-1 text-sm text-slate-400">{t('home.connect.subtitle')}</p>
+              <a
+                href={HOST_DOC}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-block text-sm text-brand-400 hover:text-brand-300"
+              >
+                {t('home.connect.host')} →
+              </a>
+            </div>
+            <div className="flex-1 space-y-3">
+              <div>
+                <div className="mb-1 text-xs font-medium text-slate-300">{t('home.connect.cli')}</div>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 overflow-x-auto whitespace-nowrap rounded-lg border border-white/10 bg-ink-950 px-3 py-2 font-mono text-xs text-accent-300">
+                    {cli}
+                  </code>
+                  <CopyButton value={cli} />
+                </div>
+              </div>
+              <div>
+                <div className="mb-1 text-xs font-medium text-slate-300">mcpServers</div>
+                <div className="flex items-start gap-2">
+                  <pre className="flex-1 overflow-x-auto rounded-lg border border-white/10 bg-ink-950 px-3 py-2 font-mono text-xs leading-relaxed text-slate-300">
+                    {config}
+                  </pre>
+                  <CopyButton value={config} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        {TOOLS.length === 0 ? (
+      </section>
+
+      <section id="tools" className="scroll-mt-24 pb-20">
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold text-white">{t('home.tools.title')}</h2>
+          <p className="mt-1 text-sm text-slate-400">{t('home.tools.subtitle')}</p>
+        </div>
+
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('home.search.placeholder')}
+            aria-label={t('home.search.placeholder')}
+            className="w-full rounded-xl border border-white/10 bg-ink-800/60 px-4 py-2.5 text-sm text-slate-200 outline-none placeholder:text-slate-500 focus:border-brand-400 sm:max-w-xs"
+          />
+          <div className="flex flex-wrap gap-1.5">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategory(cat)}
+                aria-pressed={category === cat}
+                className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                  category === cat
+                    ? 'border-brand-400/60 bg-brand-500/15 text-brand-200'
+                    : 'border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                }`}
+              >
+                {cat === 'all' ? t('home.filter.all') : cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filtered.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/10 bg-ink-800/30 p-12 text-center text-slate-400">
-            {t('home.empty')}
+            {TOOLS.length === 0 ? t('home.empty') : t('home.noResults')}
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {TOOLS.map((tool) => (
+            {filtered.map((tool) => (
               <ToolCard key={tool.id} tool={tool} />
             ))}
           </div>

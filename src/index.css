@@ -42,6 +42,40 @@ body[data-embed='true'] {
   background: rgba(99, 102, 241, 0.4);
 }
 
+:focus-visible {
+  outline: 2px solid var(--color-brand-400);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: var(--color-brand-500);
+  border: 2px solid #ffffff;
+  cursor: pointer;
+}
+input[type='range']::-moz-range-thumb {
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  background: var(--color-brand-500);
+  border: 2px solid #ffffff;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Widgets are embedded in iframes where scrollbars should stay subtle. */
 * {
   scrollbar-width: thin;

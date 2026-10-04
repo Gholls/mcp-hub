@@ -19,6 +19,10 @@ export const vramCalcTool: ToolMeta = {
   status: 'stable',
   embedPath: '/embed/vram-calc',
   pagePath: '/tools/vram-calc',
+  examples: [
+    { en: 'How much VRAM does Llama 3 70B need at INT4 with a 32k context?', zh: 'Llama 3 70B 用 INT4、32k 上下文需要多少显存？' },
+    { en: 'Which GPU should I rent to serve a 13B model for 16 concurrent users?', zh: '部署 13B 模型、16 路并发，该租哪种 GPU？' },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
@@ -84,6 +88,10 @@ export const cronDebuggerTool: ToolMeta = {
   status: 'stable',
   embedPath: '/embed/cron-debugger',
   pagePath: '/tools/cron-debugger',
+  examples: [
+    { en: "Explain the cron '30 9 * * 1-5' and when it runs next.", zh: "解释 cron '30 9 * * 1-5' 并给出下次执行时间。" },
+    { en: "Test the regex (\\d{3})-\\d{4} against 'call 555-1234'.", zh: "用正则 (\\d{3})-\\d{4} 测试 'call 555-1234'。" },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
@@ -134,6 +142,10 @@ export const schemaViewerTool: ToolMeta = {
   status: 'stable',
   embedPath: '/embed/schema-viewer',
   pagePath: '/tools/schema-viewer',
+  examples: [
+    { en: 'Validate this JSON-LD Product markup and list its @type.', zh: '校验这段 JSON-LD Product 并列出 @type。' },
+    { en: 'Summarize the structure of this JSON document.', zh: '概括这份 JSON 文档的结构。' },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
@@ -174,6 +186,10 @@ export const apiUptimeTool: ToolMeta = {
   status: 'stable',
   embedPath: '/embed/api-uptime',
   pagePath: '/tools/api-uptime',
+  examples: [
+    { en: "Is https://api.github.com up right now, and what's its latency?", zh: 'https://api.github.com 现在可用吗？延迟多少？' },
+    { en: 'Check the health of my API endpoint.', zh: '检查我的 API 接口健康状况。' },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
@@ -218,6 +234,10 @@ export const chronoEnergyTool: ToolMeta = {
   status: 'beta',
   embedPath: '/embed/chrono-energy',
   pagePath: '/tools/chrono-energy',
+  examples: [
+    { en: 'Analyze the BaZi chart for someone born 1990-06-15 at 10:30.', zh: '分析 1990-06-15 10:30 出生的八字。' },
+    { en: 'What are this chart’s favorable five elements (喜用神)?', zh: '这个八字的喜用神是什么？' },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
@@ -267,6 +287,10 @@ export const jwtDecoderTool: ToolMeta = {
   status: 'stable',
   embedPath: '/embed/jwt-decoder',
   pagePath: '/tools/jwt-decoder',
+  examples: [
+    { en: 'Decode this JWT and tell me if it has expired.', zh: '解析这个 JWT，看它是否已过期。' },
+    { en: 'Show the claims and signing algorithm of this access token.', zh: '显示这个 access token 的声明和签名算法。' },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
@@ -304,6 +328,10 @@ export const hashGeneratorTool: ToolMeta = {
   status: 'stable',
   embedPath: '/embed/hash-generator',
   pagePath: '/tools/hash-generator',
+  examples: [
+    { en: "Compute the SHA-256 hash of 'hello world'.", zh: "计算 'hello world' 的 SHA-256。" },
+    { en: 'Give me the SHA-512 checksum of this text.', zh: '给我这段文本的 SHA-512 校验和。' },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
@@ -346,6 +374,10 @@ export const colorStudioTool: ToolMeta = {
   status: 'stable',
   embedPath: '/embed/color-studio',
   pagePath: '/tools/color-studio',
+  examples: [
+    { en: 'Convert #6366f1 to RGB and HSL.', zh: '把 #6366f1 转成 RGB 和 HSL。' },
+    { en: 'Is white text on #6366f1 accessible? Check WCAG contrast.', zh: '白字放在 #6366f1 上可读吗？检查 WCAG 对比度。' },
+  ],
   inputSchema: {
     type: 'object',
     properties: {
