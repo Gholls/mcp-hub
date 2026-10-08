@@ -36,6 +36,7 @@
 | `color-studio` | 颜色工具与对比度 | Design | hex/RGB/HSL 转换、深浅色阶、WCAG 对比度检查 |
 | `chrono-energy` | 玄学八字与 Chrono 能量盘 | Culture | 四柱八字、五行雷达、大运时间轴（beta） |
 | `gomoku` | 五子棋 · 与 AI 对战 | Games | 与宿主 AI 下五子棋（棋盘与规则在卡片内完成） |
+| `echarts` | ECharts 数据可视化 | Data | 用 ECharts option 渲染交互式图表（折线/柱状/饼图/雷达/桑基…）；点击数据点回传 AI 下钻 |
 
 ## 路由
 
@@ -57,8 +58,10 @@
 ## 技术栈
 
 Vite · React 19 · TypeScript · Tailwind CSS v4 · `@mcp-ui/*` ·
-`@modelcontextprotocol/ext-apps` · Cloudflare Workers + 静态资源 ·
+`@modelcontextprotocol/ext-apps` · Apache ECharts · Cloudflare Workers + 静态资源 ·
 Vitest · GitHub Actions。
+
+> ECharts 仅在自身组件分包中懒加载，不影响站点首屏与其他卡片。
 
 ## 架构
 

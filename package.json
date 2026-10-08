@@ -32,6 +32,7 @@
     "@mcp-ui/server": "^6.1.0",
     "@modelcontextprotocol/ext-apps": "^1.7.5",
     "@modelcontextprotocol/sdk": "^1.31.0",
+    "echarts": "^6.1.0",
     "lunar-typescript": "^1.8.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

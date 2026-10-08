@@ -448,6 +448,59 @@ export const gomokuTool: ToolMeta = {
   },
 }
 
+export const echartsTool: ToolMeta = {
+  id: 'echarts',
+  name: 'Interactive ECharts',
+  title: {
+    en: 'ECharts Data Visualization',
+    zh: 'ECharts 数据可视化',
+  },
+  description: {
+    en: 'Render interactive Apache ECharts charts from an ECharts option — line, bar, pie, radar, scatter, sankey and more.',
+    zh: '用标准 ECharts option 渲染交互式图表——折线、柱状、饼图、雷达、散点、桑基图等。',
+  },
+  mcpDescription:
+    'Render an interactive Apache ECharts chart from a standard ECharts `option` JSON object. Supports line, bar, pie, radar, scatter, funnel, gauge, sankey, graph and more — choose them via `series[].type`. Use this whenever a user would benefit from a chart or data visualization instead of raw numbers. Inputs: `option` (a valid ECharts option object; the required field), optional `title`, `subtitle`, and `insights` (a one-line textual takeaway shown under the chart). When `enableInteractivity` is true (default), clicking a data point sends a follow-up message to the conversation so the user can drill down. Always produce the option from the user\'s data; keep it valid JSON.',
+  category: 'Data',
+  icon: '📊',
+  tags: ['chart', 'echarts', 'visualization', 'data'],
+  status: 'stable',
+  embedPath: '/embed/echarts',
+  pagePath: '/tools/echarts',
+  examples: [
+    { en: 'Chart my monthly revenue: Jan 12, Feb 18, Mar 9, Apr 22 (bar chart).', zh: '把月度营收画成柱状图：1月12、2月18、3月9、4月22。' },
+    { en: 'Visualize these two models across speed/quality/cost as a radar chart.', zh: '用雷达图对比这两个模型在速度/质量/成本上的表现。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      option: {
+        type: 'object',
+        description:
+          'A valid Apache ECharts option object. Set `series[].type` (line, bar, pie, radar, scatter, sankey, ...), axes, legend, tooltip, etc.',
+      },
+      title: { type: 'string', description: 'Card title shown above the chart.' },
+      subtitle: { type: 'string', description: 'Small subtitle under the title.' },
+      insights: {
+        type: 'string',
+        description: 'A one-line AI takeaway rendered under the chart.',
+      },
+      enableInteractivity: {
+        type: 'boolean',
+        description: 'When true, clicking a data point sends it back to the conversation.',
+        default: true,
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+    required: ['option'],
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -466,6 +519,7 @@ export const TOOLS: ToolMeta[] = [
   hashGeneratorTool,
   colorStudioTool,
   gomokuTool,
+  echartsTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

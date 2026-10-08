@@ -36,6 +36,7 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 | `color-studio` | Color Studio & Contrast | Design | hex/RGB/HSL conversion, tints/shades, WCAG contrast checks |
 | `chrono-energy` | BaZi Chrono-Energy Wheel | Culture | Four Pillars, five-element radar and luck cycles (beta) |
 | `gomoku` | Gomoku · Play vs AI | Games | Five-in-a-row against the host's own AI (board + rules live in the card) |
+| `echarts` | ECharts Data Visualization | Data | Render interactive ECharts charts (line/bar/pie/radar/sankey…) from an option; click a point to drill down with the AI |
 
 ## Routes
 
@@ -57,8 +58,11 @@ gets a help page. `POST /mcp` is the JSON-RPC transport. See
 ## Stack
 
 Vite · React 19 · TypeScript · Tailwind CSS v4 · `@mcp-ui/*` ·
-`@modelcontextprotocol/ext-apps` · Cloudflare Workers + static assets ·
-Vitest · GitHub Actions.
+`@modelcontextprotocol/ext-apps` · Apache ECharts · Cloudflare Workers + static
+assets · Vitest · GitHub Actions.
+
+> ECharts is imported lazily inside its own widget chunk, so it never affects the
+> first paint of the site or other cards.
 
 ## Architecture
 

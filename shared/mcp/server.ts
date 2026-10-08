@@ -20,6 +20,7 @@ import { decodeJwt } from '../calc/jwt.ts'
 import { HASH_ALGORITHMS, hashText, type HashAlgorithm } from '../calc/hash.ts'
 import { analyzeColor, parseColor, scaleColor } from '../calc/color.ts'
 import { boardToText, gameState, rcToCoord } from '../calc/gomoku.ts'
+import { parseOption, summarizeOption } from '../calc/echarts.ts'
 
 export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 
@@ -407,6 +408,29 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           gameOver: state.gameOver,
           error: state.error ?? null,
           board: boardToText(state.board, state.lastMove),
+        },
+      }
+    }
+    case 'echarts': {
+      const parsed = parseOption(args.option)
+      if (!parsed.option) {
+        return { summary: `ECharts: ${parsed.error}`, structured: { error: parsed.error } }
+      }
+      const info = summarizeOption(parsed.option)
+      const types = info.chartTypes.join(', ') || 'unknown'
+      return {
+        summary:
+          `ECharts chart (${types}) with ${info.seriesCount} series and ${info.points} data points.` +
+          (info.title ? ` Title: "${info.title}".` : ''),
+        structured: {
+          title: typeof args.title === 'string' ? args.title : (info.title ?? null),
+          subtitle: typeof args.subtitle === 'string' ? args.subtitle : null,
+          insights: typeof args.insights === 'string' ? args.insights : null,
+          enableInteractivity: args.enableInteractivity !== false,
+          chartTypes: info.chartTypes,
+          seriesCount: info.seriesCount,
+          points: info.points,
+          option: parsed.option,
         },
       }
     }
