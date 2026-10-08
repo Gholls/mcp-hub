@@ -2,6 +2,38 @@
 
 export type EChartsOption = Record<string, unknown>
 
+/**
+ * Cheat-sheet injected into the tool schema so an LLM can produce a valid
+ * ECharts `option` in one shot. Keep it compact but concrete.
+ */
+export const ECHARTS_OPTION_GUIDE = [
+  'Valid JSON only: no comments, no trailing commas, no functions.',
+  'Always include "series": [{ "type": ..., "data": [...] }].',
+  '',
+  'line:   {"tooltip":{"trigger":"axis"},"xAxis":{"type":"category","data":["Mon","Tue","Wed"]},"yAxis":{"type":"value"},"series":[{"type":"line","smooth":true,"data":[120,200,150]}]}',
+  'bar:    same axis shape as line, then {"series":[{"type":"bar","data":[5,9,7]}]}',
+  'stacked bar: series:[{type:"bar",stack:"t",data:[..]},{type:"bar",stack:"t",data:[..]}]',
+  'mixed (bar+line, dual axis): {"xAxis":{"type":"category","data":[..]},"yAxis":[{"type":"value"},{"type":"value"}],"series":[{"type":"bar","yAxisIndex":0,"data":[..]},{"type":"line","yAxisIndex":1,"data":[..]}]}',
+  'pie:    {"tooltip":{"trigger":"item"},"series":[{"type":"pie","radius":["40%","70%"],"data":[{"name":"A","value":10},{"name":"B","value":20}]}]}',
+  'radar:  {"tooltip":{},"radar":{"indicator":[{"name":"Speed","max":100},{"name":"Cost","max":100},{"name":"Quality","max":100}]},"series":[{"type":"radar","data":[{"name":"Model A","value":[80,40,70]},{"name":"Model B","value":[60,70,85]}]}]}',
+  'scatter:{"xAxis":{"type":"value"},"yAxis":{"type":"value"},"series":[{"type":"scatter","symbolSize":8,"data":[[10,20],[15,25],[30,12]]}]}',
+  'sankey: {"tooltip":{"trigger":"item"},"series":[{"type":"sankey","data":[{"name":"A"},{"name":"B"},{"name":"C"}],"links":[{"source":"A","target":"B","value":5},{"source":"B","target":"C","value":3}]}]}',
+  'funnel: {"tooltip":{"trigger":"item"},"series":[{"type":"funnel","data":[{"name":"Visit","value":100},{"name":"Signup","value":45},{"name":"Buy","value":12}]}]}',
+  'gauge:  {"series":[{"type":"gauge","min":0,"max":100,"data":[{"value":72,"name":"Score"}]}]}',
+  '',
+  'Notes: category x-axis needs "data": [...]; pie/radar/sankey/funnel/gauge need no xAxis/yAxis.',
+  'Keep series[].data as a plain array; use objects only for pie/funnel/radar named items.',
+  'Dark theme, axis colors, legend and tooltip styling are auto-applied — omit styling unless needed.',
+].join('\n')
+
+/** A minimal, valid example option (used as the schema default). */
+export const ECHARTS_DEFAULT_OPTION = {
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
+  yAxis: { type: 'value' },
+  series: [{ type: 'line', smooth: true, data: [120, 200, 150, 80, 170] }],
+}
+
 export interface ParsedOption {
   option?: EChartsOption
   error?: string

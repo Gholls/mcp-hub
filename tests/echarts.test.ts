@@ -1,5 +1,24 @@
 import { describe, expect, it } from 'vitest'
-import { parseOption, summarizeOption, withDarkTheme } from '../shared/calc/echarts.ts'
+import {
+  ECHARTS_DEFAULT_OPTION,
+  ECHARTS_OPTION_GUIDE,
+  parseOption,
+  summarizeOption,
+  withDarkTheme,
+} from '../shared/calc/echarts.ts'
+
+describe('ECHARTS_OPTION_GUIDE', () => {
+  it('covers the common chart types', () => {
+    for (const type of ['line', 'bar', 'pie', 'radar', 'scatter', 'sankey', 'funnel', 'gauge']) {
+      expect(ECHARTS_OPTION_GUIDE).toContain(type)
+    }
+  })
+  it('the default option is a valid line chart', () => {
+    const summary = summarizeOption(ECHARTS_DEFAULT_OPTION)
+    expect(summary.chartTypes).toEqual(['line'])
+    expect(summary.points).toBe(5)
+  })
+})
 
 describe('parseOption', () => {
   it('accepts an object as-is', () => {

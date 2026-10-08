@@ -1,4 +1,5 @@
 import type { ToolMeta } from './types.ts'
+import { ECHARTS_DEFAULT_OPTION, ECHARTS_OPTION_GUIDE } from './calc/echarts.ts'
 
 export const vramCalcTool: ToolMeta = {
   id: 'vram-calc',
@@ -460,7 +461,7 @@ export const echartsTool: ToolMeta = {
     zh: '用标准 ECharts option 渲染交互式图表——折线、柱状、饼图、雷达、散点、桑基图等。',
   },
   mcpDescription:
-    'Render an interactive Apache ECharts chart from a standard ECharts `option` JSON object. Supports line, bar, pie, radar, scatter, funnel, gauge, sankey, graph and more — choose them via `series[].type`. Use this whenever a user would benefit from a chart or data visualization instead of raw numbers. Inputs: `option` (a valid ECharts option object; the required field), optional `title`, `subtitle`, and `insights` (a one-line textual takeaway shown under the chart). When `enableInteractivity` is true (default), clicking a data point sends a follow-up message to the conversation so the user can drill down. Always produce the option from the user\'s data; keep it valid JSON.',
+    'Render an interactive Apache ECharts chart from a standard ECharts `option` JSON object. Supports line, bar (incl. stacked & dual-axis mixed), pie, radar, scatter, funnel, gauge, sankey, graph and more — chosen via `series[].type`. Use this whenever a user would benefit from a chart or data visualization instead of raw numbers. The `option` field description contains ready-to-copy JSON templates for every common chart type — follow those shapes and fill in the user\'s real data. Inputs: `option` (required ECharts option object), optional `title`, `subtitle`, `insights` (one-line takeaway under the chart). When `enableInteractivity` is true (default), clicking a data point sends a follow-up message to the conversation for drill-down. Output valid JSON only (no comments, no functions).',
   category: 'Data',
   icon: '📊',
   tags: ['chart', 'echarts', 'visualization', 'data'],
@@ -470,14 +471,16 @@ export const echartsTool: ToolMeta = {
   examples: [
     { en: 'Chart my monthly revenue: Jan 12, Feb 18, Mar 9, Apr 22 (bar chart).', zh: '把月度营收画成柱状图：1月12、2月18、3月9、4月22。' },
     { en: 'Visualize these two models across speed/quality/cost as a radar chart.', zh: '用雷达图对比这两个模型在速度/质量/成本上的表现。' },
+    { en: 'Show the token spend flow from providers to tasks as a Sankey diagram.', zh: '用桑基图展示从供应商到任务的 Token 消耗流向。' },
+    { en: 'Plot QPS and p99 latency together with a dual Y axis.', zh: '用双 Y 轴同时画出 QPS 与 p99 延迟。' },
   ],
   inputSchema: {
     type: 'object',
     properties: {
       option: {
         type: 'object',
-        description:
-          'A valid Apache ECharts option object. Set `series[].type` (line, bar, pie, radar, scatter, sankey, ...), axes, legend, tooltip, etc.',
+        description: `A valid Apache ECharts option object. Generate it from the user's data. Type templates (copy the shape, fill in real data):\n${ECHARTS_OPTION_GUIDE}`,
+        default: ECHARTS_DEFAULT_OPTION,
       },
       title: { type: 'string', description: 'Card title shown above the chart.' },
       subtitle: { type: 'string', description: 'Small subtitle under the title.' },
