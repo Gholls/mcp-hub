@@ -34,6 +34,211 @@ export const ECHARTS_DEFAULT_OPTION = {
   series: [{ type: 'line', smooth: true, data: [120, 200, 150, 80, 170] }],
 }
 
+export interface EChartsTemplate {
+  id: string
+  label: { en: string; zh: string }
+  option: EChartsOption
+}
+
+export const ECHARTS_TEMPLATES: EChartsTemplate[] = [
+  {
+    id: 'line',
+    label: { en: 'Line', zh: '折线图' },
+    option: {
+      tooltip: { trigger: 'axis' },
+      legend: { data: ['Revenue', 'Cost'] },
+      grid: { left: 8, right: 12, top: 36, bottom: 4, containLabel: true },
+      xAxis: { type: 'category', boundaryGap: false, data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'] },
+      yAxis: { type: 'value' },
+      series: [
+        { name: 'Revenue', type: 'line', smooth: true, areaStyle: { opacity: 0.18 }, data: [120, 180, 150, 220, 260, 300] },
+        { name: 'Cost', type: 'line', smooth: true, data: [80, 110, 95, 140, 150, 170] },
+      ],
+    },
+  },
+  {
+    id: 'bar',
+    label: { en: 'Bar', zh: '柱状图' },
+    option: {
+      tooltip: { trigger: 'axis' },
+      grid: { left: 8, right: 12, top: 24, bottom: 4, containLabel: true },
+      xAxis: { type: 'category', data: ['Q1', 'Q2', 'Q3', 'Q4'] },
+      yAxis: { type: 'value' },
+      series: [{ name: 'Sales', type: 'bar', barWidth: '52%', itemStyle: { borderRadius: [6, 6, 0, 0] }, data: [320, 480, 410, 560] }],
+    },
+  },
+  {
+    id: 'stacked',
+    label: { en: 'Stacked bar', zh: '堆叠柱状' },
+    option: {
+      tooltip: { trigger: 'axis' },
+      legend: { data: ['Web', 'App', 'API'] },
+      grid: { left: 8, right: 12, top: 36, bottom: 4, containLabel: true },
+      xAxis: { type: 'category', data: ['Q1', 'Q2', 'Q3', 'Q4'] },
+      yAxis: { type: 'value' },
+      series: [
+        { name: 'Web', type: 'bar', stack: 'total', data: [120, 160, 140, 180] },
+        { name: 'App', type: 'bar', stack: 'total', data: [90, 130, 110, 160] },
+        { name: 'API', type: 'bar', stack: 'total', data: [60, 80, 100, 120] },
+      ],
+    },
+  },
+  {
+    id: 'mixed',
+    label: { en: 'Bar + line', zh: '柱线双轴' },
+    option: {
+      tooltip: { trigger: 'axis' },
+      legend: { data: ['QPS', 'p99 (ms)'] },
+      grid: { left: 8, right: 12, top: 36, bottom: 4, containLabel: true },
+      xAxis: { type: 'category', data: ['00', '04', '08', '12', '16', '20'] },
+      yAxis: [
+        { type: 'value', name: 'QPS' },
+        { type: 'value', name: 'ms' },
+      ],
+      series: [
+        { name: 'QPS', type: 'bar', barWidth: '46%', itemStyle: { borderRadius: [4, 4, 0, 0] }, data: [820, 640, 1200, 1500, 1380, 900] },
+        { name: 'p99 (ms)', type: 'line', yAxisIndex: 1, smooth: true, data: [45, 38, 70, 120, 95, 60] },
+      ],
+    },
+  },
+  {
+    id: 'pie',
+    label: { en: 'Donut', zh: '环形图' },
+    option: {
+      tooltip: { trigger: 'item' },
+      legend: { bottom: 0 },
+      series: [
+        {
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['50%', '46%'],
+          itemStyle: { borderRadius: 6, borderColor: 'transparent', borderWidth: 2 },
+          label: { formatter: '{b} {d}%' },
+          data: [
+            { name: 'Chat', value: 38 },
+            { name: 'Code', value: 27 },
+            { name: 'Search', value: 18 },
+            { name: 'Image', value: 11 },
+            { name: 'Other', value: 6 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'radar',
+    label: { en: 'Radar', zh: '雷达图' },
+    option: {
+      tooltip: {},
+      legend: { data: ['Model A', 'Model B'] },
+      radar: {
+        indicator: [
+          { name: 'Speed', max: 100 },
+          { name: 'Quality', max: 100 },
+          { name: 'Cost', max: 100 },
+          { name: 'Context', max: 100 },
+          { name: 'Safety', max: 100 },
+        ],
+      },
+      series: [
+        {
+          type: 'radar',
+          areaStyle: { opacity: 0.15 },
+          data: [
+            { name: 'Model A', value: [85, 78, 60, 70, 88] },
+            { name: 'Model B', value: [65, 90, 82, 92, 74] },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'scatter',
+    label: { en: 'Scatter', zh: '散点图' },
+    option: {
+      tooltip: { trigger: 'item' },
+      grid: { left: 8, right: 12, top: 24, bottom: 4, containLabel: true },
+      xAxis: { type: 'value', name: 'Price' },
+      yAxis: { type: 'value', name: 'Rating' },
+      series: [
+        {
+          type: 'scatter',
+          symbolSize: 12,
+          itemStyle: { opacity: 0.75 },
+          data: [[12, 4.2], [18, 3.6], [25, 4.6], [30, 3.1], [42, 4.8], [55, 2.9], [68, 4.4], [80, 3.8]],
+        },
+      ],
+    },
+  },
+  {
+    id: 'sankey',
+    label: { en: 'Sankey', zh: '桑基图' },
+    option: {
+      tooltip: { trigger: 'item' },
+      series: [
+        {
+          type: 'sankey',
+          nodeGap: 12,
+          labels: { color: '#cbd5e1' },
+          data: [
+            { name: 'Input' }, { name: 'Context' }, { name: 'Output' }, { name: 'Chat' }, { name: 'Tools' }, { name: 'Reasoning' },
+          ],
+          links: [
+            { source: 'Input', target: 'Context', value: 40 },
+            { source: 'Input', target: 'Reasoning', value: 25 },
+            { source: 'Context', target: 'Output', value: 22 },
+            { source: 'Context', target: 'Chat', value: 18 },
+            { source: 'Reasoning', target: 'Tools', value: 15 },
+            { source: 'Reasoning', target: 'Output', value: 10 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'funnel',
+    label: { en: 'Funnel', zh: '漏斗图' },
+    option: {
+      tooltip: { trigger: 'item' },
+      series: [
+        {
+          type: 'funnel',
+          left: '12%',
+          width: '76%',
+          gap: 2,
+          label: { formatter: '{b}: {c}' },
+          data: [
+            { name: 'Visit', value: 1000 },
+            { name: 'Signup', value: 460 },
+            { name: 'Activate', value: 250 },
+            { name: 'Paid', value: 92 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'gauge',
+    label: { en: 'Gauge', zh: '仪表盘' },
+    option: {
+      series: [
+        {
+          type: 'gauge',
+          min: 0,
+          max: 100,
+          radius: '86%',
+          progress: { show: true, width: 14 },
+          axisLine: { lineStyle: { width: 14 } },
+          axisLabel: { color: '#94a3b8', distance: 18 },
+          pointer: { width: 4 },
+          detail: { valueAnimation: true, formatter: '{value}', color: '#e5e7eb', fontSize: 28, offsetCenter: [0, '62%'] },
+          data: [{ value: 72, name: 'Score' }],
+        },
+      ],
+    },
+  },
+]
+
 export interface ParsedOption {
   option?: EChartsOption
   error?: string

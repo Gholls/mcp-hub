@@ -2,10 +2,24 @@ import { describe, expect, it } from 'vitest'
 import {
   ECHARTS_DEFAULT_OPTION,
   ECHARTS_OPTION_GUIDE,
+  ECHARTS_TEMPLATES,
   parseOption,
   summarizeOption,
   withDarkTheme,
 } from '../shared/calc/echarts.ts'
+
+describe('ECHARTS_TEMPLATES', () => {
+  it('has unique ids and every template renders a series', () => {
+    const ids = ECHARTS_TEMPLATES.map((t) => t.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    for (const template of ECHARTS_TEMPLATES) {
+      expect(template.label.en && template.label.zh).toBeTruthy()
+      const summary = summarizeOption(template.option)
+      expect(summary.seriesCount).toBeGreaterThan(0)
+      expect(summary.chartTypes.length).toBeGreaterThan(0)
+    }
+  })
+})
 
 describe('ECHARTS_OPTION_GUIDE', () => {
   it('covers the common chart types', () => {

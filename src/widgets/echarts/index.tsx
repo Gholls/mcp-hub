@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import type { Locale } from '@shared/types.ts'
-import { parseOption, withDarkTheme, type EChartsOption } from '@shared/calc/echarts.ts'
+import {
+  ECHARTS_TEMPLATES,
+  parseOption,
+  withDarkTheme,
+  type EChartsOption,
+} from '@shared/calc/echarts.ts'
 import type { WidgetProps } from '../registry.ts'
 import { WidgetShell } from '../../components/ui.tsx'
 import CopyButton from '../../components/CopyButton.tsx'
@@ -18,7 +23,8 @@ const T: Record<Locale, Dict> = {
     empty: 'The option has no `series` to render.',
     copy: 'Copy option',
     sent: 'Sent to AI',
-    click: 'Selected',
+    aiChart: 'AI chart',
+    exampleHint: 'No chart from the AI yet — browse an example:',
     note: 'Rendered with Apache ECharts. Click a data point to send it back to your AI.',
   },
   zh: {
@@ -28,7 +34,8 @@ const T: Record<Locale, Dict> = {
     empty: 'option 中没有可渲染的 `series`。',
     copy: '复制 option',
     sent: '已发送给 AI',
-    click: '已选中',
+    aiChart: 'AI 图表',
+    exampleHint: 'AI 暂未给出图表 — 可先浏览示例：',
     note: '由 Apache ECharts 渲染。点击数据点可回传给 AI。',
   },
 }
@@ -54,12 +61,25 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
   const enableInteractivity = readBoolean(initial, 'enableInteractivity', true)
 
   const parsed = useMemo(() => parseOption(initial.option), [initial.option])
-  const option = parsed.option as EChartsOption | undefined
-  const hasSeries = Boolean(option && ((option.series as unknown[] | undefined)?.length ?? 0) > 0)
+  const provided = parsed.option as EChartsOption | undefined
+
+  const [mode, setMode] = useState<string>(() => (provided ? 'ai' : ECHARTS_TEMPLATES[0].id))
+
+  useEffect(() => {
+    if (provided) setMode('ai')
+  }, [provided])
+
+  const activeTemplate = ECHARTS_TEMPLATES.find((t) => t.id === mode)
+  const activeOption = mode === 'ai' ? provided : activeTemplate?.option
+  const hasSeries = Boolean(
+    activeOption && ((activeOption.series as unknown[] | undefined)?.length ?? 0) > 0,
+  )
+  const activeTitle = mode === 'ai' ? title || d.title : (activeTemplate?.label[locale] ?? d.title)
 
   const handleClick = useCallback(
     (params: ClickParams) => {
-      const value = typeof params.value === 'object' ? JSON.stringify(params.value) : String(params.value ?? '')
+      const value =
+        typeof params.value === 'object' ? JSON.stringify(params.value) : String(params.value ?? '')
       const label = params.name ?? params.seriesName ?? ''
       const text =
         locale === 'zh'
@@ -77,7 +97,6 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
     handlersRef.current = { enable: enableInteractivity, onClick: handleClick }
   })
 
-  // Create / dispose the chart instance and keep it sized to the container.
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
@@ -96,15 +115,17 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
     }
   }, [])
 
-  // Smooth, not-merged updates whenever the option changes.
   useEffect(() => {
     const chart = chartRef.current
-    if (!chart || !option) return
-    chart.setOption(withDarkTheme(option), { notMerge: true, lazyUpdate: true })
+    if (!chart || !activeOption) return
+    chart.setOption(withDarkTheme(activeOption), { notMerge: true, lazyUpdate: true })
     chart.resize()
-  }, [option])
+  }, [activeOption])
 
-  const optionJson = useMemo(() => (option ? JSON.stringify(option, null, 2) : ''), [option])
+  const chips = [
+    ...(provided ? [{ id: 'ai', label: d.aiChart }] : []),
+    ...ECHARTS_TEMPLATES.map((t) => ({ id: t.id, label: t.label[locale] })),
+  ]
 
   const footer = (
     <span className="flex items-center gap-2">
@@ -114,35 +135,60 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
   )
 
   return (
-    <WidgetShell title={title || d.title} icon="📊" footer={footer}>
+    <WidgetShell title={activeTitle} icon="📊" footer={footer}>
       <div className="flex flex-col gap-3">
-        {subtitle ? <p className="-mt-1 text-xs text-slate-400">{subtitle}</p> : null}
+        {subtitle && mode === 'ai' ? (
+          <p className="-mt-1 text-xs text-slate-400">{subtitle}</p>
+        ) : null}
 
         {parsed.error ? (
           <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
             {d.invalid}: {parsed.error}
           </div>
-        ) : !hasSeries ? (
-          <p className="text-sm text-slate-500">{d.empty}</p>
         ) : null}
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          {!provided ? (
+            <span className="mr-1 text-[11px] text-slate-500">{d.exampleHint}</span>
+          ) : null}
+          {chips.map((chip) => (
+            <button
+              key={chip.id}
+              type="button"
+              onClick={() => setMode(chip.id)}
+              aria-pressed={mode === chip.id}
+              className={`rounded-lg border px-2.5 py-1 text-[11px] font-medium transition ${
+                mode === chip.id
+                  ? 'border-brand-400/60 bg-brand-500/15 text-brand-200'
+                  : 'border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
+              }`}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
 
         <div className="overflow-hidden rounded-xl border border-white/8 bg-ink-950/50 p-1">
           <div ref={containerRef} className="h-[320px] w-full" />
         </div>
 
-        {insights ? (
+        {!hasSeries && !parsed.error ? (
+          <p className="text-sm text-slate-500">{d.empty}</p>
+        ) : null}
+
+        {insights && mode === 'ai' ? (
           <div className="flex items-start gap-2 rounded-xl border border-brand-500/25 bg-brand-500/5 px-3 py-2 text-xs leading-relaxed text-brand-100">
             <span className="flex-shrink-0 font-semibold text-brand-300">💡 AI</span>
             <span>{insights}</span>
           </div>
         ) : null}
 
-        {option ? (
+        {activeOption ? (
           <div className="flex items-center justify-between text-[11px] text-slate-500">
             <span className="font-mono">
-              {Array.isArray(option.series) ? `${option.series.length} series` : ''}
+              {Array.isArray(activeOption.series) ? `${activeOption.series.length} series` : ''}
             </span>
-            <CopyButton value={optionJson} label={d.copy} />
+            <CopyButton value={JSON.stringify(activeOption, null, 2)} label={d.copy} />
           </div>
         ) : (
           <p className="text-sm text-slate-500">{d.noOption}</p>
