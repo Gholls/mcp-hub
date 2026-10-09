@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 
-export default function Math({
+export default function MathTex({
   tex,
   display = false,
   className = '',

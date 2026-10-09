@@ -28,6 +28,7 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   gomoku: lazy(() => import('./gomoku/index.tsx')),
   echarts: lazy(() => import('./echarts/index.tsx')),
   'function-grapher': lazy(() => import('./function-grapher/index.tsx')),
+  'trig-lab': lazy(() => import('./trig-lab/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {

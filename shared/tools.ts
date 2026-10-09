@@ -551,6 +551,43 @@ export const functionGrapherTool: ToolMeta = {
   },
 }
 
+export const trigLabTool: ToolMeta = {
+  id: 'trig-lab',
+  name: 'Trigonometry Lab',
+  title: {
+    en: 'Trigonometry Lab',
+    zh: '三角函数实验室',
+  },
+  description: {
+    en: 'Explore the unit circle and trigonometric functions y = A·sin(ωx+φ)+k with live sliders for amplitude, period and phase.',
+    zh: '探索单位圆与三角函数 y = A·sin(ωx+φ)+k，用滑块实时调整振幅、周期与相位。',
+  },
+  mcpDescription:
+    'Explore trigonometric functions and the unit circle. Inputs: `func` ("sin" | "cos" | "tan"), `A` (amplitude), `omega` (angular frequency), `phi` (phase), `k` (vertical shift) and `unit` ("rad" or "deg"). Returns the equation y = A·f(ωx+φ)+k and its features (amplitude, period, phase shift, range). Use this for teaching trigonometry, periodic functions and graph transformations.',
+  category: 'Math',
+  icon: '📐',
+  tags: ['math', 'trigonometry', 'unit-circle', 'education'],
+  status: 'stable',
+  embedPath: '/embed/trig-lab',
+  pagePath: '/tools/trig-lab',
+  examples: [
+    { en: 'Show y = 2 sin(3x) and its period.', zh: '画出 y = 2 sin(3x) 并说明周期。' },
+    { en: 'Explain how the unit circle relates to the sine curve.', zh: '解释单位圆与正弦曲线的关系。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      func: { type: 'string', enum: ['sin', 'cos', 'tan'], description: 'Trigonometric function.', default: 'sin' },
+      A: { type: 'number', description: 'Amplitude.', default: 1 },
+      omega: { type: 'number', description: 'Angular frequency ω.', default: 1 },
+      phi: { type: 'number', description: 'Phase φ.', default: 0 },
+      k: { type: 'number', description: 'Vertical shift k.', default: 0 },
+      unit: { type: 'string', enum: ['rad', 'deg'], description: 'Angle unit.', default: 'rad' },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -571,6 +608,7 @@ export const TOOLS: ToolMeta[] = [
   gomokuTool,
   echartsTool,
   functionGrapherTool,
+  trigLabTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

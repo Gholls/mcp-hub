@@ -15,7 +15,7 @@ import type { EChartsOption } from '@shared/calc/echarts.ts'
 import type { WidgetProps } from '../registry.ts'
 import { Field, Slider, WidgetShell } from '../../components/ui.tsx'
 import CopyButton from '../../components/CopyButton.tsx'
-import Math from '../../components/Math.tsx'
+import MathTex from '../../components/Math.tsx'
 import { useECharts } from '../../lib/use-echarts.ts'
 import { useMcp } from '../../lib/mcp-app.ts'
 import { readString } from '../params.ts'
@@ -197,7 +197,7 @@ export default function FunctionGrapherWidget({ locale, initial }: WidgetProps) 
                 <CopyButton value={equation} />
               </div>
               <div className="overflow-x-auto py-1 text-slate-100">
-                <Math tex={equation} />
+                <MathTex tex={equation} />
               </div>
             </div>
 
@@ -222,7 +222,7 @@ export default function FunctionGrapherWidget({ locale, initial }: WidgetProps) 
                   <li key={i} className="flex items-center justify-between gap-2 text-xs">
                     <span className="text-slate-500">{fact.label[locale]}</span>
                     <span className="text-slate-200">
-                      <Math tex={fact.latex} />
+                      <MathTex tex={fact.latex} />
                     </span>
                   </li>
                 ))}

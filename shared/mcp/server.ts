@@ -27,6 +27,7 @@ import {
   getFamily,
   substitutedLatex,
 } from '../calc/grapher.ts'
+import { graphLatex, trigFeatures, type AngleUnit, type TrigFunc, type TrigParams } from '../calc/trig.ts'
 
 export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 
@@ -462,6 +463,31 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           family: family.id,
           stage: family.stage,
           params,
+          equation,
+          features: facts.map((f) => ({ label: f.label.en, value: f.latex })),
+        },
+      }
+    }
+    case 'trig-lab': {
+      const func: TrigFunc = args.func === 'cos' ? 'cos' : args.func === 'tan' ? 'tan' : 'sin'
+      const unit: AngleUnit = args.unit === 'deg' ? 'deg' : 'rad'
+      const params: TrigParams = {
+        func,
+        unit,
+        A: asNumber(args.A, 1),
+        omega: asNumber(args.omega, 1),
+        phi: asNumber(args.phi, 0),
+        k: asNumber(args.k, 0),
+      }
+      const equation = graphLatex(params)
+      const facts = trigFeatures(params)
+      return {
+        summary:
+          `Trigonometric graph: ${equation}. ` +
+          facts.map((f) => `${f.label.en} ${f.latex}`).join('; ') +
+          '.',
+        structured: {
+          ...params,
           equation,
           features: facts.map((f) => ({ label: f.label.en, value: f.latex })),
         },
