@@ -504,6 +504,53 @@ export const echartsTool: ToolMeta = {
   },
 }
 
+export const functionGrapherTool: ToolMeta = {
+  id: 'function-grapher',
+  name: 'Function Grapher',
+  title: {
+    en: 'Function Grapher',
+    zh: '函数图像绘制器',
+  },
+  description: {
+    en: 'Plot common functions with live parameter sliders (linear, inverse, quadratic, power, exponential, logarithmic) and read off key features.',
+    zh: '用滑块实时绘制常见函数图像（一次、反比例、二次、幂、指数、对数），并显示图像特征。',
+  },
+  mcpDescription:
+    'Plot and explore a common function. Inputs: `family` (one of "linear", "proportion", "inverse", "quadratic", "power", "exponential", "logarithmic") and optional `params` (e.g. {"a":1,"b":-2,"c":-3} for quadratic, {"k":2} for linear/inverse, {"a":2} for exponential/logarithmic/power). Returns the equation and key features such as vertex, axis of symmetry, discriminant, asymptotes and monotonicity. Use this for middle/high-school math when a user asks to draw or explain a function graph.',
+  category: 'Math',
+  icon: '📈',
+  tags: ['math', 'function', 'graph', 'plot', 'education'],
+  status: 'stable',
+  embedPath: '/embed/function-grapher',
+  pagePath: '/tools/function-grapher',
+  examples: [
+    { en: 'Plot the quadratic y = x² − 2x − 3 and show its vertex.', zh: '画出二次函数 y = x² − 2x − 3 并标出顶点。' },
+    { en: 'Show how y = a·x changes as a varies.', zh: '展示 y = a·x 随 a 变化的图像。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      family: {
+        type: 'string',
+        enum: ['linear', 'proportion', 'inverse', 'quadratic', 'power', 'exponential', 'logarithmic'],
+        description: 'Function family to plot.',
+        default: 'quadratic',
+      },
+      params: {
+        type: 'object',
+        description: 'Parameter values, e.g. {"a":1,"b":-2,"c":-3} or {"k":2}. Missing values use defaults.',
+      },
+      locale: {
+        type: 'string',
+        enum: ['en', 'zh'],
+        description: 'UI language for the rendered card.',
+        default: 'en',
+      },
+    },
+    required: ['family'],
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -523,6 +570,7 @@ export const TOOLS: ToolMeta[] = [
   colorStudioTool,
   gomokuTool,
   echartsTool,
+  functionGrapherTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

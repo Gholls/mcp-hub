@@ -21,6 +21,12 @@ import { HASH_ALGORITHMS, hashText, type HashAlgorithm } from '../calc/hash.ts'
 import { analyzeColor, parseColor, scaleColor } from '../calc/color.ts'
 import { boardToText, gameState, rcToCoord } from '../calc/gomoku.ts'
 import { parseOption, summarizeOption } from '../calc/echarts.ts'
+import {
+  defaultParams,
+  features as graphFeatures,
+  getFamily,
+  substitutedLatex,
+} from '../calc/grapher.ts'
 
 export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 
@@ -431,6 +437,33 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           seriesCount: info.seriesCount,
           points: info.points,
           option: parsed.option,
+        },
+      }
+    }
+    case 'function-grapher': {
+      const family = getFamily(typeof args.family === 'string' ? args.family : 'quadratic')
+      if (!family) throw new McpError(ErrorCode.InvalidParams, 'Unknown function family')
+      const provided: Record<string, number> = {}
+      if (typeof args.params === 'object' && args.params !== null) {
+        for (const [key, value] of Object.entries(args.params as Record<string, unknown>)) {
+          const n = Number(value)
+          if (Number.isFinite(n)) provided[key] = n
+        }
+      }
+      const params = { ...defaultParams(family), ...provided }
+      const equation = substitutedLatex(family, params)
+      const facts = graphFeatures(family, params)
+      return {
+        summary:
+          `Function graph: ${equation} (${family.label.en}). Features: ` +
+          facts.map((f) => `${f.label.en} ${f.latex}`).join('; ') +
+          '.',
+        structured: {
+          family: family.id,
+          stage: family.stage,
+          params,
+          equation,
+          features: facts.map((f) => ({ label: f.label.en, value: f.latex })),
         },
       }
     }
