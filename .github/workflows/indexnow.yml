@@ -1,0 +1,29 @@
+name: IndexNow
+
+on:
+  schedule:
+    - cron: "23 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Submit sitemap URLs to IndexNow
+        run: |
+          set -euo pipefail
+          key=$(basename "$(ls public/*.txt | head -n1)" .txt)
+          echo "IndexNow key: $key"
+          urls=$(curl -s https://mcp.gholl.com/sitemap.xml \
+            | grep -oE '<loc>[^<]+' \
+            | sed 's/<loc>//' \
+            | jq -R . | jq -s .)
+          echo "URLs: $urls"
+          curl -s -X POST https://api.indexnow.org/indexnow \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            -d "{\"host\":\"mcp.gholl.com\",\"key\":\"$key\",\"keyLocation\":\"https://mcp.gholl.com/$key.txt\",\"urlList\":$urls}" \
+            -w '\nHTTP %{http_code}\n'

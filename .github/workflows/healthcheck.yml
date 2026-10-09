@@ -1,0 +1,39 @@
+name: Health check
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe public surfaces and MCP endpoint
+        run: |
+          set -euo pipefail
+          base=https://mcp.gholl.com
+          for path in / /llms.txt /.well-known/mcp.json /sitemap.xml /robots.txt; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$base$path")
+            echo "$path -> $code"
+            [ "$code" = "200" ] || { echo "FAIL: $path returned $code"; exit 1; }
+          done
+
+          curl -s -X POST "$base/mcp" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"healthcheck","version":"1.0"}}}' \
+            -o /tmp/init.txt -w 'initialize -> %{http_code}\n'
+          grep -q '"result"' /tmp/init.txt || { echo "initialize failed"; cat /tmp/init.txt; exit 1; }
+
+          curl -s -X POST "$base/mcp" \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -d '{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}' \
+            -o /tmp/tools.txt -w 'tools/list -> %{http_code}\n'
+          grep -q 'vram-calc' /tmp/tools.txt || { echo "tools/list missing tools"; cat /tmp/tools.txt; exit 1; }
+
+          echo "All checks passed."
