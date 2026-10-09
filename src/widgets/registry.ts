@@ -29,6 +29,7 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   echarts: lazy(() => import('./echarts/index.tsx')),
   'function-grapher': lazy(() => import('./function-grapher/index.tsx')),
   'trig-lab': lazy(() => import('./trig-lab/index.tsx')),
+  'geometry-lab': lazy(() => import('./geometry-lab/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {

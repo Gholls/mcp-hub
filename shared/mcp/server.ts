@@ -28,6 +28,15 @@ import {
   substitutedLatex,
 } from '../calc/grapher.ts'
 import { graphLatex, trigFeatures, type AngleUnit, type TrigFunc, type TrigParams } from '../calc/trig.ts'
+import {
+  circleMeasures,
+  classifyQuadrilateral,
+  polygonArea,
+  polygonPerimeter,
+  quadrilateralAngles,
+  triangleMeasures,
+  type Point,
+} from '../calc/geometry.ts'
 
 export const SERVER_INFO = { name: 'mcp.gholl.com', version: '0.1.0' } as const
 
@@ -490,6 +499,48 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           ...params,
           equation,
           features: facts.map((f) => ({ label: f.label.en, value: f.latex })),
+        },
+      }
+    }
+    case 'geometry-lab': {
+      const shape = args.shape === 'quadrilateral' ? 'quadrilateral' : args.shape === 'circle' ? 'circle' : 'triangle'
+      const round = (n: number) => Math.round(n * 100) / 100
+      const parsePoints = (): Point[] => {
+        const pts = Array.isArray(args.points) ? args.points : []
+        const parsed = pts
+          .filter((p): p is number[] => Array.isArray(p) && p.length >= 2)
+          .map((p) => ({ x: Number(p[0]), y: Number(p[1]) }))
+          .filter((p) => Number.isFinite(p.x) && Number.isFinite(p.y))
+        return parsed
+      }
+      if (shape === 'circle') {
+        const radius = Math.max(0.1, asNumber(args.radius, 3))
+        const m = circleMeasures(radius)
+        return {
+          summary: `Circle r=${round(m.radius)}: d=${round(m.diameter)}, C=2πr=${round(m.circumference)}, S=πr²=${round(m.area)}.`,
+          structured: { shape, radius: m.radius, ...m },
+        }
+      }
+      const pts = parsePoints()
+      if (shape === 'triangle') {
+        if (pts.length !== 3) throw new McpError(ErrorCode.InvalidParams, 'triangle needs 3 points')
+        const m = triangleMeasures(pts)
+        return {
+          summary: `Triangle sides a=${round(m.sides[0])}, b=${round(m.sides[1])}, c=${round(m.sides[2])}; angles ${m.angles.map(round).join('°, ')}°; area ${round(m.area)}; perimeter ${round(m.perimeter)}.${m.isRight ? ' Right triangle.' : ''}`,
+          structured: { shape, points: pts, ...m, angleSum: round(m.angles.reduce((a, b) => a + b, 0)) },
+        }
+      }
+      if (pts.length !== 4) throw new McpError(ErrorCode.InvalidParams, 'quadrilateral needs 4 points')
+      const angles = quadrilateralAngles(pts)
+      return {
+        summary: `Quadrilateral (${classifyQuadrilateral(pts)}): angles ${angles.map(round).join('°, ')}°; area ${round(polygonArea(pts))}; perimeter ${round(polygonPerimeter(pts))}.`,
+        structured: {
+          shape,
+          points: pts,
+          type: classifyQuadrilateral(pts),
+          angles,
+          area: round(polygonArea(pts)),
+          perimeter: round(polygonPerimeter(pts)),
         },
       }
     }

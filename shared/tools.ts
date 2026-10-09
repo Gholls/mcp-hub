@@ -588,6 +588,44 @@ export const trigLabTool: ToolMeta = {
   },
 }
 
+export const geometryLabTool: ToolMeta = {
+  id: 'geometry-lab',
+  name: 'Geometry Lab',
+  title: {
+    en: 'Geometry Lab',
+    zh: '几何实验室',
+  },
+  description: {
+    en: 'Drag triangles, quadrilaterals and circles to explore sides, angles, area and the Pythagorean / sine / cosine theorems.',
+    zh: '拖动三角形、四边形、圆，实时查看边长、角度、面积，并验证勾股定理与正余弦定理。',
+  },
+  mcpDescription:
+    'Interactive plane geometry. Inputs: `shape` ("triangle" | "quadrilateral" | "circle"), optional `points` (array of [x,y] vertices for triangle/quadrilateral) and `radius` (for circle). Returns side lengths, angles, perimeter, area and, for triangles, right/isosceles/equilateral flags plus angle-sum, Pythagorean and law-of-sines/cosines checks. Use for middle-school geometry teaching.',
+  category: 'Math',
+  icon: '📐',
+  tags: ['math', 'geometry', 'triangle', 'circle', 'education'],
+  status: 'stable',
+  embedPath: '/embed/geometry-lab',
+  pagePath: '/tools/geometry-lab',
+  examples: [
+    { en: 'Draw a 3-4-5 right triangle and verify the Pythagorean theorem.', zh: '画一个 3-4-5 直角三角形并验证勾股定理。' },
+    { en: 'Compare the area and circumference of circles with r=2 and r=3.', zh: '比较半径 2 与 3 的圆的面积与周长。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      shape: { type: 'string', enum: ['triangle', 'quadrilateral', 'circle'], description: 'Shape to draw.', default: 'triangle' },
+      points: {
+        type: 'array',
+        items: { type: 'array', items: { type: 'number' } },
+        description: 'Vertices as [[x,y], ...] (triangle: 3 points, quadrilateral: 4 points).',
+      },
+      radius: { type: 'number', description: 'Circle radius.', default: 3 },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -609,6 +647,7 @@ export const TOOLS: ToolMeta[] = [
   echartsTool,
   functionGrapherTool,
   trigLabTool,
+  geometryLabTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {
