@@ -1,0 +1,40 @@
+name: Feature request
+description: Suggest an idea or improvement for mcp-hub
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement to
+        [mcp-hub](https://github.com/Gholls/mcp-hub). Please search existing
+        issues first to avoid duplicates.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: A clear and concise description of the problem or missing capability.
+      placeholder: I'm always frustrated when [...]
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any alternative solutions or workarounds you have considered.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any other context, links, or screenshots that help explain the request.
+    validations:
+      required: false

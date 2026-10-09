@@ -35,3 +35,6 @@ pnpm-debug.log*
 # misc
 coverage
 *.tsbuildinfo
+
+# agent workspace (local only)
+.omo/

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/Gholls/mcp-hub#readme
+    about: Project setup, architecture, tools, and client integration docs.
+  - name: MCP Specification
+    url: https://modelcontextprotocol.io/specification
+    about: Questions about the Model Context Protocol specification itself.

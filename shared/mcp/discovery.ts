@@ -95,5 +95,29 @@ export function buildSitemap(): string {
 }
 
 export function buildRobots(): string {
-  return ['User-agent: *', 'Allow: /', '', `Sitemap: ${SITE_ORIGIN}/sitemap.xml`, ''].join('\n')
+  return [
+    'User-agent: *',
+    'Allow: /',
+    '',
+    '# AI search & answer engines: allow indexing, citation and on-demand fetches.',
+    '# A CDN-injected managed robots.txt (e.g. Cloudflare Content Signals) can still',
+    '# override these rules — disable it in the dashboard so these directives win.',
+    ...[
+      'OAI-SearchBot',
+      'ChatGPT-User',
+      'GPTBot',
+      'Claude-SearchBot',
+      'Claude-User',
+      'ClaudeBot',
+      'anthropic-ai',
+      'PerplexityBot',
+      'Perplexity-User',
+      'Googlebot',
+      'Google-Extended',
+      'Bingbot',
+    ].flatMap((agent) => [`User-agent: ${agent}`, 'Allow: /']),
+    '',
+    `Sitemap: ${SITE_ORIGIN}/sitemap.xml`,
+    '',
+  ].join('\n')
 }

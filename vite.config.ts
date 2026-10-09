@@ -32,11 +32,24 @@ function discoveryPlugin(): Plugin {
   }
 }
 
+/** Adds the Cloudflare Web Analytics beacon only when `VITE_CF_ANALYTICS_TOKEN` is set at build time. */
+function analyticsPlugin(): Plugin {
+  return {
+    name: 'gholl-analytics',
+    transformIndexHtml(html) {
+      const token = process.env.VITE_CF_ANALYTICS_TOKEN
+      if (!token) return html
+      const beacon = `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"${token}"}'></script>`
+      return html.replace('</head>', `  ${beacon}\n  </head>`)
+    },
+  }
+}
+
 export default defineConfig({
   // The main site is code-split (small first paint, lazy widgets); the
   // per-widget `dist/app/<id>` bundles are built separately as single files by
   // `scripts/build-embeds.mjs` for MCP Apps / iframe use.
-  plugins: [react(), tailwindcss(), discoveryPlugin()],
+  plugins: [react(), tailwindcss(), discoveryPlugin(), analyticsPlugin()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

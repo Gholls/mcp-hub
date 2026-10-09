@@ -1,0 +1,76 @@
+name: Bug report
+description: Report something in mcp-hub that is not working as expected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug in
+        [mcp-hub](https://github.com/Gholls/mcp-hub).
+
+        Please search existing issues first to avoid duplicates. The live
+        deployment serves MCP Apps UI tools over Streamable HTTP at
+        https://mcp.gholl.com/mcp.
+  - type: dropdown
+    id: client
+    attributes:
+      label: MCP client / host
+      description: Which client or host were you using when the bug occurred?
+      options:
+        - Claude
+        - ChatGPT
+        - Cursor
+        - VS Code
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: endpoint
+    attributes:
+      label: MCP endpoint
+      description: The endpoint you connected to, if it differs from the default.
+      placeholder: https://mcp.gholl.com/mcp
+    validations:
+      required: false
+  - type: input
+    id: tool
+    attributes:
+      label: Tool ID
+      description: The MCP tool involved, if applicable.
+      placeholder: Tool name as shown by your client
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: A minimal, concrete sequence of actions that triggers the bug.
+      placeholder: |
+        1. Connect to the endpoint
+        2. Invoke tool ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened, including any error messages shown by the client.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or error output
+      description: Relevant client or server output. Paste as text rather than screenshots.
+      render: shell
+    validations:
+      required: false

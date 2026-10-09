@@ -13,6 +13,12 @@ Interactive micro-tools for humans **and** AI agents, served from
   tools that render as sandboxed iframe apps
   ([MCP Apps](https://github.com/modelcontextprotocol/ext-apps)).
 
+> **Reference implementation.** mcp-hub is a working reference for the
+> [MCP Apps](https://github.com/modelcontextprotocol/ext-apps) interactive-UI
+> pattern ([SEP-1865](https://modelcontextprotocol.io/seps/1865-mcp-apps-interactive-user-interfaces-for-mcp)):
+> every tool ships a self-contained UI card over `resources/read`, side by side
+> with the pure-data MCP path.
+
 One tool definition (`shared/tools.ts`) powers four surfaces: the gallery, the
 SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 

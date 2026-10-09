@@ -1,13 +1,22 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "com.gholl/mcp-hub",
-  "description": "Interactive micro-tools for humans and AI agents: GPU VRAM estimator, cron/regex debugger, JSON-LD viewer, API uptime dashboard and BaZi chrono-energy. Each tool renders a sandboxed UI card.",
+  "title": "MCP Hub — Interactive Micro-Tools",
+  "description": "Interactive micro-tools as sandboxed MCP Apps UI cards: VRAM calc, cron/regex, JWT, charts, games.",
   "version": "0.1.0",
   "repository": {
     "url": "https://github.com/Gholls/mcp-hub",
     "source": "github"
   },
   "websiteUrl": "https://mcp.gholl.com",
+  "icons": [
+    {
+      "src": "https://mcp.gholl.com/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": ["any"],
+      "theme": "dark"
+    }
+  ],
   "remotes": [
     {
       "type": "streamable-http",
