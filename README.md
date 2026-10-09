@@ -5,6 +5,8 @@
 [![CI](https://github.com/Gholls/mcp-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/Gholls/mcp-hub/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
+![mcp-hub — interactive micro-tools for humans and AI agents](https://mcp.gholl.com/og/site.png)
+
 Interactive micro-tools for humans **and** AI agents, served from
 [`mcp.gholl.com`](https://mcp.gholl.com).
 
