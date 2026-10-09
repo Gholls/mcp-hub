@@ -43,6 +43,10 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 | `chrono-energy` | BaZi Chrono-Energy Wheel | Culture | Four Pillars, five-element radar and luck cycles (beta) |
 | `gomoku` | Gomoku · Play vs AI | Games | Five-in-a-row against the host's own AI (board + rules live in the card) |
 | `echarts` | ECharts Data Visualization | Data | Render interactive ECharts charts (line/bar/pie/radar/sankey…) from an option; click a point to drill down with the AI |
+| `function-grapher` | Function Grapher | Math | Plot linear/inverse/quadratic/power/exp/log functions with live sliders and key features |
+| `trig-lab` | Trigonometry Lab | Math | Draggable unit circle + wave y=A·sin(ωx+φ)+k (amplitude/period/phase) |
+| `geometry-lab` | Geometry Lab | Math | Drag triangles, quadrilaterals and circles; live sides/angles/area and theorem checks |
+| `conic-sections` | Conic Sections | Math | Circle/ellipse/parabola/hyperbola with foci, eccentricity and asymptotes |
 
 ## Routes
 
@@ -64,11 +68,11 @@ gets a help page. `POST /mcp` is the JSON-RPC transport. See
 ## Stack
 
 Vite · React 19 · TypeScript · Tailwind CSS v4 · `@mcp-ui/*` ·
-`@modelcontextprotocol/ext-apps` · Apache ECharts · Cloudflare Workers + static
-assets · Vitest · GitHub Actions.
+`@modelcontextprotocol/ext-apps` · Apache ECharts · KaTeX · Cloudflare Workers +
+static assets · Vitest · GitHub Actions.
 
-> ECharts is imported lazily inside its own widget chunk, so it never affects the
-> first paint of the site or other cards.
+> ECharts and KaTeX are imported lazily inside the widgets that need them, so they
+> never affect the first paint of the site or other cards.
 
 ## Architecture
 

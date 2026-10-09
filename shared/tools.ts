@@ -626,6 +626,42 @@ export const geometryLabTool: ToolMeta = {
   },
 }
 
+export const conicSectionsTool: ToolMeta = {
+  id: 'conic-sections',
+  name: 'Conic Sections',
+  title: {
+    en: 'Conic Sections',
+    zh: '圆锥曲线',
+  },
+  description: {
+    en: 'Plot circles, ellipses, parabolas and hyperbolas with live sliders, showing foci, eccentricity and asymptotes.',
+    zh: '用滑块实时绘制圆、椭圆、抛物线、双曲线，显示焦点、离心率与渐近线。',
+  },
+  mcpDescription:
+    'Plot a conic section. Inputs: `type` ("circle" | "ellipse" | "parabola" | "hyperbola") and parameters `a` (radius or semi-major axis), `b` (semi-minor axis) and `p` (parabola focal parameter, y²=2px). Returns the standard equation plus foci, eccentricity, directrix and asymptotes where relevant. Use for high-school conic-section teaching.',
+  category: 'Math',
+  icon: '🌀',
+  tags: ['math', 'conic', 'ellipse', 'hyperbola', 'parabola', 'education'],
+  status: 'stable',
+  embedPath: '/embed/conic-sections',
+  pagePath: '/tools/conic-sections',
+  examples: [
+    { en: 'Draw the ellipse x²/9 + y²/4 = 1 and mark its foci.', zh: '画出椭圆 x²/9 + y²/4 = 1 并标出焦点。' },
+    { en: 'Compare the eccentricity of these ellipses as b changes.', zh: '当 b 变化时比较椭圆的离心率。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      type: { type: 'string', enum: ['circle', 'ellipse', 'parabola', 'hyperbola'], description: 'Conic type.', default: 'ellipse' },
+      a: { type: 'number', description: 'Radius (circle) or semi-major axis (ellipse/hyperbola).', default: 3 },
+      b: { type: 'number', description: 'Semi-minor axis (ellipse/hyperbola).', default: 2 },
+      p: { type: 'number', description: 'Parabola focal parameter p (y² = 2 p x).', default: 2 },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+    required: ['type'],
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -648,6 +684,7 @@ export const TOOLS: ToolMeta[] = [
   functionGrapherTool,
   trigLabTool,
   geometryLabTool,
+  conicSectionsTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

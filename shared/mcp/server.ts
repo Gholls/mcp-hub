@@ -28,6 +28,7 @@ import {
   substitutedLatex,
 } from '../calc/grapher.ts'
 import { graphLatex, trigFeatures, type AngleUnit, type TrigFunc, type TrigParams } from '../calc/trig.ts'
+import { conicEquation, conicFeatures, type ConicType } from '../calc/conic.ts'
 import {
   circleMeasures,
   classifyQuadrilateral,
@@ -541,6 +542,29 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           angles,
           area: round(polygonArea(pts)),
           perimeter: round(polygonPerimeter(pts)),
+        },
+      }
+    }
+    case 'conic-sections': {
+      const type: ConicType =
+        args.type === 'circle' || args.type === 'parabola' || args.type === 'hyperbola'
+          ? args.type
+          : 'ellipse'
+      const params = {
+        type,
+        a: Math.max(0.1, asNumber(args.a, 3)),
+        b: Math.max(0.1, asNumber(args.b, 2)),
+        p: Math.max(0.1, asNumber(args.p, 2)),
+      }
+      return {
+        summary:
+          `${type} conic: ${conicEquation(params)}. ` +
+          conicFeatures(params).map((f) => `${f.label.en} ${f.latex}`).join('; ') +
+          '.',
+        structured: {
+          ...params,
+          equation: conicEquation(params),
+          features: conicFeatures(params).map((f) => ({ label: f.label.en, value: f.latex })),
         },
       }
     }

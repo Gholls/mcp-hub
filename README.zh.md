@@ -37,6 +37,10 @@
 | `chrono-energy` | 玄学八字与 Chrono 能量盘 | Culture | 四柱八字、五行雷达、大运时间轴（beta） |
 | `gomoku` | 五子棋 · 与 AI 对战 | Games | 与宿主 AI 下五子棋（棋盘与规则在卡片内完成） |
 | `echarts` | ECharts 数据可视化 | Data | 用 ECharts option 渲染交互式图表（折线/柱状/饼图/雷达/桑基…）；点击数据点回传 AI 下钻 |
+| `function-grapher` | 函数图像绘制器 | Math | 一次/反比例/二次/幂/指数/对数函数，滑块实时绘图并显示图像特征 |
+| `trig-lab` | 三角函数实验室 | Math | 可拖动单位圆 + 波形 y=A·sin(ωx+φ)+k（振幅/周期/相位） |
+| `geometry-lab` | 几何实验室 | Math | 拖动三角形/四边形/圆，实时边长、角度、面积与定理验证 |
+| `conic-sections` | 圆锥曲线 | Math | 圆/椭圆/抛物线/双曲线，显示焦点、离心率与渐近线 |
 
 ## 路由
 
@@ -58,10 +62,10 @@
 ## 技术栈
 
 Vite · React 19 · TypeScript · Tailwind CSS v4 · `@mcp-ui/*` ·
-`@modelcontextprotocol/ext-apps` · Apache ECharts · Cloudflare Workers + 静态资源 ·
-Vitest · GitHub Actions。
+`@modelcontextprotocol/ext-apps` · Apache ECharts · KaTeX · Cloudflare Workers +
+静态资源 · Vitest · GitHub Actions。
 
-> ECharts 仅在自身组件分包中懒加载，不影响站点首屏与其他卡片。
+> ECharts 与 KaTeX 仅在需要它们的组件分包中懒加载，不影响站点首屏与其他卡片。
 
 ## 架构
 
