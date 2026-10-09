@@ -915,6 +915,78 @@ export const colorPaletteTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { color: { type: 'string', default: '#6366f1' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['color'] },
 }
 
+export const bitVisualizerTool: ToolMeta = {
+  id: 'bit-visualizer',
+  name: 'Bit Visualizer',
+  title: { en: 'Bit Visualizer', zh: '位可视化' },
+  description: { en: 'See an integer as a grid of bits, with binary/octal/hex.', zh: '以位方块查看整数，附二进制/八进制/十六进制。' },
+  mcpDescription: 'Show an integer in base 2/8/10/16 and as a bit array. Inputs: `value` and optional `bits` (8/16/32). Use for bit math or base conversion.',
+  category: 'Developer', icon: '🔢', tags: ['bits', 'binary', 'hex'], status: 'stable',
+  embedPath: '/embed/bit-visualizer', pagePath: '/tools/bit-visualizer',
+  examples: [{ en: 'Show 42 in binary and hex.', zh: '把 42 显示成二进制和十六进制。' }],
+  inputSchema: { type: 'object', properties: { value: { type: 'integer', default: 42 }, bits: { type: 'integer', default: 16 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['value'] },
+}
+
+export const matrixCalculatorTool: ToolMeta = {
+  id: 'matrix-calculator',
+  name: 'Matrix Calculator',
+  title: { en: 'Matrix Calculator', zh: '矩阵计算' },
+  description: { en: 'Multiply, transpose and take determinants of matrices.', zh: '矩阵乘法、转置与行列式。' },
+  mcpDescription: 'Do matrix math. Inputs: `a` and `b` (matrices as newline rows, e.g. "1 2\\n3 4") and `op` ("multiply" | "transpose" | "determinant"). Returns the resulting matrix or scalar.',
+  category: 'Math', icon: '🧮', tags: ['matrix', 'math', 'linear-algebra'], status: 'stable',
+  embedPath: '/embed/matrix-calculator', pagePath: '/tools/matrix-calculator',
+  examples: [{ en: 'Multiply [[1,2],[3,4]] by [[5,6],[7,8]].', zh: '计算 [[1,2],[3,4]] 乘 [[5,6],[7,8]]。' }],
+  inputSchema: { type: 'object', properties: { a: { type: 'string' }, b: { type: 'string' }, op: { type: 'string', enum: ['multiply', 'transpose', 'determinant'], default: 'multiply' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['a'] },
+}
+
+export const chineseMoneyTool: ToolMeta = {
+  id: 'chinese-money',
+  name: 'Amount in Chinese',
+  title: { en: 'Amount in Chinese', zh: '金额大写' },
+  description: { en: 'Render an amount in Chinese capital numerals, like a receipt.', zh: '以票据样式把金额转成人民币大写。' },
+  mcpDescription: 'Convert an amount to Chinese financial capital numerals (人民币大写) and Chinese numerals. Input: `amount`. Use for invoices or cheques.',
+  category: 'Finance', icon: '💰', tags: ['finance', 'chinese', 'money'], status: 'stable',
+  embedPath: '/embed/chinese-money', pagePath: '/tools/chinese-money',
+  examples: [{ en: 'Write 1234.56 in RMB capital letters.', zh: '把 1234.56 写成人民币大写。' }],
+  inputSchema: { type: 'object', properties: { amount: { type: 'number', default: 1234.56 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['amount'] },
+}
+
+export const colorBlindnessTool: ToolMeta = {
+  id: 'color-blindness',
+  name: 'Color Blindness Simulator',
+  title: { en: 'Color Blindness Simulator', zh: '色盲模拟' },
+  description: { en: 'Preview a color under different color-vision deficiencies.', zh: '预览色觉异常者看到的颜色。' },
+  mcpDescription: 'Simulate how a color appears with protanopia/deuteranopia/tritanopia. Input: `color` (hex). Returns the simulated hex values. Use for accessibility checks.',
+  category: 'Design', icon: '👁️', tags: ['color', 'accessibility', 'design'], status: 'stable',
+  embedPath: '/embed/color-blindness', pagePath: '/tools/color-blindness',
+  examples: [{ en: 'How does red look to someone with deuteranopia?', zh: '红色在绿色盲眼里是什么样？' }],
+  inputSchema: { type: 'object', properties: { color: { type: 'string', default: '#e11d48' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['color'] },
+}
+
+export const randomPickerTool: ToolMeta = {
+  id: 'random-picker',
+  name: 'Random Picker',
+  title: { en: 'Random Picker', zh: '随机抽取' },
+  description: { en: 'Spin a wheel to fairly pick from a list.', zh: '转盘公平地从列表抽取。' },
+  mcpDescription: 'Pick one item at random from a list using crypto-randomness. Input: `items` (array). Returns the chosen item. Use for fair raffles or decisions.',
+  category: 'Games', icon: '🎡', tags: ['random', 'picker', 'game'], status: 'stable',
+  embedPath: '/embed/random-picker', pagePath: '/tools/random-picker',
+  examples: [{ en: 'Pick one of Alice/Bob/Carol.', zh: '从 Alice/Bob/Carol 里随机抽一个。' }],
+  inputSchema: { type: 'object', properties: { items: { type: 'array', items: { type: 'string' } }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['items'] },
+}
+
+export const qrGeneratorTool: ToolMeta = {
+  id: 'qr-generator',
+  name: 'QR Code Generator',
+  title: { en: 'QR Code Generator', zh: '二维码生成器' },
+  description: { en: 'Generate a QR code from text or a URL.', zh: '把文本或链接生成二维码。' },
+  mcpDescription: 'Generate a QR code for a text or URL. Input: `text`. The card renders and lets the user download a PNG. Use when a user wants a scannable QR code.',
+  category: 'Design', icon: '⬛', tags: ['qr', 'barcode', 'design'], status: 'stable',
+  embedPath: '/embed/qr-generator', pagePath: '/tools/qr-generator',
+  examples: [{ en: 'Make a QR code for https://mcp.gholl.com.', zh: '为 https://mcp.gholl.com 生成二维码。' }],
+  inputSchema: { type: 'object', properties: { text: { type: 'string', default: 'https://mcp.gholl.com' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['text'] },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -952,6 +1024,12 @@ export const TOOLS: ToolMeta[] = [
   statisticsTool,
   primeFactorTool,
   colorPaletteTool,
+  bitVisualizerTool,
+  matrixCalculatorTool,
+  chineseMoneyTool,
+  colorBlindnessTool,
+  randomPickerTool,
+  qrGeneratorTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

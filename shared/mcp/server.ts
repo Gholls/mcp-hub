@@ -36,7 +36,11 @@ import { bmi, bmiCategory } from '../calc/bmi.ts'
 import { findStatus } from '../calc/httpstatus.ts'
 import { rollDice, sum } from '../calc/dice.ts'
 import { CLOCK_ZONES, timeInZone } from '../calc/worldclock.ts'
-import { coinFlip } from '../calc/random.ts'
+import { coinFlip, pickOne } from '../calc/random.ts'
+import { allBases, bitArray } from '../calc/numbase.ts'
+import { determinant, multiply, parseMatrix, transpose } from '../calc/matrix.ts'
+import { toChineseMoney, toChineseNumber } from '../calc/chinese-money.ts'
+import { CVD_TYPES, simulate } from '../calc/colorblind.ts'
 import { round2, splitTip } from '../calc/tip.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
 import { divisors, factorize } from '../calc/primes.ts'
@@ -692,6 +696,47 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       const color = typeof args.color === 'string' ? args.color : '#6366f1'
       const palette = paletteFrom(color)
       return { summary: `Palette: ${palette.join(', ')}.`, structured: { base: color, palette } }
+    }
+    case 'bit-visualizer': {
+      const value = Math.max(0, Math.floor(asNumber(args.value, 42)))
+      const bits = Math.min(32, Math.max(1, Math.round(asNumber(args.bits, 16))))
+      const bases = allBases(String(value), 10, [2, 8, 10, 16]).reduce<Record<string, string>>((acc, b) => {
+        acc[b.base === 16 ? 'hex' : b.base === 8 ? 'oct' : b.base === 2 ? 'bin' : 'dec'] = b.value
+        return acc
+      }, {})
+      return { summary: `${value}: ${bases.bin} (bin) · ${bases.hex} (hex).`, structured: { value, bits, ...bases, bitArray: bitArray(value, bits) } }
+    }
+    case 'matrix-calculator': {
+      const a = parseMatrix(typeof args.a === 'string' ? args.a : '')
+      const op = args.op === 'transpose' ? 'transpose' : args.op === 'determinant' ? 'determinant' : 'multiply'
+      if (op === 'transpose') return { summary: `Transpose computed.`, structured: { matrix: transpose(a) } }
+      if (op === 'determinant') {
+        const det = determinant(a)
+        return { summary: det === null ? 'Not a square matrix.' : `det = ${det}.`, structured: { determinant: det } }
+      }
+      const product = multiply(a, parseMatrix(typeof args.b === 'string' ? args.b : ''))
+      if (!product) throw new McpError(ErrorCode.InvalidParams, 'Matrix dimensions do not match')
+      return { summary: `A × B computed.`, structured: { matrix: product } }
+    }
+    case 'chinese-money': {
+      const amount = asNumber(args.amount, 1234.56)
+      const upper = toChineseMoney(amount)
+      return { summary: `${amount} → ${upper}`, structured: { amount, upper, lower: toChineseNumber(amount) } }
+    }
+    case 'color-blindness': {
+      const color = typeof args.color === 'string' ? args.color : '#e11d48'
+      const variants = CVD_TYPES.map((t) => ({ type: t.id, hex: simulate(color, t.id) }))
+      return { summary: `${color} → ${variants.map((v) => `${v.type}:${v.hex}`).join(', ')}`, structured: { base: color, variants } }
+    }
+    case 'random-picker': {
+      const items = Array.isArray(args.items) ? (args.items as unknown[]).map(String) : []
+      const chosen = pickOne(items)
+      if (chosen === undefined) throw new McpError(ErrorCode.InvalidParams, 'No items provided')
+      return { summary: `Picked: ${chosen}.`, structured: { chosen, count: items.length } }
+    }
+    case 'qr-generator': {
+      const text = typeof args.text === 'string' ? args.text : 'https://mcp.gholl.com'
+      return { summary: `QR code for "${text}" (${text.length} chars) rendered in the card.`, structured: { text } }
     }
     default:
       throw new McpError(ErrorCode.MethodNotFound, `Tool not implemented: ${toolId}`)
