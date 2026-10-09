@@ -26,16 +26,16 @@ body,
 body {
   margin: 0;
   background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(99, 102, 241, 0.15), transparent 60%),
+    radial-gradient(1100px 560px at 50% -12%, rgba(99, 102, 241, 0.2), transparent 62%),
+    radial-gradient(900px 520px at 100% -8%, rgba(34, 211, 238, 0.09), transparent 55%),
     var(--color-ink-950);
   color: #e5e7eb;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Embedded widgets let the MCP host control the backdrop. */
 body[data-embed='true'] {
-  background: transparent;
+  background: var(--color-ink-950);
 }
 
 .md-preview {

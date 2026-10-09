@@ -54,6 +54,7 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@shared': fileURLToPath(new URL('./shared', import.meta.url)),
+      'virtual:gholl-widget': fileURLToPath(new URL('./src/embed/virtual-stub.tsx', import.meta.url)),
     },
   },
   build: {

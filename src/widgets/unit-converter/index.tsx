@@ -61,10 +61,17 @@ export default function UnitConverterWidget({ locale }: WidgetProps) {
     [category, categoryId, num, from, valid],
   )
 
-  const finiteValues = converted.map((c) => c.value).filter((v): v is number => v !== null && Number.isFinite(v))
-  const min = finiteValues.length ? Math.min(...finiteValues, 0) : 0
-  const max = finiteValues.length ? Math.max(...finiteValues, 1) : 1
-  const span = max - min || 1
+  const logs = converted
+    .map((c) => c.value)
+    .filter((v): v is number => v !== null && Number.isFinite(v) && v > 0)
+    .map((v) => Math.log10(v))
+  const logMin = logs.length ? Math.min(...logs) : 0
+  const logMax = logs.length ? Math.max(...logs) : 1
+  const logSpan = logMax - logMin || 1
+  const barWidth = (value: number | null): number => {
+    if (value === null || !Number.isFinite(value) || value <= 0) return 4
+    return Math.max(6, ((Math.log10(value) - logMin) / logSpan) * 100)
+  }
 
   return (
     <WidgetShell title={d.title} icon="📏" footer={d.note}>
@@ -141,7 +148,7 @@ export default function UnitConverterWidget({ locale }: WidgetProps) {
           </div>
           <ul className="flex flex-col gap-2">
             {converted.map((c) => {
-              const width = c.value === null || !Number.isFinite(c.value) ? 0 : Math.max(2, ((c.value - min) / span) * 100)
+              const width = barWidth(c.value)
               const active = c.unit.id === from || c.unit.id === to
               return (
                 <li key={c.unit.id} className="flex items-center gap-3 text-xs">
