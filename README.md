@@ -31,6 +31,11 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 
 ## Tools
 
+> The live catalogue has **51 cards across 13 categories** (Math, Data, Developer,
+> Design, Security, Monitoring, Finance, Text, Everyday, AI, Education, Games,
+> Culture, Infrastructure). See the gallery at https://mcp.gholl.com or the
+> machine-readable list at https://mcp.gholl.com/.well-known/mcp.json. A sample:
+
 | id | Tool | Category | What it does |
 | --- | --- | --- | --- |
 | `vram-calc` | GPU VRAM & Deployment Estimator | Infrastructure | Estimate LLM serving VRAM, recommend GPUs, generate vLLM / Ollama commands |

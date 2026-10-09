@@ -25,6 +25,10 @@
 
 ## 工具
 
+> 线上共 **51 张卡片、13 个分类**（数学、数据、开发、设计、安全、监控、财务、文本、
+> 日常、AI、教育、游戏、文化、基础设施）。展厅见 https://mcp.gholl.com ，机器可读
+> 列表见 https://mcp.gholl.com/.well-known/mcp.json 。以下为示例：
+
 | id | 工具 | 分类 | 作用 |
 | --- | --- | --- | --- |
 | `vram-calc` | GPU 显存与部署预估 | Infrastructure | 估算大模型部署所需显存、推荐 GPU、生成 vLLM / Ollama 命令 |
