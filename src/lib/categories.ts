@@ -14,6 +14,7 @@ const LABELS: Record<string, { en: string; zh: string }> = {
   Security: { en: 'Security', zh: '安全' },
   Finance: { en: 'Finance', zh: '财务' },
   AI: { en: 'AI', zh: 'AI' },
+  Education: { en: 'Education', zh: '教育' },
 }
 
 const ORDER = [
@@ -27,6 +28,7 @@ const ORDER = [
   'Monitoring',
   'Finance',
   'AI',
+  'Education',
   'Games',
   'Culture',
   'Infrastructure',

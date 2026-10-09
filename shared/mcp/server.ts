@@ -49,6 +49,7 @@ import { diffLines, diffStats } from '../calc/difflib.ts'
 import { renderMarkdown } from '../calc/markdown.ts'
 import { numericColumnIndexes, parseCsv } from '../calc/csv.ts'
 import { totp } from '../calc/totp.ts'
+import { parseQuiz, scoreQuiz } from '../calc/quiz.ts'
 import { round2, splitTip } from '../calc/tip.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
 import { divisors, factorize } from '../calc/primes.ts'
@@ -841,6 +842,17 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
         return { summary: 'Too many redirects.', structured: { status: 0, chain, headers: {} } }
       } finally {
         clearTimeout(timer)
+      }
+    }
+    case 'quiz': {
+      const parsed = parseQuiz(args)
+      if (!parsed.quiz) {
+        return { summary: `Quiz error: ${parsed.error}`, structured: { error: parsed.error } }
+      }
+      const max = scoreQuiz(parsed.quiz, {}).max
+      return {
+        summary: `Quiz "${parsed.quiz.title ?? 'Untitled'}" — ${parsed.quiz.questions.length} question(s), max score ${max}.`,
+        structured: { quiz: parsed.quiz, maxScore: max },
       }
     }
     default:

@@ -67,6 +67,7 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'favicon-generator': lazy(() => import('./favicon-generator/index.tsx')),
   'dns-lookup': lazy(() => import('./dns-lookup/index.tsx')),
   'http-inspector': lazy(() => import('./http-inspector/index.tsx')),
+  quiz: lazy(() => import('./quiz/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {

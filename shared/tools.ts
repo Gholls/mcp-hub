@@ -1179,6 +1179,59 @@ export const httpInspectorTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { url: { type: 'string', default: 'https://mcp.gholl.com' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['url'] },
 }
 
+export const quizTool: ToolMeta = {
+  id: 'quiz',
+  name: 'Quiz',
+  title: { en: 'Quiz', zh: '测试题' },
+  description: {
+    en: 'A universal quiz card. The AI defines the questions, the options, each option’s score and how many to show per page; the card renders them and reports the answers back.',
+    zh: '万能测试题卡片。题目、选项、每个选项的分值与每页题数都由 AI 设定；卡片只负责渲染并把作答回传。',
+  },
+  mcpDescription:
+    'Render an interactive quiz. The card only renders; YOU (the model) define everything. Inputs: `title` (optional), `description` (optional), `perPage` (how many questions to show per page, default 1), and `questions` — an array of { prompt, type ("single" | "multiple", default "single"), options, explanation? }. Each option is { label, score } (or a bare string, with an optional parallel `scores` array). Set `score` per option (can be negative) to weight answers. The card paginates, lets the user answer single/multiple choice, computes the total, and sends the selections and score back through the conversation so you can respond. Use whenever a user wants a test, quiz or questionnaire.',
+  category: 'Education',
+  icon: '📋',
+  tags: ['quiz', 'education', 'test', 'multiple-choice'],
+  status: 'stable',
+  embedPath: '/embed/quiz',
+  pagePath: '/tools/quiz',
+  examples: [
+    { en: 'Quiz me on the MCP Apps pattern with 3 multiple-choice questions.', zh: '用 3 道选择题考我 MCP Apps 相关知识。' },
+    { en: 'Make a 5-question multi-choice quiz, 2 per page.', zh: '出 5 道多选题，每页 2 题。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      title: { type: 'string', description: 'Quiz title.' },
+      description: { type: 'string', description: 'Short instructions shown under the title.' },
+      perPage: { type: 'integer', description: 'How many questions to show per page (1–10).', default: 1 },
+      questions: {
+        type: 'array',
+        description: 'Array of questions. Each: { prompt, type: "single" | "multiple", options: [{ label, score }], explanation? }.',
+        items: {
+          type: 'object',
+          properties: {
+            prompt: { type: 'string' },
+            type: { type: 'string', enum: ['single', 'multiple'] },
+            options: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: { label: { type: 'string' }, score: { type: 'number' } },
+                required: ['label'],
+              },
+            },
+            explanation: { type: 'string' },
+          },
+          required: ['prompt', 'options'],
+        },
+      },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+    required: ['questions'],
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -1238,6 +1291,7 @@ export const TOOLS: ToolMeta[] = [
   faviconGeneratorTool,
   dnsLookupTool,
   httpInspectorTool,
+  quizTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {
