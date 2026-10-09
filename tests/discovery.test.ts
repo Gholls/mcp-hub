@@ -38,4 +38,11 @@ describe('discovery documents', () => {
   it('robots points at the sitemap', () => {
     expect(buildRobots()).toContain('Sitemap: https://mcp.gholl.com/sitemap.xml')
   })
+
+  it.each(['OAI-SearchBot', 'ClaudeBot', 'PerplexityBot'])(
+    'robots explicitly allows %s',
+    (agent) => {
+      expect(buildRobots()).toContain(`User-agent: ${agent}\nAllow: /\n`)
+    },
+  )
 })
