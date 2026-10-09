@@ -731,6 +731,114 @@ export const unitConverterTool: ToolMeta = {
   },
 }
 
+export const gradientGeneratorTool: ToolMeta = {
+  id: 'gradient-generator',
+  name: 'CSS Gradient Generator',
+  title: { en: 'CSS Gradient Generator', zh: 'CSS 渐变生成器' },
+  description: { en: 'Design a CSS gradient with a live preview and copy-ready code.', zh: '可视化设计 CSS 渐变并复制代码。' },
+  mcpDescription:
+    'Generate a CSS gradient. Inputs: `from`, `to` (hex colors), optional `angle` (degrees) and `kind` ("linear" | "radial"). Returns the `background` CSS. Use when a user wants a gradient/background.',
+  category: 'Design', icon: '🌈', tags: ['css', 'gradient', 'design'], status: 'stable',
+  embedPath: '/embed/gradient-generator', pagePath: '/tools/gradient-generator',
+  examples: [{ en: 'Make an indigo-to-cyan gradient at 135°.', zh: '做一个 135° 的靛蓝到青色渐变。' }],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      from: { type: 'string', description: 'Start color (hex).', default: '#6366f1' },
+      to: { type: 'string', description: 'End color (hex).', default: '#22d3ee' },
+      angle: { type: 'number', description: 'Angle in degrees (linear only).', default: 135 },
+      kind: { type: 'string', enum: ['linear', 'radial'], default: 'linear' },
+      locale: { type: 'string', enum: ['en', 'zh'], default: 'en' },
+    },
+  },
+}
+
+export const boxShadowTool: ToolMeta = {
+  id: 'box-shadow',
+  name: 'CSS Box Shadow',
+  title: { en: 'CSS Box Shadow', zh: 'CSS 阴影生成' },
+  description: { en: 'Build a CSS box-shadow with a live preview.', zh: '可视化生成 CSS box-shadow。' },
+  mcpDescription:
+    'Build a CSS `box-shadow`. Inputs: `x`, `y`, `blur`, `spread` (px), `color` and optional `inset`. Returns the CSS declaration.',
+  category: 'Design', icon: '🌑', tags: ['css', 'shadow', 'design'], status: 'stable',
+  embedPath: '/embed/box-shadow', pagePath: '/tools/box-shadow',
+  examples: [{ en: 'A soft drop shadow for a card.', zh: '给卡片做一个柔和的投影。' }],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      x: { type: 'number', default: 0 }, y: { type: 'number', default: 12 },
+      blur: { type: 'number', default: 24 }, spread: { type: 'number', default: -6 },
+      color: { type: 'string', default: '#00000055' }, inset: { type: 'boolean', default: false },
+      locale: { type: 'string', enum: ['en', 'zh'], default: 'en' },
+    },
+  },
+}
+
+export const borderRadiusTool: ToolMeta = {
+  id: 'border-radius',
+  name: 'CSS Border Radius',
+  title: { en: 'CSS Border Radius', zh: 'CSS 圆角生成' },
+  description: { en: 'Shape CSS corners with a live preview.', zh: '可视化调节 CSS 圆角。' },
+  mcpDescription:
+    'Build a CSS `border-radius` with four corner values. Inputs: `tl`, `tr`, `br`, `bl` (px). Returns the CSS declaration.',
+  category: 'Design', icon: '⬭', tags: ['css', 'radius', 'design'], status: 'stable',
+  embedPath: '/embed/border-radius', pagePath: '/tools/border-radius',
+  examples: [{ en: 'A card with 20px rounded corners.', zh: '一个 20px 圆角的卡片。' }],
+  inputSchema: {
+    type: 'object',
+    properties: { tl: { type: 'number', default: 24 }, tr: { type: 'number', default: 24 }, br: { type: 'number', default: 24 }, bl: { type: 'number', default: 24 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } },
+  },
+}
+
+export const bmiCalculatorTool: ToolMeta = {
+  id: 'bmi-calculator',
+  name: 'BMI Calculator',
+  title: { en: 'BMI Calculator', zh: 'BMI 计算器' },
+  description: { en: 'Body-mass index with a colored scale.', zh: '带色带的体质指数。' },
+  mcpDescription:
+    'Compute BMI from weight (kg) and height (cm), returning the value and category (underweight/normal/overweight/obese). Inputs: `weight`, `height`.',
+  category: 'Everyday', icon: '⚖️', tags: ['health', 'bmi'], status: 'stable',
+  embedPath: '/embed/bmi-calculator', pagePath: '/tools/bmi-calculator',
+  examples: [{ en: 'My BMI with 65kg and 175cm?', zh: '65kg、175cm 的 BMI 是多少？' }],
+  inputSchema: {
+    type: 'object',
+    properties: { weight: { type: 'number', description: 'Weight in kg.', default: 65 }, height: { type: 'number', description: 'Height in cm.', default: 175 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } },
+    required: ['weight', 'height'],
+  },
+}
+
+export const httpStatusTool: ToolMeta = {
+  id: 'http-status',
+  name: 'HTTP Status Codes',
+  title: { en: 'HTTP Status Codes', zh: 'HTTP 状态码' },
+  description: { en: 'Color-coded reference for HTTP status codes.', zh: '按类别着色的 HTTP 状态码速查。' },
+  mcpDescription:
+    'Look up HTTP status codes. Optional `query` filters by code or phrase. Returns matching codes with phrase, category and description. Use when a user asks what an HTTP status code means.',
+  category: 'Monitoring', icon: '🚦', tags: ['http', 'status', 'reference'], status: 'stable',
+  embedPath: '/embed/http-status', pagePath: '/tools/http-status',
+  examples: [{ en: 'What does 429 mean?', zh: '429 是什么含义？' }],
+  inputSchema: {
+    type: 'object',
+    properties: { query: { type: 'string', description: 'Code or phrase to search.', default: '' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } },
+  },
+}
+
+export const diceRollerTool: ToolMeta = {
+  id: 'dice-roller',
+  name: 'Dice Roller',
+  title: { en: 'Dice Roller', zh: '骰子' },
+  description: { en: 'Roll cryptographically-random dice and read the total.', zh: '掷骰子（密码学随机）并显示合计。' },
+  mcpDescription:
+    'Roll dice. Inputs: `count` (1–20) and `sides` (e.g. 6, 20). Returns the individual results and their total. Use for tabletop games or random rolls the user should be able to trust.',
+  category: 'Games', icon: '🎲', tags: ['dice', 'random', 'game'], status: 'stable',
+  embedPath: '/embed/dice-roller', pagePath: '/tools/dice-roller',
+  examples: [{ en: 'Roll 2d6.', zh: '掷两个 6 面骰。' }, { en: 'Roll a d20.', zh: '掷一个 20 面骰。' }],
+  inputSchema: {
+    type: 'object',
+    properties: { count: { type: 'integer', default: 2 }, sides: { type: 'integer', default: 6 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } },
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -756,6 +864,12 @@ export const TOOLS: ToolMeta[] = [
   conicSectionsTool,
   jsonFormatterTool,
   unitConverterTool,
+  gradientGeneratorTool,
+  boxShadowTool,
+  borderRadiusTool,
+  bmiCalculatorTool,
+  httpStatusTool,
+  diceRollerTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

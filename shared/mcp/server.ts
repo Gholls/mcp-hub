@@ -31,6 +31,10 @@ import { graphLatex, trigFeatures, type AngleUnit, type TrigFunc, type TrigParam
 import { conicEquation, conicFeatures, type ConicType } from '../calc/conic.ts'
 import { transformJson } from '../calc/jsonfmt.ts'
 import { convertUnits } from '../calc/units.ts'
+import { buildBorderRadius, buildBoxShadow, buildGradient, type GradientKind } from '../calc/design.ts'
+import { bmi, bmiCategory } from '../calc/bmi.ts'
+import { findStatus } from '../calc/httpstatus.ts'
+import { rollDice, sum } from '../calc/dice.ts'
 import {
   circleMeasures,
   classifyQuadrilateral,
@@ -597,6 +601,56 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       return {
         summary: `${value} ${from} = ${rounded} ${to} (${category}).`,
         structured: { category, value, from, to, result: rounded },
+      }
+    }
+    case 'gradient-generator': {
+      const kind: GradientKind = args.kind === 'radial' ? 'radial' : 'linear'
+      const css = buildGradient(asNumber(args.angle, 135), String(args.from ?? '#6366f1'), String(args.to ?? '#22d3ee'), kind)
+      return { summary: `background: ${css};`, structured: { kind, css } }
+    }
+    case 'box-shadow': {
+      const css = buildBoxShadow({
+        x: asNumber(args.x, 0),
+        y: asNumber(args.y, 12),
+        blur: asNumber(args.blur, 24),
+        spread: asNumber(args.spread, -6),
+        color: String(args.color ?? '#00000055'),
+        inset: args.inset === true,
+      })
+      return { summary: `box-shadow: ${css};`, structured: { css } }
+    }
+    case 'border-radius': {
+      const css = buildBorderRadius(
+        asNumber(args.tl, 24),
+        asNumber(args.tr, 24),
+        asNumber(args.br, 24),
+        asNumber(args.bl, 24),
+      )
+      return { summary: `border-radius: ${css};`, structured: { css } }
+    }
+    case 'bmi-calculator': {
+      const value = bmi(asNumber(args.weight, 65), asNumber(args.height, 175))
+      const category = bmiCategory(value)
+      return {
+        summary: `BMI ${value.toFixed(1)} — ${category.en}.`,
+        structured: { bmi: Math.round(value * 10) / 10, category: category.key },
+      }
+    }
+    case 'http-status': {
+      const query = typeof args.query === 'string' ? args.query : ''
+      const results = findStatus(query)
+      return {
+        summary: results.map((s) => `${s.code} ${s.phrase}`).join('; ') || 'No matching status code.',
+        structured: { count: results.length, statuses: results },
+      }
+    }
+    case 'dice-roller': {
+      const count = Math.max(1, Math.min(20, Math.round(asNumber(args.count, 2))))
+      const sides = Math.max(2, Math.min(100, Math.round(asNumber(args.sides, 6))))
+      const values = rollDice(count, sides)
+      return {
+        summary: `${values.join(', ')} (total ${sum(values)}).`,
+        structured: { count, sides, values, total: sum(values) },
       }
     }
     default:

@@ -33,6 +33,12 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'conic-sections': lazy(() => import('./conic-sections/index.tsx')),
   'json-formatter': lazy(() => import('./json-formatter/index.tsx')),
   'unit-converter': lazy(() => import('./unit-converter/index.tsx')),
+  'gradient-generator': lazy(() => import('./gradient-generator/index.tsx')),
+  'box-shadow': lazy(() => import('./box-shadow/index.tsx')),
+  'border-radius': lazy(() => import('./border-radius/index.tsx')),
+  'bmi-calculator': lazy(() => import('./bmi-calculator/index.tsx')),
+  'http-status': lazy(() => import('./http-status/index.tsx')),
+  'dice-roller': lazy(() => import('./dice-roller/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {
