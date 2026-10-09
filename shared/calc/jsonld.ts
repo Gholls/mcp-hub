@@ -6,17 +6,24 @@ export interface JsonParseResult {
   value?: unknown
 }
 
+function detectErrorLine(message: string, text: string): number | undefined {
+  const line = /line (\d+)/.exec(message)
+  if (line) return Number(line[1])
+  const position = /position (\d+)/.exec(message)
+  if (position) return text.slice(0, Number(position[1])).split('\n').length
+  return text.includes('\n') ? undefined : 1
+}
+
 export function parseJson(text: string): JsonParseResult {
   if (!text.trim()) return { valid: false, error: 'Empty input' }
   try {
     return { valid: true, value: JSON.parse(text) }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
-    const lineMatch = /line (\d+)/.exec(message)
     return {
       valid: false,
       error: message.replace(/^JSON\.parse: /, ''),
-      errorLine: lineMatch ? Number(lineMatch[1]) : undefined,
+      errorLine: detectErrorLine(message, text),
     }
   }
 }
