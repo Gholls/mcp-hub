@@ -29,14 +29,11 @@ import {
 } from '../calc/grapher.ts'
 import { graphLatex, trigFeatures, type AngleUnit, type TrigFunc, type TrigParams } from '../calc/trig.ts'
 import { conicEquation, conicFeatures, type ConicType } from '../calc/conic.ts'
-import { transformJson } from '../calc/jsonfmt.ts'
 import { convertUnits } from '../calc/units.ts'
 import { buildBorderRadius, buildBoxShadow, buildGradient, type GradientKind } from '../calc/design.ts'
-import { bmi, bmiCategory } from '../calc/bmi.ts'
-import { findStatus } from '../calc/httpstatus.ts'
 import { rollDice, sum } from '../calc/dice.ts'
 import { CLOCK_ZONES, timeInZone } from '../calc/worldclock.ts'
-import { coinFlip, pickOne } from '../calc/random.ts'
+import { pickOne } from '../calc/random.ts'
 import { allBases, bitArray } from '../calc/numbase.ts'
 import { determinant, multiply, parseMatrix, transpose } from '../calc/matrix.ts'
 import { toChineseMoney, toChineseNumber } from '../calc/chinese-money.ts'
@@ -44,15 +41,11 @@ import { CVD_TYPES, simulate } from '../calc/colorblind.ts'
 import { compound, loan } from '../calc/finance.ts'
 import { passwordStrength } from '../calc/password.ts'
 import { decodeResistor } from '../calc/resistor.ts'
-import { toTable } from '../calc/table.ts'
 import { diffLines, diffStats } from '../calc/difflib.ts'
-import { renderMarkdown } from '../calc/markdown.ts'
 import { numericColumnIndexes, parseCsv } from '../calc/csv.ts'
 import { totp } from '../calc/totp.ts'
 import { parseQuiz, scoreQuiz } from '../calc/quiz.ts'
-import { round2, splitTip } from '../calc/tip.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
-import { divisors, factorize } from '../calc/primes.ts'
 import { paletteFrom } from '../calc/palette.ts'
 import {
   circleMeasures,
@@ -593,20 +586,6 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
         },
       }
     }
-    case 'json-formatter': {
-      const mode = args.mode === 'minify' ? 'minify' : 'format'
-      const result = transformJson(typeof args.json === 'string' ? args.json : '', mode)
-      if (!result.ok || !result.stats) {
-        return {
-          summary: `Invalid JSON: ${result.error}`,
-          structured: { valid: false, error: result.error, errorLine: result.errorLine ?? null },
-        }
-      }
-      return {
-        summary: `${mode === 'minify' ? 'Minified' : 'Formatted'} JSON — ${result.stats.bytes} bytes, ${result.stats.nodes} nodes, depth ${result.stats.depth}.`,
-        structured: { valid: true, text: result.text, stats: result.stats },
-      }
-    }
     case 'unit-converter': {
       const category = typeof args.category === 'string' ? args.category : 'length'
       const value = asNumber(args.value, 1)
@@ -620,47 +599,6 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       return {
         summary: `${value} ${from} = ${rounded} ${to} (${category}).`,
         structured: { category, value, from, to, result: rounded },
-      }
-    }
-    case 'gradient-generator': {
-      const kind: GradientKind = args.kind === 'radial' ? 'radial' : 'linear'
-      const css = buildGradient(asNumber(args.angle, 135), String(args.from ?? '#6366f1'), String(args.to ?? '#22d3ee'), kind)
-      return { summary: `background: ${css};`, structured: { kind, css } }
-    }
-    case 'box-shadow': {
-      const css = buildBoxShadow({
-        x: asNumber(args.x, 0),
-        y: asNumber(args.y, 12),
-        blur: asNumber(args.blur, 24),
-        spread: asNumber(args.spread, -6),
-        color: String(args.color ?? '#00000055'),
-        inset: args.inset === true,
-      })
-      return { summary: `box-shadow: ${css};`, structured: { css } }
-    }
-    case 'border-radius': {
-      const css = buildBorderRadius(
-        asNumber(args.tl, 24),
-        asNumber(args.tr, 24),
-        asNumber(args.br, 24),
-        asNumber(args.bl, 24),
-      )
-      return { summary: `border-radius: ${css};`, structured: { css } }
-    }
-    case 'bmi-calculator': {
-      const value = bmi(asNumber(args.weight, 65), asNumber(args.height, 175))
-      const category = bmiCategory(value)
-      return {
-        summary: `BMI ${value.toFixed(1)} — ${category.en}.`,
-        structured: { bmi: Math.round(value * 10) / 10, category: category.key },
-      }
-    }
-    case 'http-status': {
-      const query = typeof args.query === 'string' ? args.query : ''
-      const results = findStatus(query)
-      return {
-        summary: results.map((s) => `${s.code} ${s.phrase}`).join('; ') || 'No matching status code.',
-        structured: { count: results.length, statuses: results },
       }
     }
     case 'dice-roller': {
@@ -680,26 +618,11 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       const times = zones.map((z) => ({ zone: z.id, ...timeInZone(z.tz) }))
       return { summary: times.map((t) => `${t.zone}: ${t.time}`).join(' · '), structured: { times } }
     }
-    case 'coin-flip': {
-      const result = coinFlip()
-      return { summary: `Coin flip: ${result}.`, structured: { result } }
-    }
-    case 'tip-split': {
-      const s = splitTip(asNumber(args.total, 200), asNumber(args.tipPercent, 15), asNumber(args.people, 4))
-      return { summary: `Per person ${s.perPerson} (total ${s.grandTotal}, tip ${s.tip}).`, structured: s }
-    }
     case 'statistics': {
       const numbers = parseNumbers(typeof args.data === 'string' ? args.data : Array.isArray(args.data) ? args.data.join(' ') : '')
       const stats = describeStats(numbers)
       if (!stats) throw new McpError(ErrorCode.InvalidParams, 'No numbers provided')
-      return { summary: `n=${stats.count}, mean=${round2(stats.mean)}, median=${round2(stats.median)}, std=${round2(stats.std)}.`, structured: stats }
-    }
-    case 'prime-factor': {
-      const n = Math.max(2, Math.floor(asNumber(args.n, 360)))
-      return {
-        summary: `${n} = ${factorize(n).map((f) => (f.power > 1 ? `${f.factor}^${f.power}` : `${f.factor}`)).join(' × ')}; ${divisors(n).length} divisors.`,
-        structured: { n, factors: factorize(n), divisors: divisors(n) },
-      }
+      return { summary: `n=${stats.count}, mean=${(Math.round(stats.mean * 100) / 100)}, median=${(Math.round(stats.median * 100) / 100)}, std=${(Math.round(stats.std * 100) / 100)}.`, structured: stats }
     }
     case 'color-palette': {
       const color = typeof args.color === 'string' ? args.color : '#6366f1'
@@ -770,12 +693,6 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       if (!r) throw new McpError(ErrorCode.InvalidParams, 'Invalid resistor bands')
       return { summary: `${r.formatted}${r.tolerance !== undefined ? ` ±${r.tolerance}%` : ''}`, structured: r }
     }
-    case 'json-to-table': {
-      const parsed = parseJson(typeof args.json === 'string' ? args.json : '')
-      if (!parsed.valid) return { summary: `Invalid JSON: ${parsed.error}`, structured: { error: parsed.error } }
-      const table = toTable(parsed.value)
-      return { summary: `${table.columns.length} columns, ${table.rows.length} rows.`, structured: table }
-    }
     case 'text-diff': {
       const lines = diffLines(typeof args.a === 'string' ? args.a : '', typeof args.b === 'string' ? args.b : '')
       const stats = diffStats(lines)
@@ -787,10 +704,6 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
     case 'image-compressor':
     case 'favicon-generator': {
       return { summary: 'Interactive card — runs entirely in the card.', structured: {} }
-    }
-    case 'markdown-preview': {
-      const html = renderMarkdown(typeof args.markdown === 'string' ? args.markdown : '')
-      return { summary: `Markdown rendered (${html.length} chars of HTML).`, structured: { html } }
     }
     case 'csv-chart': {
       const data = parseCsv(typeof args.csv === 'string' ? args.csv : '')
@@ -854,6 +767,20 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
         summary: `Quiz "${parsed.quiz.title ?? 'Untitled'}" — ${parsed.quiz.questions.length} question(s), max score ${max}.`,
         structured: { quiz: parsed.quiz, maxScore: max },
       }
+    }
+    case 'css-effects': {
+      const tab = args.tab === 'shadow' ? 'shadow' : args.tab === 'radius' ? 'radius' : 'gradient'
+      if (tab === 'shadow') {
+        const css = `box-shadow: ${buildBoxShadow({ x: asNumber(args.x, 0), y: asNumber(args.y, 12), blur: asNumber(args.blur, 24), spread: asNumber(args.spread, -6), color: String(args.color ?? '#00000055'), inset: args.inset === true })};`
+        return { summary: css, structured: { tab, css } }
+      }
+      if (tab === 'radius') {
+        const css = `border-radius: ${buildBorderRadius(asNumber(args.tl, 24), asNumber(args.tr, 24), asNumber(args.br, 24), asNumber(args.bl, 24))};`
+        return { summary: css, structured: { tab, css } }
+      }
+      const kind: GradientKind = args.kind === 'radial' ? 'radial' : 'linear'
+      const css = `background: ${buildGradient(asNumber(args.angle, 135), String(args.from ?? '#6366f1'), String(args.to ?? '#22d3ee'), kind)};`
+      return { summary: css, structured: { tab, css } }
     }
     default:
       throw new McpError(ErrorCode.MethodNotFound, `Tool not implemented: ${toolId}`)

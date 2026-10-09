@@ -15,7 +15,7 @@ const HOST_DOC = `${REPO_URL}/blob/main/docs/host-integration.md`
 
 function Stat({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
-    <div className="rounded-2xl border border-white/8 bg-ink-800/40 px-4 py-3">
+    <div className="rounded-2xl border border-white/8 bg-white/[0.04] px-4 py-3">
       <div className={`font-mono text-2xl font-bold ${accent ? 'text-accent-400' : 'text-white'}`}>
         {value}
       </div>
@@ -94,7 +94,7 @@ export default function Home() {
           </a>
           <a
             href="#connect"
-            className="rounded-xl border border-white/10 bg-ink-800/60 px-5 py-3 font-medium text-slate-200 transition hover:border-brand-400/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
+            className="rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 font-medium text-slate-200 transition hover:border-brand-400/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400"
           >
             {t('home.hero.ctaMcp')}
           </a>
@@ -160,12 +160,12 @@ export default function Home() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder={`${t('home.search.placeholder')}  /`}
             aria-label={t('home.search.placeholder')}
-            className="w-full rounded-xl border border-white/10 bg-ink-800/60 px-4 py-2.5 text-sm text-slate-200 outline-none placeholder:text-slate-500 focus:border-brand-400 sm:max-w-xs"
+            className="w-full rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm text-slate-200 outline-none placeholder:text-slate-500 focus:border-brand-400 sm:max-w-xs"
           />
         </div>
 
         {groups.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-ink-800/30 p-12 text-center text-slate-400">
+          <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.03] p-12 text-center text-slate-400">
             {TOOLS.length === 0 ? t('home.empty') : t('home.noResults')}
           </div>
         ) : (

@@ -8,10 +8,11 @@ export default function ToolCard({ tool }: { tool: ToolMeta }) {
   return (
     <Link
       to={`/tools/${tool.id}`}
-      className="group flex flex-col gap-3 rounded-2xl border border-white/8 bg-ink-800/50 p-5 transition hover:-translate-y-0.5 hover:border-brand-400/50 hover:bg-ink-800 focus-visible:border-brand-400 focus-visible:outline-none"
+      className="group relative flex flex-col gap-3 overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(160deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))] p-5 shadow-[0_14px_40px_-18px_rgba(2,6,23,0.9)] ring-1 ring-inset ring-white/5 transition hover:-translate-y-0.5 hover:border-brand-400/50 hover:shadow-[0_22px_50px_-18px_rgba(99,102,241,0.5)] focus-visible:border-brand-400 focus-visible:outline-none"
     >
+      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-400/60 to-transparent opacity-0 transition group-hover:opacity-100" />
       <div className="flex items-center justify-between">
-        <span className="grid h-11 w-11 place-items-center rounded-xl bg-ink-700 text-xl">
+        <span className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-500/25 to-accent-400/15 text-xl ring-1 ring-inset ring-white/10">
           {tool.icon}
         </span>
         <span className="rounded-full border border-white/10 px-2 py-0.5 text-[11px] uppercase tracking-wide text-slate-400">

@@ -108,7 +108,7 @@ export default function ToolPage() {
           href={tool.embedPath}
           target="_blank"
           rel="noreferrer"
-          className="flex-shrink-0 rounded-xl border border-white/10 bg-ink-800/60 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-brand-400/60 hover:text-white"
+          className="flex-shrink-0 rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-brand-400/60 hover:text-white"
         >
           {t('tool.openWidget')} ↗
         </a>
@@ -133,14 +133,14 @@ export default function ToolPage() {
             </Suspense>
           </WidgetErrorBoundary>
         ) : (
-          <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-12 text-center text-slate-400">
+          <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-12 text-center text-slate-400">
             {t('common.comingSoon')}
           </div>
         )}
       </section>
 
       {tool.examples && tool.examples.length > 0 ? (
-        <section className="mt-6 rounded-2xl border border-white/8 bg-ink-800/40 p-5">
+        <section className="mt-6 rounded-2xl border border-white/8 bg-white/[0.04] p-5">
           <h2 className="text-sm font-semibold text-white">{t('tool.examples')}</h2>
           <ul className="mt-3 space-y-2">
             {tool.examples.map((example, i) => {
@@ -162,7 +162,7 @@ export default function ToolPage() {
       </div>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-6">
+        <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-6">
           <h2 className="font-semibold text-white">{t('tool.usageWeb')}</h2>
           <p className="mt-1 text-sm text-slate-400">{t('tool.usageWebDesc')}</p>
           <div className="mt-4 flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function ToolPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/8 bg-ink-800/40 p-6">
+        <div className="rounded-2xl border border-white/8 bg-white/[0.04] p-6">
           <h2 className="font-semibold text-white">{t('tool.usageMcp')}</h2>
           <p className="mt-1 text-sm text-slate-400">{t('tool.usageMcpDesc')}</p>
           <div className="mt-4 flex items-start gap-2">
@@ -185,7 +185,7 @@ export default function ToolPage() {
         </div>
       </section>
 
-      <section className="mt-6 rounded-2xl border border-white/8 bg-ink-800/40 p-6">
+      <section className="mt-6 rounded-2xl border border-white/8 bg-white/[0.04] p-6">
         <h2 className="font-semibold text-white">{t('tool.api')}</h2>
         <p className="mt-1 text-sm text-slate-400">{t('tool.apiDesc')}</p>
         <div className="mt-4 grid gap-3 lg:grid-cols-2">

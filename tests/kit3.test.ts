@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { describe as describeStats, histogram, parseNumbers } from '../shared/calc/stats.ts'
-import { divisors, factorize, isPrime } from '../shared/calc/primes.ts'
 import { bestForeground, paletteFrom } from '../shared/calc/palette.ts'
-import { splitTip } from '../shared/calc/tip.ts'
 import { timeInZone } from '../shared/calc/worldclock.ts'
 import { coinFlip } from '../shared/calc/random.ts'
 
@@ -23,19 +21,6 @@ describe('stats', () => {
   })
 })
 
-describe('primes', () => {
-  it('factorizes and lists divisors', () => {
-    expect(factorize(360)).toEqual([
-      { factor: 2, power: 3 },
-      { factor: 3, power: 2 },
-      { factor: 5, power: 1 },
-    ])
-    expect(divisors(12)).toEqual([1, 2, 3, 4, 6, 12])
-    expect(isPrime(97)).toBe(true)
-    expect(isPrime(100)).toBe(false)
-  })
-})
-
 describe('palette', () => {
   it('generates five colors and a foreground', () => {
     const palette = paletteFrom('#6366f1')
@@ -46,13 +31,7 @@ describe('palette', () => {
   })
 })
 
-describe('tip & world', () => {
-  it('splits a bill', () => {
-    const s = splitTip(200, 15, 4)
-    expect(s.tip).toBe(30)
-    expect(s.grandTotal).toBe(230)
-    expect(s.perPerson).toBe(57.5)
-  })
+describe('world & random', () => {
   it('reports a time for a zone', () => {
     const t = timeInZone('UTC', Date.UTC(2026, 0, 1, 12, 0, 0))
     expect(t.time).toBe('12:00')

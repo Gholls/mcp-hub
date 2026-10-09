@@ -59,7 +59,7 @@ export default function ReactionTestWidget({ locale }: WidgetProps) {
               ? 'bg-emerald-500 text-ink-950'
               : phase === 'waiting'
                 ? 'bg-rose-500/80 text-white'
-                : 'bg-ink-900/70 text-slate-200 hover:bg-ink-800'
+                : 'bg-ink-900/70 text-slate-200 hover:bg-white/10'
           }`}
         >
           {phase === 'go' ? d.go : phase === 'waiting' ? d.start : d.again}

@@ -110,7 +110,7 @@ export function StatCard({
 /** Placeholder shown while a lazily-loaded widget chunk is fetched. */
 export function WidgetSkeleton() {
   return (
-    <div className="animate-pulse overflow-hidden rounded-2xl border border-white/10 bg-ink-800/60">
+    <div className="animate-pulse overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05]">
       <div className="border-b border-white/8 px-4 py-3">
         <div className="h-3 w-40 rounded bg-white/10" />
       </div>
@@ -135,13 +135,18 @@ export function WidgetShell({
   footer?: ReactNode
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/10 bg-ink-800/60 shadow-xl shadow-black/20">
-      <div className="flex items-center gap-2 border-b border-white/8 px-4 py-3">
-        {icon ? <span className="text-base">{icon}</span> : null}
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
+    <div className="relative overflow-hidden rounded-2xl border border-white/12 bg-[linear-gradient(160deg,rgba(255,255,255,0.10),rgba(255,255,255,0.03)_45%,rgba(255,255,255,0.015))] shadow-[0_18px_50px_-16px_rgba(2,6,23,0.85)] ring-1 ring-inset ring-white/5 backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-400/70 to-transparent" />
+      <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.03] px-4 py-3">
+        {icon ? (
+          <span className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-brand-500/30 to-accent-400/20 text-sm">
+            {icon}
+          </span>
+        ) : null}
+        <h3 className="text-sm font-semibold tracking-tight text-white">{title}</h3>
       </div>
       <div className="p-4">{children}</div>
-      <div className="flex items-center justify-between gap-3 border-t border-white/8 px-4 py-2 text-xs text-slate-500">
+      <div className="flex items-center justify-between gap-3 border-t border-white/8 bg-white/[0.02] px-4 py-2 text-xs text-slate-400">
         <span className="min-w-0 flex-1 truncate">{footer}</span>
         <BrandLink />
       </div>

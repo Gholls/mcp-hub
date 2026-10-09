@@ -1,20 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { renderMarkdown } from '../shared/calc/markdown.ts'
 import { numericColumnIndexes, parseCsv } from '../shared/calc/csv.ts'
 import { base32Decode, totp } from '../shared/calc/totp.ts'
-
-describe('markdown', () => {
-  it('renders headings, bold, code and lists', () => {
-    const html = renderMarkdown('# Hi\n\n**bold** and `code`\n\n- a\n- b')
-    expect(html).toContain('<h1>Hi</h1>')
-    expect(html).toContain('<strong>bold</strong>')
-    expect(html).toContain('<code>code</code>')
-    expect(html).toContain('<li>a</li>')
-  })
-  it('escapes HTML', () => {
-    expect(renderMarkdown('<script>')).toContain('&lt;script&gt;')
-  })
-})
 
 describe('csv', () => {
   it('parses rows and finds numeric columns', () => {
@@ -38,7 +24,6 @@ describe('totp', () => {
     expect(code).toMatch(/^\d{6}$/)
   })
   it('matches the RFC 6238 test vector (SHA-1)', async () => {
-    // secret "12345678901234567890" base32-encoded
     const secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'
     const code = await totp(secret, 59 * 1000)
     expect(code).toBe('287082')

@@ -662,36 +662,6 @@ export const conicSectionsTool: ToolMeta = {
   },
 }
 
-export const jsonFormatterTool: ToolMeta = {
-  id: 'json-formatter',
-  name: 'JSON Formatter',
-  title: { en: 'JSON Formatter', zh: 'JSON 格式化' },
-  description: {
-    en: 'Validate, pretty-print, minify and sort JSON keys, with byte/line/node stats.',
-    zh: '校验、格式化、压缩并对 JSON 键排序，显示字节/行数/节点统计。',
-  },
-  mcpDescription:
-    'Validate and reformat a JSON string. Inputs: `json` (required) and optional `mode` ("format" pretty-prints with 2-space indent, "minify" compresses). Returns the formatted text plus stats (bytes, lines, nodes, depth). Use when a user pastes JSON and wants it cleaned up, minified or checked.',
-  category: 'Developer',
-  icon: '🧾',
-  tags: ['json', 'format', 'minify', 'validate'],
-  status: 'stable',
-  embedPath: '/embed/json-formatter',
-  pagePath: '/tools/json-formatter',
-  examples: [
-    { en: 'Format this JSON and tell me how many nodes it has.', zh: '把这个 JSON 格式化，并告诉我有多少节点。' },
-    { en: 'Minify this JSON.', zh: '把这个 JSON 压缩成一行。' },
-  ],
-  inputSchema: {
-    type: 'object',
-    properties: {
-      json: { type: 'string', description: 'The JSON document as a string.' },
-      mode: { type: 'string', enum: ['format', 'minify'], description: 'Output mode.', default: 'format' },
-      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
-    },
-    required: ['json'],
-  },
-}
 
 export const unitConverterTool: ToolMeta = {
   id: 'unit-converter',
@@ -731,97 +701,10 @@ export const unitConverterTool: ToolMeta = {
   },
 }
 
-export const gradientGeneratorTool: ToolMeta = {
-  id: 'gradient-generator',
-  name: 'CSS Gradient Generator',
-  title: { en: 'CSS Gradient Generator', zh: 'CSS 渐变生成器' },
-  description: { en: 'Design a CSS gradient with a live preview and copy-ready code.', zh: '可视化设计 CSS 渐变并复制代码。' },
-  mcpDescription:
-    'Generate a CSS gradient. Inputs: `from`, `to` (hex colors), optional `angle` (degrees) and `kind` ("linear" | "radial"). Returns the `background` CSS. Use when a user wants a gradient/background.',
-  category: 'Design', icon: '🌈', tags: ['css', 'gradient', 'design'], status: 'stable',
-  embedPath: '/embed/gradient-generator', pagePath: '/tools/gradient-generator',
-  examples: [{ en: 'Make an indigo-to-cyan gradient at 135°.', zh: '做一个 135° 的靛蓝到青色渐变。' }],
-  inputSchema: {
-    type: 'object',
-    properties: {
-      from: { type: 'string', description: 'Start color (hex).', default: '#6366f1' },
-      to: { type: 'string', description: 'End color (hex).', default: '#22d3ee' },
-      angle: { type: 'number', description: 'Angle in degrees (linear only).', default: 135 },
-      kind: { type: 'string', enum: ['linear', 'radial'], default: 'linear' },
-      locale: { type: 'string', enum: ['en', 'zh'], default: 'en' },
-    },
-  },
-}
 
-export const boxShadowTool: ToolMeta = {
-  id: 'box-shadow',
-  name: 'CSS Box Shadow',
-  title: { en: 'CSS Box Shadow', zh: 'CSS 阴影生成' },
-  description: { en: 'Build a CSS box-shadow with a live preview.', zh: '可视化生成 CSS box-shadow。' },
-  mcpDescription:
-    'Build a CSS `box-shadow`. Inputs: `x`, `y`, `blur`, `spread` (px), `color` and optional `inset`. Returns the CSS declaration.',
-  category: 'Design', icon: '🌑', tags: ['css', 'shadow', 'design'], status: 'stable',
-  embedPath: '/embed/box-shadow', pagePath: '/tools/box-shadow',
-  examples: [{ en: 'A soft drop shadow for a card.', zh: '给卡片做一个柔和的投影。' }],
-  inputSchema: {
-    type: 'object',
-    properties: {
-      x: { type: 'number', default: 0 }, y: { type: 'number', default: 12 },
-      blur: { type: 'number', default: 24 }, spread: { type: 'number', default: -6 },
-      color: { type: 'string', default: '#00000055' }, inset: { type: 'boolean', default: false },
-      locale: { type: 'string', enum: ['en', 'zh'], default: 'en' },
-    },
-  },
-}
 
-export const borderRadiusTool: ToolMeta = {
-  id: 'border-radius',
-  name: 'CSS Border Radius',
-  title: { en: 'CSS Border Radius', zh: 'CSS 圆角生成' },
-  description: { en: 'Shape CSS corners with a live preview.', zh: '可视化调节 CSS 圆角。' },
-  mcpDescription:
-    'Build a CSS `border-radius` with four corner values. Inputs: `tl`, `tr`, `br`, `bl` (px). Returns the CSS declaration.',
-  category: 'Design', icon: '⬭', tags: ['css', 'radius', 'design'], status: 'stable',
-  embedPath: '/embed/border-radius', pagePath: '/tools/border-radius',
-  examples: [{ en: 'A card with 20px rounded corners.', zh: '一个 20px 圆角的卡片。' }],
-  inputSchema: {
-    type: 'object',
-    properties: { tl: { type: 'number', default: 24 }, tr: { type: 'number', default: 24 }, br: { type: 'number', default: 24 }, bl: { type: 'number', default: 24 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } },
-  },
-}
 
-export const bmiCalculatorTool: ToolMeta = {
-  id: 'bmi-calculator',
-  name: 'BMI Calculator',
-  title: { en: 'BMI Calculator', zh: 'BMI 计算器' },
-  description: { en: 'Body-mass index with a colored scale.', zh: '带色带的体质指数。' },
-  mcpDescription:
-    'Compute BMI from weight (kg) and height (cm), returning the value and category (underweight/normal/overweight/obese). Inputs: `weight`, `height`.',
-  category: 'Everyday', icon: '⚖️', tags: ['health', 'bmi'], status: 'stable',
-  embedPath: '/embed/bmi-calculator', pagePath: '/tools/bmi-calculator',
-  examples: [{ en: 'My BMI with 65kg and 175cm?', zh: '65kg、175cm 的 BMI 是多少？' }],
-  inputSchema: {
-    type: 'object',
-    properties: { weight: { type: 'number', description: 'Weight in kg.', default: 65 }, height: { type: 'number', description: 'Height in cm.', default: 175 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } },
-    required: ['weight', 'height'],
-  },
-}
 
-export const httpStatusTool: ToolMeta = {
-  id: 'http-status',
-  name: 'HTTP Status Codes',
-  title: { en: 'HTTP Status Codes', zh: 'HTTP 状态码' },
-  description: { en: 'Color-coded reference for HTTP status codes.', zh: '按类别着色的 HTTP 状态码速查。' },
-  mcpDescription:
-    'Look up HTTP status codes. Optional `query` filters by code or phrase. Returns matching codes with phrase, category and description. Use when a user asks what an HTTP status code means.',
-  category: 'Monitoring', icon: '🚦', tags: ['http', 'status', 'reference'], status: 'stable',
-  embedPath: '/embed/http-status', pagePath: '/tools/http-status',
-  examples: [{ en: 'What does 429 mean?', zh: '429 是什么含义？' }],
-  inputSchema: {
-    type: 'object',
-    properties: { query: { type: 'string', description: 'Code or phrase to search.', default: '' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } },
-  },
-}
 
 export const diceRollerTool: ToolMeta = {
   id: 'dice-roller',
@@ -852,30 +735,7 @@ export const worldClockTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { zones: { type: 'array', items: { type: 'string' }, description: 'Optional timezone ids.' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
 }
 
-export const coinFlipTool: ToolMeta = {
-  id: 'coin-flip',
-  name: 'Coin Flip',
-  title: { en: 'Coin Flip', zh: '抛硬币' },
-  description: { en: 'Fair coin flip using the Web Crypto API.', zh: '使用 Web Crypto 的公平抛硬币。' },
-  mcpDescription: 'Flip a fair coin. Returns "heads" or "tails". Use for unbiased random binary decisions the user should trust.',
-  category: 'Games', icon: '🪙', tags: ['random', 'coin', 'game'], status: 'stable',
-  embedPath: '/embed/coin-flip', pagePath: '/tools/coin-flip',
-  examples: [{ en: 'Flip a coin.', zh: '抛个硬币。' }],
-  inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
-}
 
-export const tipSplitTool: ToolMeta = {
-  id: 'tip-split',
-  name: 'Tip & Bill Split',
-  title: { en: 'Tip & Bill Split', zh: '小费与分账' },
-  description: { en: 'Add a tip and split a bill with a visual breakdown.', zh: '加小费并分账，带可视化比例。' },
-  mcpDescription:
-    'Compute a tip and split a bill. Inputs: `total`, `tipPercent`, `people`. Returns tip, grand total and per-person amount.',
-  category: 'Finance', icon: '🧾', tags: ['tip', 'split', 'bill'], status: 'stable',
-  embedPath: '/embed/tip-split', pagePath: '/tools/tip-split',
-  examples: [{ en: 'Split a $200 bill 4 ways with 15% tip.', zh: '200 元账单 4 人分，15% 小费。' }],
-  inputSchema: { type: 'object', properties: { total: { type: 'number', default: 200 }, tipPercent: { type: 'number', default: 15 }, people: { type: 'integer', default: 4 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['total'] },
-}
 
 export const statisticsTool: ToolMeta = {
   id: 'statistics',
@@ -890,17 +750,6 @@ export const statisticsTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { data: { type: 'string', description: 'Numbers separated by spaces/commas.' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['data'] },
 }
 
-export const primeFactorTool: ToolMeta = {
-  id: 'prime-factor',
-  name: 'Prime Factorization',
-  title: { en: 'Prime Factorization', zh: '质因数分解' },
-  description: { en: 'Prime factorization, divisors and primality.', zh: '质因数分解、因数与质数判定。' },
-  mcpDescription: 'Factorize an integer into primes. Input: `n`. Returns prime factors with powers, all divisors and whether n is prime.',
-  category: 'Math', icon: '🧮', tags: ['math', 'prime', 'factor'], status: 'stable',
-  embedPath: '/embed/prime-factor', pagePath: '/tools/prime-factor',
-  examples: [{ en: 'Factorize 360.', zh: '把 360 分解质因数。' }],
-  inputSchema: { type: 'object', properties: { n: { type: 'integer', default: 360 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['n'] },
-}
 
 export const colorPaletteTool: ToolMeta = {
   id: 'color-palette',
@@ -1035,17 +884,6 @@ export const resistorColorTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { bands: { type: 'array', items: { type: 'string' } }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['bands'] },
 }
 
-export const jsonToTableTool: ToolMeta = {
-  id: 'json-to-table',
-  name: 'JSON to Table',
-  title: { en: 'JSON to Table', zh: 'JSON 转表格' },
-  description: { en: 'Render JSON as a readable table.', zh: '把 JSON 渲染成表格。' },
-  mcpDescription: 'Convert JSON into a table. Input: `json` (string). Handles arrays of objects, arrays of arrays and objects. Returns columns and rows.',
-  category: 'Data', icon: '🗂️', tags: ['json', 'table', 'data'], status: 'stable',
-  embedPath: '/embed/json-to-table', pagePath: '/tools/json-to-table',
-  examples: [{ en: 'Show this JSON as a table.', zh: '把这段 JSON 显示成表格。' }],
-  inputSchema: { type: 'object', properties: { json: { type: 'string' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['json'] },
-}
 
 export const textDiffTool: ToolMeta = {
   id: 'text-diff',
@@ -1083,17 +921,6 @@ export const typingTestTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
 }
 
-export const markdownPreviewTool: ToolMeta = {
-  id: 'markdown-preview',
-  name: 'Markdown Preview',
-  title: { en: 'Markdown Preview', zh: 'Markdown 预览' },
-  description: { en: 'Write Markdown and preview it rendered.', zh: '边写 Markdown 边预览渲染结果。' },
-  mcpDescription: 'Render Markdown to HTML. Input: `markdown`. Returns the rendered HTML (headings, lists, code, links, bold/italic). Use when a user wants Markdown rendered.',
-  category: 'Text', icon: '📝', tags: ['markdown', 'text', 'preview'], status: 'stable',
-  embedPath: '/embed/markdown-preview', pagePath: '/tools/markdown-preview',
-  examples: [{ en: 'Render this Markdown.', zh: '渲染这段 Markdown。' }],
-  inputSchema: { type: 'object', properties: { markdown: { type: 'string' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['markdown'] },
-}
 
 export const csvChartTool: ToolMeta = {
   id: 'csv-chart',
@@ -1232,6 +1059,49 @@ export const quizTool: ToolMeta = {
   },
 }
 
+export const cssEffectsTool: ToolMeta = {
+  id: 'css-effects',
+  name: 'CSS Effects Studio',
+  title: { en: 'CSS Effects Studio', zh: 'CSS 效果工作室' },
+  description: {
+    en: 'Design gradients, box-shadows and border-radius with live previews and copy-ready CSS.',
+    zh: '可视化设计渐变、阴影与圆角，实时预览并复制 CSS。',
+  },
+  mcpDescription:
+    'An interactive CSS design studio with three tabs: gradient, shadow and border-radius. Inputs (all optional): `tab` ("gradient" | "shadow" | "radius"), gradient `from`/`to`/`angle`/`kind`, shadow `x`/`y`/`blur`/`spread`/`color`/`inset`, and radius `tl`/`tr`/`br`/`bl`. Returns the resulting CSS. Use when a user wants a gradient, shadow or rounded-corner CSS.',
+  category: 'Design',
+  icon: '🎛️',
+  tags: ['css', 'gradient', 'shadow', 'radius', 'design'],
+  status: 'stable',
+  embedPath: '/embed/css-effects',
+  pagePath: '/tools/css-effects',
+  examples: [
+    { en: 'An indigo-to-cyan gradient at 135°.', zh: '做一个 135° 的靛蓝到青色渐变。' },
+    { en: 'A soft card shadow.', zh: '给卡片做一个柔和投影。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      tab: { type: 'string', enum: ['gradient', 'shadow', 'radius'], default: 'gradient' },
+      from: { type: 'string', default: '#6366f1' },
+      to: { type: 'string', default: '#22d3ee' },
+      angle: { type: 'number', default: 135 },
+      kind: { type: 'string', enum: ['linear', 'radial'], default: 'linear' },
+      x: { type: 'number', default: 0 },
+      y: { type: 'number', default: 12 },
+      blur: { type: 'number', default: 24 },
+      spread: { type: 'number', default: -6 },
+      color: { type: 'string', default: '#00000055' },
+      inset: { type: 'boolean', default: false },
+      tl: { type: 'number', default: 24 },
+      tr: { type: 'number', default: 24 },
+      br: { type: 'number', default: 24 },
+      bl: { type: 'number', default: 24 },
+      locale: { type: 'string', enum: ['en', 'zh'], default: 'en' },
+    },
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -1255,19 +1125,11 @@ export const TOOLS: ToolMeta[] = [
   trigLabTool,
   geometryLabTool,
   conicSectionsTool,
-  jsonFormatterTool,
   unitConverterTool,
-  gradientGeneratorTool,
-  boxShadowTool,
-  borderRadiusTool,
-  bmiCalculatorTool,
-  httpStatusTool,
+  cssEffectsTool,
   diceRollerTool,
   worldClockTool,
-  coinFlipTool,
-  tipSplitTool,
   statisticsTool,
-  primeFactorTool,
   colorPaletteTool,
   bitVisualizerTool,
   matrixCalculatorTool,
@@ -1279,11 +1141,9 @@ export const TOOLS: ToolMeta[] = [
   compoundInterestTool,
   passwordStrengthTool,
   resistorColorTool,
-  jsonToTableTool,
   textDiffTool,
   reactionTestTool,
   typingTestTool,
-  markdownPreviewTool,
   csvChartTool,
   totpGeneratorTool,
   imageToBase64Tool,

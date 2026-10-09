@@ -33,7 +33,7 @@ export default function ParamTable({ schema }: { schema: JsonSchema }) {
   if (entries.length === 0) return null
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/8 bg-ink-800/40">
+    <div className="overflow-hidden rounded-2xl border border-white/8 bg-white/[0.04]">
       <div className="border-b border-white/8 px-5 py-3">
         <h2 className="text-sm font-semibold text-white">{t('params.title')}</h2>
       </div>

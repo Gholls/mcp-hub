@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { compound, loan } from '../shared/calc/finance.ts'
 import { decodeResistor, formatOhms } from '../shared/calc/resistor.ts'
 import { diffLines, diffStats } from '../shared/calc/difflib.ts'
-import { toTable } from '../shared/calc/table.ts'
 
 describe('finance', () => {
   it('computes a loan', () => {
@@ -36,17 +35,5 @@ describe('diff', () => {
     expect(stats.added).toBe(1)
     expect(stats.removed).toBe(1)
     expect(lines.some((l) => l.type === 'same' && l.text === 'a')).toBe(true)
-  })
-})
-
-describe('table', () => {
-  it('converts arrays of objects', () => {
-    const t = toTable([{ a: 1, b: 2 }, { a: 3, b: 4 }])
-    expect(t.columns).toEqual(['a', 'b'])
-    expect(t.rows).toEqual([['1', '2'], ['3', '4']])
-  })
-  it('converts objects and arrays of arrays', () => {
-    expect(toTable({ x: 1 }).rows).toEqual([['x', '1']])
-    expect(toTable([[1, 2], [3, 4]]).columns).toEqual(['#1', '#2'])
   })
 })
