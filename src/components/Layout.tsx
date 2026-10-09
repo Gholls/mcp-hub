@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router-dom'
 import { useI18n } from '../lib/i18n.tsx'
+import CommandPalette from './CommandPalette.tsx'
 
 const REPO_URL = 'https://github.com/Gholls/mcp-hub'
 
@@ -48,6 +49,7 @@ export default function Layout() {
             >
               {t('nav.github')}
             </a>
+            <CommandPalette />
             <button
               type="button"
               onClick={toggle}

@@ -4,6 +4,8 @@ import { TOOLS } from '@shared/tools.ts'
 import { SITE_ORIGIN } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
 import { useSeo } from '../lib/seo.ts'
+import { searchTools } from '../lib/search.ts'
+import { categoryLabel, groupByCategory } from '../lib/categories.ts'
 import CopyButton from '../components/CopyButton.tsx'
 import ToolCard from '../components/ToolCard.tsx'
 
@@ -23,10 +25,9 @@ function Stat({ value, label, accent }: { value: string; label: string; accent?:
 }
 
 export default function Home() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { hash } = useLocation()
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState('all')
   const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -47,22 +48,9 @@ export default function Home() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  const categories = useMemo(
-    () => ['all', ...Array.from(new Set(TOOLS.map((tool) => tool.category)))],
-    [],
-  )
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    return TOOLS.filter((tool) => {
-      if (category !== 'all' && tool.category !== category) return false
-      if (!q) return true
-      const haystack = [tool.name, tool.title.en, tool.title.zh, tool.description.en, ...tool.tags]
-        .join(' ')
-        .toLowerCase()
-      return haystack.includes(q)
-    })
-  }, [query, category])
+  const results = useMemo(() => searchTools(query), [query])
+  const groups = useMemo(() => groupByCategory(results), [results])
+  const categoryCount = new Set(TOOLS.map((tool) => tool.category)).size
 
   const seo = useMemo(
     () => ({
@@ -114,7 +102,7 @@ export default function Home() {
 
         <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
           <Stat value={String(TOOLS.length)} label={t('home.stats.tools')} accent />
-          <Stat value={String(categories.length - 1)} label={t('home.stats.categories')} />
+          <Stat value={String(categoryCount)} label={t('home.stats.categories')} />
           <Stat value={t('home.stats.open')} label={t('home.stats.auth')} />
         </div>
       </section>
@@ -164,7 +152,7 @@ export default function Home() {
           <p className="mt-1 text-sm text-slate-400">{t('home.tools.subtitle')}</p>
         </div>
 
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mb-6">
           <input
             ref={searchRef}
             type="search"
@@ -174,33 +162,26 @@ export default function Home() {
             aria-label={t('home.search.placeholder')}
             className="w-full rounded-xl border border-white/10 bg-ink-800/60 px-4 py-2.5 text-sm text-slate-200 outline-none placeholder:text-slate-500 focus:border-brand-400 sm:max-w-xs"
           />
-          <div className="flex flex-wrap gap-1.5">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => setCategory(cat)}
-                aria-pressed={category === cat}
-                className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
-                  category === cat
-                    ? 'border-brand-400/60 bg-brand-500/15 text-brand-200'
-                    : 'border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
-                }`}
-              >
-                {cat === 'all' ? t('home.filter.all') : cat}
-              </button>
-            ))}
-          </div>
         </div>
 
-        {filtered.length === 0 ? (
+        {groups.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/10 bg-ink-800/30 p-12 text-center text-slate-400">
             {TOOLS.length === 0 ? t('home.empty') : t('home.noResults')}
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((tool) => (
-              <ToolCard key={tool.id} tool={tool} />
+          <div className="flex flex-col gap-12">
+            {groups.map(([category, tools]) => (
+              <div key={category}>
+                <div className="mb-4 flex items-baseline gap-3">
+                  <h3 className="text-lg font-semibold text-white">{categoryLabel(category, locale)}</h3>
+                  <span className="text-xs text-slate-500">{tools.length}</span>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {tools.map((tool) => (
+                    <ToolCard key={tool.id} tool={tool} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import * as echarts from 'echarts'
 import { withDarkTheme, type EChartsOption } from '@shared/calc/echarts.ts'
 
@@ -33,5 +33,15 @@ export function useECharts(option: EChartsOption | undefined, onClick?: (params:
     chart.resize()
   }, [option])
 
-  return containerRef
+  const downloadPng = useCallback((name = 'chart') => {
+    const chart = chartRef.current
+    if (!chart) return
+    const url = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#0b0d17' })
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${name}.png`
+    link.click()
+  }, [])
+
+  return { ref: containerRef, downloadPng }
 }

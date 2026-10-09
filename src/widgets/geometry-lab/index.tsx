@@ -34,6 +34,7 @@ const T: Record<Locale, Dict> = {
     area: 'Area',
     perimeter: 'Perimeter',
     dragHint: 'Drag the vertices (or the radius handle) to reshape.',
+    export: 'Export image',
     note: 'Interactive plane geometry. Shapes update live and theorems re-compute.',
     explain: 'Ask AI to explain',
     quiz: 'Ask AI for a quiz',
@@ -56,6 +57,7 @@ const T: Record<Locale, Dict> = {
     area: '面积',
     perimeter: '周长',
     dragHint: '拖动顶点（或半径端点）改变图形。',
+    export: '导出图片',
     note: '交互式平面几何，图形与定理实时更新。',
     explain: '让 AI 讲解',
     quiz: '让 AI 出题',
@@ -129,6 +131,22 @@ export default function GeometryLabWidget({ locale }: WidgetProps) {
       e.currentTarget.setPointerCapture(e.pointerId)
       applyHandle(nearest, e.clientX, e.clientY)
     }
+  }
+
+  function exportSvg() {
+    const svg = svgRef.current
+    if (!svg) return
+    const clone = svg.cloneNode(true) as SVGSVGElement
+    clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+    const blob = new Blob([new XMLSerializer().serializeToString(clone)], {
+      type: 'image/svg+xml;charset=utf-8',
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'geometry.svg'
+    link.click()
+    URL.revokeObjectURL(url)
   }
 
   function askAi(kind: 'explain' | 'quiz') {
@@ -257,7 +275,16 @@ export default function GeometryLabWidget({ locale }: WidgetProps) {
                 <circle key={i} cx={sx(h.x)} cy={sy(h.y)} r="6" fill="#e5e7eb" stroke="#0f172a" strokeWidth="2" className="cursor-grab" />
               ))}
             </svg>
-            <p className="text-[11px] text-slate-500">{d.dragHint}</p>
+            <div className="flex w-full items-center justify-between">
+              <p className="text-[11px] text-slate-500">{d.dragHint}</p>
+              <button
+                type="button"
+                onClick={exportSvg}
+                className="rounded-lg border border-white/10 px-2.5 py-1 text-[11px] text-slate-300 transition hover:border-brand-400/60 hover:text-white"
+              >
+                {d.export}
+              </button>
+            </div>
             {shape === 'circle' ? (
               <div className="w-full">
                 <Field label={d.radius} hint={fmt(radius)}>

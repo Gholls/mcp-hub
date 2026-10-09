@@ -22,6 +22,7 @@ const T: Record<Locale, Dict> = {
     invalid: 'Invalid option',
     empty: 'The option has no `series` to render.',
     copy: 'Copy option',
+    export: 'Export image',
     sent: 'Sent to AI',
     aiChart: 'AI chart',
     exampleHint: 'No chart from the AI yet — browse an example:',
@@ -33,6 +34,7 @@ const T: Record<Locale, Dict> = {
     invalid: 'option 无效',
     empty: 'option 中没有可渲染的 `series`。',
     copy: '复制 option',
+    export: '导出图片',
     sent: '已发送给 AI',
     aiChart: 'AI 图表',
     exampleHint: 'AI 暂未给出图表 — 可先浏览示例：',
@@ -122,6 +124,16 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
     chart.resize()
   }, [activeOption])
 
+  function exportPng() {
+    const chart = chartRef.current
+    if (!chart) return
+    const url = chart.getDataURL({ type: 'png', pixelRatio: 2, backgroundColor: '#0b0d17' })
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'echarts.png'
+    link.click()
+  }
+
   const chips = [
     ...(provided ? [{ id: 'ai', label: d.aiChart }] : []),
     ...ECHARTS_TEMPLATES.map((t) => ({ id: t.id, label: t.label[locale] })),
@@ -184,11 +196,20 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
         ) : null}
 
         {activeOption ? (
-          <div className="flex items-center justify-between text-[11px] text-slate-500">
+          <div className="flex items-center justify-between gap-2 text-[11px] text-slate-500">
             <span className="font-mono">
               {Array.isArray(activeOption.series) ? `${activeOption.series.length} series` : ''}
             </span>
-            <CopyButton value={JSON.stringify(activeOption, null, 2)} label={d.copy} />
+            <span className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={exportPng}
+                className="rounded-lg border border-white/10 px-2.5 py-1 text-[11px] text-slate-300 transition hover:border-brand-400/60 hover:text-white"
+              >
+                {d.export}
+              </button>
+              <CopyButton value={JSON.stringify(activeOption, null, 2)} label={d.copy} />
+            </span>
           </div>
         ) : (
           <p className="text-sm text-slate-500">{d.noOption}</p>

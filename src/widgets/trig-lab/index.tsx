@@ -35,6 +35,7 @@ const T: Record<Locale, Dict> = {
     explain: 'Ask AI to explain',
     quiz: 'Ask AI for a quiz',
     dragHint: 'Drag the point on the circle or move the angle slider.',
+    export: 'Export image',
     note: 'Unit circle + wave. Drag the angle to see sin, cos and tan, and watch the curve transform.',
     sos: 'Explain this trigonometric graph',
     quizMsg: 'Create one practice problem about this trigonometric function',
@@ -53,6 +54,7 @@ const T: Record<Locale, Dict> = {
     explain: '让 AI 讲解',
     quiz: '让 AI 出题',
     dragHint: '拖动圆上的点，或移动角度滑块。',
+    export: '导出图片',
     note: '单位圆 + 波形。拖动角度查看 sin、cos、tan，并观察图像变换。',
     sos: '讲解这个三角函数图像',
     quizMsg: '针对这个三角函数出一道练习题',
@@ -187,7 +189,7 @@ export default function TrigLabWidget({ locale }: WidgetProps) {
     }
   }, [points, xGuide, x1, unit])
 
-  const containerRef = useECharts(option)
+  const { ref: chartRef, downloadPng } = useECharts(option)
 
   function askAi(kind: 'explain' | 'quiz') {
     const header =
@@ -274,7 +276,16 @@ export default function TrigLabWidget({ locale }: WidgetProps) {
 
           <div className="flex flex-col gap-3">
             <div className="overflow-hidden rounded-xl border border-white/8 bg-ink-950/50 p-1">
-              <div ref={containerRef} className="h-[300px] w-full" />
+              <div ref={chartRef} className="h-[300px] w-full" />
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => downloadPng('trig')}
+                className="rounded-lg border border-white/10 px-2.5 py-1 text-[11px] text-slate-300 transition hover:border-brand-400/60 hover:text-white"
+              >
+                {d.export}
+              </button>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">

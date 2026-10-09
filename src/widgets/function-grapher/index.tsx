@@ -33,6 +33,7 @@ const T: Record<Locale, Dict> = {
     quiz: 'Ask AI for a quiz',
     copied: 'Copied',
     drag: 'Drag to pan, scroll to zoom',
+    export: 'Export image',
     note: 'Pick a function family, adjust the sliders, and watch the curve update.',
     sos: 'Explain this function graph',
     quizMsg: 'Create one practice problem about this function',
@@ -47,6 +48,7 @@ const T: Record<Locale, Dict> = {
     quiz: '让 AI 出题',
     copied: '已复制',
     drag: '拖动平移，滚轮缩放',
+    export: '导出图片',
     note: '选择函数类型，拖动滑块，图像实时变化。',
     sos: '讲解这个函数图像',
     quizMsg: '针对这个函数出一道练习题',
@@ -135,7 +137,7 @@ export default function FunctionGrapherWidget({ locale, initial }: WidgetProps) 
     () => buildOption(family.id, params, points, family.domain),
     [family, params, points],
   )
-  const containerRef = useECharts(option)
+  const { ref: chartRef, downloadPng } = useECharts(option)
 
   const equation = substitutedLatex(family, params)
   const facts = features(family, params)
@@ -185,9 +187,18 @@ export default function FunctionGrapherWidget({ locale, initial }: WidgetProps) 
         <div className="grid gap-4 lg:grid-cols-[1fr_260px]">
           <div className="flex flex-col gap-3">
             <div className="overflow-hidden rounded-xl border border-white/8 bg-ink-950/50 p-1">
-              <div ref={containerRef} className="h-[320px] w-full" />
+              <div ref={chartRef} className="h-[320px] w-full" />
             </div>
-            <p className="text-[11px] text-slate-500">{d.drag}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] text-slate-500">{d.drag}</p>
+              <button
+                type="button"
+                onClick={() => downloadPng('function-graph')}
+                className="rounded-lg border border-white/10 px-2.5 py-1 text-[11px] text-slate-300 transition hover:border-brand-400/60 hover:text-white"
+              >
+                {d.export}
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">

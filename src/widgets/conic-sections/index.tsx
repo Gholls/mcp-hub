@@ -30,6 +30,7 @@ const T: Record<Locale, Dict> = {
     features: 'Features',
     explain: 'Ask AI to explain',
     quiz: 'Ask AI for a quiz',
+    export: 'Export image',
     note: 'Circle, ellipse, parabola and hyperbola with live foci, eccentricity and asymptotes.',
     sos: 'Explain this conic section',
     quizMsg: 'Create one practice problem about this conic section',
@@ -47,6 +48,7 @@ const T: Record<Locale, Dict> = {
     features: '几何性质',
     explain: '让 AI 讲解',
     quiz: '让 AI 出题',
+    export: '导出图片',
     note: '圆、椭圆、抛物线、双曲线，实时显示焦点、离心率与渐近线。',
     sos: '讲解这条圆锥曲线',
     quizMsg: '针对这条圆锥曲线出一道练习题',
@@ -97,7 +99,7 @@ export default function ConicSectionsWidget({ locale, initial }: WidgetProps) {
     }
   }, [curve])
 
-  const containerRef = useECharts(option)
+  const { ref: chartRef, downloadPng } = useECharts(option)
 
   function askAi(kind: 'explain' | 'quiz') {
     const head = `${d[kind === 'explain' ? 'sos' : 'quizMsg']}: ${type}, ${equation} (a=${a}, b=${b}, p=${p}).`
@@ -132,8 +134,19 @@ export default function ConicSectionsWidget({ locale, initial }: WidgetProps) {
         </div>
 
         <div className="grid gap-4 lg:grid-cols-[1fr_240px]">
-          <div className="overflow-hidden rounded-xl border border-white/8 bg-ink-950/50 p-1">
-            <div ref={containerRef} className="h-[340px] w-full" />
+          <div className="flex flex-col gap-2">
+            <div className="overflow-hidden rounded-xl border border-white/8 bg-ink-950/50 p-1">
+              <div ref={chartRef} className="h-[340px] w-full" />
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => downloadPng('conic')}
+                className="rounded-lg border border-white/10 px-2.5 py-1 text-[11px] text-slate-300 transition hover:border-brand-400/60 hover:text-white"
+              >
+                {d.export}
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
