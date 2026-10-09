@@ -51,6 +51,14 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'color-blindness': lazy(() => import('./color-blindness/index.tsx')),
   'random-picker': lazy(() => import('./random-picker/index.tsx')),
   'qr-generator': lazy(() => import('./qr-generator/index.tsx')),
+  'loan-calculator': lazy(() => import('./loan-calculator/index.tsx')),
+  'compound-interest': lazy(() => import('./compound-interest/index.tsx')),
+  'password-strength': lazy(() => import('./password-strength/index.tsx')),
+  'resistor-color': lazy(() => import('./resistor-color/index.tsx')),
+  'json-to-table': lazy(() => import('./json-to-table/index.tsx')),
+  'text-diff': lazy(() => import('./text-diff/index.tsx')),
+  'reaction-test': lazy(() => import('./reaction-test/index.tsx')),
+  'typing-test': lazy(() => import('./typing-test/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {

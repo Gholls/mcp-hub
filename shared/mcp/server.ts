@@ -41,6 +41,11 @@ import { allBases, bitArray } from '../calc/numbase.ts'
 import { determinant, multiply, parseMatrix, transpose } from '../calc/matrix.ts'
 import { toChineseMoney, toChineseNumber } from '../calc/chinese-money.ts'
 import { CVD_TYPES, simulate } from '../calc/colorblind.ts'
+import { compound, loan } from '../calc/finance.ts'
+import { passwordStrength } from '../calc/password.ts'
+import { decodeResistor } from '../calc/resistor.ts'
+import { toTable } from '../calc/table.ts'
+import { diffLines, diffStats } from '../calc/difflib.ts'
 import { round2, splitTip } from '../calc/tip.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
 import { divisors, factorize } from '../calc/primes.ts'
@@ -737,6 +742,44 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
     case 'qr-generator': {
       const text = typeof args.text === 'string' ? args.text : 'https://mcp.gholl.com'
       return { summary: `QR code for "${text}" (${text.length} chars) rendered in the card.`, structured: { text } }
+    }
+    case 'loan-calculator': {
+      const r = loan(asNumber(args.principal, 500000), asNumber(args.rate, 4.5), Math.round(asNumber(args.months, 240)))
+      return {
+        summary: `Monthly ${r.monthly}, total interest ${r.totalInterest}, total paid ${r.totalPaid}.`,
+        structured: { monthly: r.monthly, totalInterest: r.totalInterest, totalPaid: r.totalPaid },
+      }
+    }
+    case 'compound-interest': {
+      const series = compound(asNumber(args.principal, 10000), asNumber(args.rate, 7), Math.round(asNumber(args.years, 20)), Math.round(asNumber(args.compounds, 12)))
+      const final = series[series.length - 1].value
+      return { summary: `Final value ${final}.`, structured: { final, series } }
+    }
+    case 'password-strength': {
+      const password = typeof args.password === 'string' ? args.password : ''
+      const s = passwordStrength(password)
+      return { summary: `Strength ${s.label.en} (score ${s.score}/4, ${s.bits} bits).`, structured: { score: s.score, label: s.label.en, bits: s.bits } }
+    }
+    case 'resistor-color': {
+      const bands = Array.isArray(args.bands) ? (args.bands as unknown[]).map(String) : []
+      const r = decodeResistor(bands)
+      if (!r) throw new McpError(ErrorCode.InvalidParams, 'Invalid resistor bands')
+      return { summary: `${r.formatted}${r.tolerance !== undefined ? ` ±${r.tolerance}%` : ''}`, structured: r }
+    }
+    case 'json-to-table': {
+      const parsed = parseJson(typeof args.json === 'string' ? args.json : '')
+      if (!parsed.valid) return { summary: `Invalid JSON: ${parsed.error}`, structured: { error: parsed.error } }
+      const table = toTable(parsed.value)
+      return { summary: `${table.columns.length} columns, ${table.rows.length} rows.`, structured: table }
+    }
+    case 'text-diff': {
+      const lines = diffLines(typeof args.a === 'string' ? args.a : '', typeof args.b === 'string' ? args.b : '')
+      const stats = diffStats(lines)
+      return { summary: `+${stats.added} −${stats.removed} (${stats.unchanged} unchanged).`, structured: { stats, lines: lines.slice(0, 200) } }
+    }
+    case 'reaction-test':
+    case 'typing-test': {
+      return { summary: 'Interactive card — results are measured in the card.', structured: {} }
     }
     default:
       throw new McpError(ErrorCode.MethodNotFound, `Tool not implemented: ${toolId}`)

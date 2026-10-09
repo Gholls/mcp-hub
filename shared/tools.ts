@@ -987,6 +987,102 @@ export const qrGeneratorTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { text: { type: 'string', default: 'https://mcp.gholl.com' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['text'] },
 }
 
+export const loanCalculatorTool: ToolMeta = {
+  id: 'loan-calculator',
+  name: 'Loan Calculator',
+  title: { en: 'Loan Calculator', zh: '贷款计算器' },
+  description: { en: 'Monthly payment, total interest and a balance chart.', zh: '月供、总利息与余额曲线。' },
+  mcpDescription: 'Compute a loan. Inputs: `principal`, `rate` (annual %), `months`. Returns monthly payment, total interest, total paid and a balance schedule.',
+  category: 'Finance', icon: '🏦', tags: ['loan', 'mortgage', 'finance'], status: 'stable',
+  embedPath: '/embed/loan-calculator', pagePath: '/tools/loan-calculator',
+  examples: [{ en: 'Monthly payment on a 500k loan at 4.5% over 20 years.', zh: '50 万贷款、4.5%、20 年的月供。' }],
+  inputSchema: { type: 'object', properties: { principal: { type: 'number', default: 500000 }, rate: { type: 'number', default: 4.5 }, months: { type: 'integer', default: 240 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['principal'] },
+}
+
+export const compoundInterestTool: ToolMeta = {
+  id: 'compound-interest',
+  name: 'Compound Interest',
+  title: { en: 'Compound Interest', zh: '复利计算' },
+  description: { en: 'Project compound growth over time.', zh: '复利增长预测。' },
+  mcpDescription: 'Project compound interest. Inputs: `principal`, `rate` (annual %), `years`, `compounds` (per year, default 12). Returns yearly values.',
+  category: 'Finance', icon: '📈', tags: ['compound', 'interest', 'finance'], status: 'stable',
+  embedPath: '/embed/compound-interest', pagePath: '/tools/compound-interest',
+  examples: [{ en: '10k at 7% for 20 years, compounded monthly.', zh: '1 万、7%、20 年、按月复利。' }],
+  inputSchema: { type: 'object', properties: { principal: { type: 'number', default: 10000 }, rate: { type: 'number', default: 7 }, years: { type: 'integer', default: 20 }, compounds: { type: 'integer', default: 12 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['principal'] },
+}
+
+export const passwordStrengthTool: ToolMeta = {
+  id: 'password-strength',
+  name: 'Password Strength',
+  title: { en: 'Password Strength', zh: '密码强度' },
+  description: { en: 'Estimate password strength and entropy.', zh: '评估密码强度与熵。' },
+  mcpDescription: 'Estimate a password strength from its length and character classes. Input: `password`. Returns a 0–4 score, a label and entropy bits. Use to advise users (the value is not stored).',
+  category: 'Security', icon: '🔒', tags: ['password', 'security', 'entropy'], status: 'stable',
+  embedPath: '/embed/password-strength', pagePath: '/tools/password-strength',
+  examples: [{ en: 'How strong is this password?', zh: '这个密码有多强？' }],
+  inputSchema: { type: 'object', properties: { password: { type: 'string' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['password'] },
+}
+
+export const resistorColorTool: ToolMeta = {
+  id: 'resistor-color',
+  name: 'Resistor Color Code',
+  title: { en: 'Resistor Color Code', zh: '电阻色环' },
+  description: { en: 'Decode a 4-band resistor into ohms.', zh: '由四色环解析电阻阻值。' },
+  mcpDescription: 'Decode a resistor color code. Input: `bands` (array of color ids: e.g. ["brown","black","red","gold"]). Returns the resistance and tolerance.',
+  category: 'Everyday', icon: '🧩', tags: ['electronics', 'resistor', 'reference'], status: 'stable',
+  embedPath: '/embed/resistor-color', pagePath: '/tools/resistor-color',
+  examples: [{ en: 'brown-black-red-gold = ?', zh: '棕-黑-红-金 是多少欧？' }],
+  inputSchema: { type: 'object', properties: { bands: { type: 'array', items: { type: 'string' } }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['bands'] },
+}
+
+export const jsonToTableTool: ToolMeta = {
+  id: 'json-to-table',
+  name: 'JSON to Table',
+  title: { en: 'JSON to Table', zh: 'JSON 转表格' },
+  description: { en: 'Render JSON as a readable table.', zh: '把 JSON 渲染成表格。' },
+  mcpDescription: 'Convert JSON into a table. Input: `json` (string). Handles arrays of objects, arrays of arrays and objects. Returns columns and rows.',
+  category: 'Data', icon: '🗂️', tags: ['json', 'table', 'data'], status: 'stable',
+  embedPath: '/embed/json-to-table', pagePath: '/tools/json-to-table',
+  examples: [{ en: 'Show this JSON as a table.', zh: '把这段 JSON 显示成表格。' }],
+  inputSchema: { type: 'object', properties: { json: { type: 'string' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['json'] },
+}
+
+export const textDiffTool: ToolMeta = {
+  id: 'text-diff',
+  name: 'Text Diff',
+  title: { en: 'Text Diff', zh: '文本差异' },
+  description: { en: 'Line-by-line diff between two texts.', zh: '逐行对比两段文本。' },
+  mcpDescription: 'Compute a line diff between two texts. Inputs: `a` and `b`. Returns the diff lines (same/add/del) and counts.',
+  category: 'Text', icon: '🆚', tags: ['diff', 'text', 'compare'], status: 'stable',
+  embedPath: '/embed/text-diff', pagePath: '/tools/text-diff',
+  examples: [{ en: 'What changed between these two versions?', zh: '这两版之间改了什么？' }],
+  inputSchema: { type: 'object', properties: { a: { type: 'string' }, b: { type: 'string' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['a', 'b'] },
+}
+
+export const reactionTestTool: ToolMeta = {
+  id: 'reaction-test',
+  name: 'Reaction Test',
+  title: { en: 'Reaction Test', zh: '反应速度测试' },
+  description: { en: 'Interactive reaction-time measurement.', zh: '交互式测量反应速度。' },
+  mcpDescription: 'An interactive reaction-time test card. No server computation; the user taps when the panel turns green and the card reports the milliseconds.',
+  category: 'Games', icon: '⚡', tags: ['reaction', 'game', 'test'], status: 'stable',
+  embedPath: '/embed/reaction-test', pagePath: '/tools/reaction-test',
+  examples: [{ en: 'Test my reaction time.', zh: '测一下我的反应速度。' }],
+  inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
+}
+
+export const typingTestTool: ToolMeta = {
+  id: 'typing-test',
+  name: 'Typing Test',
+  title: { en: 'Typing Test', zh: '打字测试' },
+  description: { en: 'Measure typing speed and accuracy.', zh: '测量打字速度与正确率。' },
+  mcpDescription: 'An interactive typing-speed test card. The user types a sentence and the card reports WPM and accuracy.',
+  category: 'Games', icon: '⌨️', tags: ['typing', 'game', 'test'], status: 'stable',
+  embedPath: '/embed/typing-test', pagePath: '/tools/typing-test',
+  examples: [{ en: 'Test my typing speed.', zh: '测一下我的打字速度。' }],
+  inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -1030,6 +1126,14 @@ export const TOOLS: ToolMeta[] = [
   colorBlindnessTool,
   randomPickerTool,
   qrGeneratorTool,
+  loanCalculatorTool,
+  compoundInterestTool,
+  passwordStrengthTool,
+  resistorColorTool,
+  jsonToTableTool,
+  textDiffTool,
+  reactionTestTool,
+  typingTestTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {
