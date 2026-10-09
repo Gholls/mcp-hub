@@ -78,10 +78,16 @@ const STARS: Record<number, [number, number][]> = {
 function StonePiece({ color, last }: { color: Color; last?: boolean }) {
   return (
     <span
-      className={`absolute inset-[9%] rounded-full shadow-sm ${
-        color === 'black' ? 'bg-slate-900' : 'bg-slate-100'
-      } ${last ? 'ring-2 ring-brand-400 ring-offset-1 ring-offset-transparent' : ''}`}
-    />
+      className={`absolute inset-[8%] rounded-full shadow-[0_1px_2px_rgba(0,0,0,0.45)] ${
+        color === 'black'
+          ? 'bg-[radial-gradient(circle_at_32%_28%,#64748b,#0f172a_72%)]'
+          : 'bg-[radial-gradient(circle_at_32%_28%,#ffffff,#cbd5e1_78%)]'
+      }`}
+    >
+      {last ? (
+        <span className="absolute left-1/2 top-1/2 h-[26%] w-[26%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500 ring-1 ring-white/80" />
+      ) : null}
+    </span>
   )
 }
 
@@ -259,14 +265,14 @@ export default function GomokuWidget({ locale, initial }: WidgetProps) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-sm">
             <span
-              className={`h-3.5 w-3.5 rounded-full border border-white/20 ${humanColor === 'black' ? 'bg-slate-900' : 'bg-slate-100'}`}
+              className={`h-3.5 w-3.5 rounded-full border border-white/30 ${humanColor === 'black' ? 'bg-[radial-gradient(circle_at_35%_30%,#64748b,#0f172a_72%)]' : 'bg-[radial-gradient(circle_at_35%_30%,#ffffff,#cbd5e1_78%)]'}`}
             />
             <span className="text-slate-300">
               {d.you}: <span className="text-slate-500">{humanColor === 'black' ? d.black : d.white}</span>
             </span>
             <span className="text-slate-600">·</span>
             <span
-              className={`h-3.5 w-3.5 rounded-full border border-white/20 ${humanColor === 'black' ? 'bg-slate-100' : 'bg-slate-900'}`}
+              className={`h-3.5 w-3.5 rounded-full border border-white/30 ${humanColor === 'black' ? 'bg-[radial-gradient(circle_at_35%_30%,#ffffff,#cbd5e1_78%)]' : 'bg-[radial-gradient(circle_at_35%_30%,#64748b,#0f172a_72%)]'}`}
             />
             <span className="text-slate-300">
               {d.ai}: <span className="text-slate-500">{humanColor === 'black' ? d.white : d.black}</span>
@@ -314,10 +320,14 @@ export default function GomokuWidget({ locale, initial }: WidgetProps) {
         </div>
 
         <div className="mx-auto w-full max-w-[560px]">
-          <div className="rounded-xl border border-white/10 bg-[#141b2b] p-1.5">
+          <div className="rounded-xl border border-amber-950/50 bg-[#a9762f] p-1.5 shadow-lg shadow-black/30">
             <div
               className="grid overflow-hidden rounded-md"
-              style={{ gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))` }}
+              style={{
+                gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
+                background:
+                  'repeating-linear-gradient(90deg, rgba(120,72,20,0.07) 0 2px, transparent 2px 8px), linear-gradient(135deg,#ecc78c,#d6a556)',
+              }}
             >
               {board.map((row, r) =>
                 row.map((cell, c) => {
@@ -332,19 +342,19 @@ export default function GomokuWidget({ locale, initial }: WidgetProps) {
                       onClick={() => playAt(r, c)}
                       disabled={!clickable}
                       aria-label={rcToCoord(r, c)}
-                      className={`group relative aspect-square border-b border-r border-amber-200/10 ${
+                      className={`group relative aspect-square border-b border-r border-amber-950/25 ${
                         clickable ? 'cursor-pointer' : 'cursor-default'
                       }`}
                     >
                       {isStar && cell === 0 ? (
-                        <span className="absolute left-1/2 top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-200/40" />
+                        <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-950/50" />
                       ) : null}
                       {cell !== 0 ? (
                         <StonePiece color={cell === 1 ? 'black' : 'white'} last={isLast} />
                       ) : clickable ? (
                         <span
-                          className={`absolute inset-[9%] rounded-full opacity-0 transition group-hover:opacity-100 ${
-                            previewColor === 'black' ? 'bg-slate-900/50' : 'bg-slate-100/50'
+                          className={`absolute inset-[8%] rounded-full opacity-0 transition group-hover:opacity-100 ${
+                            previewColor === 'black' ? 'bg-slate-900/35' : 'bg-white/70'
                           }`}
                         />
                       ) : null}
