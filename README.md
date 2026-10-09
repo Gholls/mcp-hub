@@ -31,29 +31,52 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 
 ## Tools
 
-> The live catalogue has **51 cards across 13 categories** (Math, Data, Developer,
-> Design, Security, Monitoring, Finance, Text, Everyday, AI, Education, Games,
-> Culture, Infrastructure). See the gallery at https://mcp.gholl.com or the
-> machine-readable list at https://mcp.gholl.com/.well-known/mcp.json. A sample:
+> The live catalogue has **41 cards across 13 categories** (Culture, Data, Design, Developer, Education, Everyday, Finance, Games, Infrastructure, Math, Monitoring, Security, Text). See the gallery at https://mcp.gholl.com or the
+> machine-readable list at https://mcp.gholl.com/.well-known/mcp.json. Full list:
 
 | id | Tool | Category | What it does |
 | --- | --- | --- | --- |
-| `vram-calc` | GPU VRAM & Deployment Estimator | Infrastructure | Estimate LLM serving VRAM, recommend GPUs, generate vLLM / Ollama commands |
-| `cron-debugger` | Cron & Regex Debugger | Developer | Explain cron schedules, list next runs, test regexes with highlighting |
-| `schema-viewer` | JSON-LD / Schema Viewer | Data | Validate & explore JSON / JSON-LD with a collapsible tree |
-| `api-uptime` | API Health & Latency | Monitoring | Live probe + 24h uptime/latency dashboard |
-| `jwt-decoder` | JWT Decoder | Developer | Decode header/payload/claims and check expiry |
-| `hash-generator` | Hash Generator | Developer | SHA-1 / SHA-256 / SHA-512 digests (hex + base64), local |
-| `color-studio` | Color Studio & Contrast | Design | hex/RGB/HSL conversion, tints/shades, WCAG contrast checks |
-| `chrono-energy` | BaZi Chrono-Energy Wheel | Culture | Four Pillars, five-element radar and luck cycles (beta) |
-| `gomoku` | Gomoku · Play vs AI | Games | Five-in-a-row against the host's own AI (board + rules live in the card) |
-| `echarts` | ECharts Data Visualization | Data | Render interactive ECharts charts (line/bar/pie/radar/sankey…) from an option; click a point to drill down with the AI |
-| `function-grapher` | Function Grapher | Math | Plot linear/inverse/quadratic/power/exp/log functions with live sliders and key features |
-| `trig-lab` | Trigonometry Lab | Math | Draggable unit circle + wave y=A·sin(ωx+φ)+k (amplitude/period/phase) |
-| `geometry-lab` | Geometry Lab | Math | Drag triangles, quadrilaterals and circles; live sides/angles/area and theorem checks |
-| `conic-sections` | Conic Sections | Math | Circle/ellipse/parabola/hyperbola with foci, eccentricity and asymptotes |
-| `json-formatter` | JSON Formatter | Developer | Validate, pretty-print, minify and sort JSON with byte/line/node stats |
-| `unit-converter` | Unit Converter | Everyday | Convert length/mass/area/volume/temperature/speed/data/time |
+| `chrono-energy` | BaZi Chrono-Energy Wheel | Culture | Compute the Four Pillars (BaZi) from a birth date/time and explore the five-element energy wheel and luck cycles. |
+| `csv-chart` | CSV to Chart | Data | Chart a CSV instantly (bar or line). |
+| `echarts` | ECharts Data Visualization | Data | Render interactive Apache ECharts charts from an ECharts option — line, bar, pie, radar, scatter, sankey and more. |
+| `schema-viewer` | JSON-LD / Schema Viewer | Data | Inspect, validate and explore structured JSON / JSON-LD with a collapsible tree, syntax checks and JSON-LD detection. |
+| `statistics` | Statistics | Data | Mean, median, standard deviation and a histogram for a data set. |
+| `color-blindness` | Color Blindness Simulator | Design | Preview a color under different color-vision deficiencies. |
+| `color-palette` | Color Palette | Design | Generate a harmonious palette from a base color. |
+| `color-studio` | Color Studio & Contrast | Design | Convert between hex/RGB/HSL, generate tints and shades, and check WCAG contrast against black and white. |
+| `css-effects` | CSS Effects Studio | Design | Design gradients, box-shadows and border-radius with live previews and copy-ready CSS. |
+| `favicon-generator` | Favicon Generator | Design | Turn text or an emoji into a favicon. |
+| `image-compressor` | Image Compressor | Design | Compress an image in the browser. |
+| `image-to-base64` | Image to Base64 | Design | Convert an image to a data URI / Base64. |
+| `qr-generator` | QR Code Generator | Design | Generate a QR code from text or a URL. |
+| `bit-visualizer` | Bit Visualizer | Developer | See an integer as a grid of bits, with binary/octal/hex. |
+| `cron-debugger` | Cron & Regex Debugger | Developer | Translate a cron schedule into plain language, preview the next runs, and test regular expressions with live highlighting. |
+| `hash-generator` | Hash Generator | Developer | Compute SHA-1 / SHA-256 / SHA-512 digests of text as hex and base64, entirely in your browser. |
+| `jwt-decoder` | JWT Decoder | Developer | Decode a JWT into its header, payload and claims, and check whether it is expired. |
+| `quiz` | Quiz | Education | A universal quiz card. The AI defines the questions, the options, each option’s score and how many to show per page; the card renders them and reports the answers back. |
+| `resistor-color` | Resistor Color Code | Everyday | Decode a 4-band resistor into ohms. |
+| `unit-converter` | Unit Converter | Everyday | Convert length, mass, area, volume, temperature, speed, data and time units. |
+| `world-clock` | World Clock | Everyday | Live times across major cities with a day/night indicator. |
+| `chinese-money` | Amount in Chinese | Finance | Render an amount in Chinese capital numerals, like a receipt. |
+| `compound-interest` | Compound Interest | Finance | Project compound growth over time. |
+| `loan-calculator` | Loan Calculator | Finance | Monthly payment, total interest and a balance chart. |
+| `dice-roller` | Dice Roller | Games | Roll cryptographically-random dice and read the total. |
+| `gomoku` | Gomoku · Play vs AI | Games | Play Gomoku (five-in-a-row) against your host AI. The card provides the board, move rules and win detection. |
+| `random-picker` | Random Picker | Games | Spin a wheel to fairly pick from a list. |
+| `reaction-test` | Reaction Test | Games | Interactive reaction-time measurement. |
+| `typing-test` | Typing Test | Games | Measure typing speed and accuracy. |
+| `vram-calc` | GPU VRAM & Deployment Estimator | Infrastructure | Estimate the VRAM required to serve an LLM and get GPU recommendations with ready-to-copy vLLM / Ollama commands. |
+| `conic-sections` | Conic Sections | Math | Plot circles, ellipses, parabolas and hyperbolas with live sliders, showing foci, eccentricity and asymptotes. |
+| `function-grapher` | Function Grapher | Math | Plot common functions with live parameter sliders (linear, inverse, quadratic, power, exponential, logarithmic) and read off key features. |
+| `geometry-lab` | Geometry Lab | Math | Drag triangles, quadrilaterals and circles to explore sides, angles, area and the Pythagorean / sine / cosine theorems. |
+| `matrix-calculator` | Matrix Calculator | Math | Multiply, transpose and take determinants of matrices. |
+| `trig-lab` | Trigonometry Lab | Math | Explore the unit circle and trigonometric functions y = A·sin(ωx+φ)+k with live sliders for amplitude, period and phase. |
+| `api-uptime` | API Health & Latency | Monitoring | Probe an API endpoint, measure live latency, and view a 24h uptime and latency dashboard. |
+| `dns-lookup` | DNS Lookup | Monitoring | Resolve DNS records over DNS-over-HTTPS. |
+| `http-inspector` | HTTP Inspector | Monitoring | Fetch a URL and inspect status, redirects and headers. |
+| `password-strength` | Password Strength | Security | Estimate password strength and entropy. |
+| `totp-generator` | TOTP Generator | Security | Generate time-based one-time codes (2FA). |
+| `text-diff` | Text Diff | Text | Line-by-line diff between two texts. |
 
 ## Routes
 
