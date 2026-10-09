@@ -46,6 +46,9 @@ import { passwordStrength } from '../calc/password.ts'
 import { decodeResistor } from '../calc/resistor.ts'
 import { toTable } from '../calc/table.ts'
 import { diffLines, diffStats } from '../calc/difflib.ts'
+import { renderMarkdown } from '../calc/markdown.ts'
+import { numericColumnIndexes, parseCsv } from '../calc/csv.ts'
+import { totp } from '../calc/totp.ts'
 import { round2, splitTip } from '../calc/tip.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
 import { divisors, factorize } from '../calc/primes.ts'
@@ -778,8 +781,67 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       return { summary: `+${stats.added} −${stats.removed} (${stats.unchanged} unchanged).`, structured: { stats, lines: lines.slice(0, 200) } }
     }
     case 'reaction-test':
-    case 'typing-test': {
-      return { summary: 'Interactive card — results are measured in the card.', structured: {} }
+    case 'typing-test':
+    case 'image-to-base64':
+    case 'image-compressor':
+    case 'favicon-generator': {
+      return { summary: 'Interactive card — runs entirely in the card.', structured: {} }
+    }
+    case 'markdown-preview': {
+      const html = renderMarkdown(typeof args.markdown === 'string' ? args.markdown : '')
+      return { summary: `Markdown rendered (${html.length} chars of HTML).`, structured: { html } }
+    }
+    case 'csv-chart': {
+      const data = parseCsv(typeof args.csv === 'string' ? args.csv : '')
+      return {
+        summary: `${data.headers.length} columns, ${data.rows.length} rows.`,
+        structured: { headers: data.headers, rowCount: data.rows.length, numericColumns: numericColumnIndexes(data) },
+      }
+    }
+    case 'totp-generator': {
+      const secret = typeof args.secret === 'string' ? args.secret : ''
+      const digits = Math.min(8, Math.max(6, Math.round(asNumber(args.digits, 6))))
+      const period = Math.max(10, Math.round(asNumber(args.period, 30)))
+      const code = await totp(secret, Date.now(), digits, period)
+      return { summary: `TOTP: ${code}`, structured: { code, digits, period } }
+    }
+    case 'dns-lookup': {
+      const name = (typeof args.name === 'string' ? args.name : '').trim().toLowerCase()
+      if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(name)) throw new McpError(ErrorCode.InvalidParams, 'Invalid domain name')
+      const type = typeof args.type === 'string' ? args.type.toUpperCase() : 'A'
+      const response = await fetch(
+        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${encodeURIComponent(type)}`,
+        { headers: { accept: 'application/dns-json' } },
+      )
+      const json = (await response.json()) as { Answer?: { name: string; type: number; TTL: number; data: string }[] }
+      const answers = json.Answer ?? []
+      return { summary: `${answers.length} ${type} record(s) for ${name}.`, structured: { name, type, answers } }
+    }
+    case 'http-inspector': {
+      const target = parsePublicUrl(typeof args.url === 'string' ? args.url : '')
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 8000)
+      try {
+        let current = target.toString()
+        const chain: string[] = []
+        for (let hop = 0; hop < 6; hop++) {
+          const response = await fetch(current, { method: 'GET', redirect: 'manual', signal: controller.signal })
+          chain.push(current)
+          const location = response.headers.get('location')
+          if (response.status >= 300 && response.status < 400 && location) {
+            current = new URL(location, current).toString()
+            continue
+          }
+          const headers: Record<string, string> = {}
+          response.headers.forEach((value, key) => {
+            headers[key] = value
+          })
+          return { summary: `HTTP ${response.status} after ${chain.length} hop(s).`, structured: { status: response.status, chain, headers } }
+        }
+        return { summary: 'Too many redirects.', structured: { status: 0, chain, headers: {} } }
+      } finally {
+        clearTimeout(timer)
+      }
     }
     default:
       throw new McpError(ErrorCode.MethodNotFound, `Tool not implemented: ${toolId}`)

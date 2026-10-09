@@ -1083,6 +1083,102 @@ export const typingTestTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
 }
 
+export const markdownPreviewTool: ToolMeta = {
+  id: 'markdown-preview',
+  name: 'Markdown Preview',
+  title: { en: 'Markdown Preview', zh: 'Markdown 预览' },
+  description: { en: 'Write Markdown and preview it rendered.', zh: '边写 Markdown 边预览渲染结果。' },
+  mcpDescription: 'Render Markdown to HTML. Input: `markdown`. Returns the rendered HTML (headings, lists, code, links, bold/italic). Use when a user wants Markdown rendered.',
+  category: 'Text', icon: '📝', tags: ['markdown', 'text', 'preview'], status: 'stable',
+  embedPath: '/embed/markdown-preview', pagePath: '/tools/markdown-preview',
+  examples: [{ en: 'Render this Markdown.', zh: '渲染这段 Markdown。' }],
+  inputSchema: { type: 'object', properties: { markdown: { type: 'string' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['markdown'] },
+}
+
+export const csvChartTool: ToolMeta = {
+  id: 'csv-chart',
+  name: 'CSV to Chart',
+  title: { en: 'CSV to Chart', zh: 'CSV 出图' },
+  description: { en: 'Chart a CSV instantly (bar or line).', zh: '粘贴 CSV 立即出图（柱状/折线）。' },
+  mcpDescription: 'Turn CSV into a chart. Input: `csv` (first row = headers). Returns headers, row count and numeric columns. The card renders a bar/line chart.',
+  category: 'Data', icon: '📉', tags: ['csv', 'chart', 'data'], status: 'stable',
+  embedPath: '/embed/csv-chart', pagePath: '/tools/csv-chart',
+  examples: [{ en: 'Chart this CSV.', zh: '把这个 CSV 画成图。' }],
+  inputSchema: { type: 'object', properties: { csv: { type: 'string' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['csv'] },
+}
+
+export const totpGeneratorTool: ToolMeta = {
+  id: 'totp-generator',
+  name: 'TOTP Generator',
+  title: { en: 'TOTP Generator', zh: 'TOTP 动态口令' },
+  description: { en: 'Generate time-based one-time codes (2FA).', zh: '生成基于时间的动态口令（2FA）。' },
+  mcpDescription: 'Generate a TOTP code from a Base32 secret. Inputs: `secret`, optional `digits` (default 6) and `period` (default 30). Returns the current code. Use to verify 2FA setup.',
+  category: 'Security', icon: '🛡️', tags: ['totp', '2fa', 'security'], status: 'stable',
+  embedPath: '/embed/totp-generator', pagePath: '/tools/totp-generator',
+  examples: [{ en: 'Generate a code for this TOTP secret.', zh: '用这个 TOTP 密钥生成口令。' }],
+  inputSchema: { type: 'object', properties: { secret: { type: 'string', default: 'JBSWY3DPEHPK3PXP' }, digits: { type: 'integer', default: 6 }, period: { type: 'integer', default: 30 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['secret'] },
+}
+
+export const imageToBase64Tool: ToolMeta = {
+  id: 'image-to-base64',
+  name: 'Image to Base64',
+  title: { en: 'Image to Base64', zh: '图片转 Base64' },
+  description: { en: 'Convert an image to a data URI / Base64.', zh: '把图片转成 Data URI / Base64。' },
+  mcpDescription: 'An interactive card that converts a chosen image to a data URI / Base64. Runs fully in the browser.',
+  category: 'Design', icon: '🖼️', tags: ['image', 'base64', 'data-uri'], status: 'stable',
+  embedPath: '/embed/image-to-base64', pagePath: '/tools/image-to-base64',
+  examples: [{ en: 'Convert an image to a data URI.', zh: '把图片转成 Data URI。' }],
+  inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
+}
+
+export const imageCompressorTool: ToolMeta = {
+  id: 'image-compressor',
+  name: 'Image Compressor',
+  title: { en: 'Image Compressor', zh: '图片压缩' },
+  description: { en: 'Compress an image in the browser.', zh: '在浏览器内压缩图片。' },
+  mcpDescription: 'An interactive card that compresses an image with a quality slider and format choice, showing before/after sizes.',
+  category: 'Design', icon: '🗜️', tags: ['image', 'compress', 'canvas'], status: 'stable',
+  embedPath: '/embed/image-compressor', pagePath: '/tools/image-compressor',
+  examples: [{ en: 'Compress this image.', zh: '压缩这张图片。' }],
+  inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
+}
+
+export const faviconGeneratorTool: ToolMeta = {
+  id: 'favicon-generator',
+  name: 'Favicon Generator',
+  title: { en: 'Favicon Generator', zh: '图标生成器' },
+  description: { en: 'Turn text or an emoji into a favicon.', zh: '把文字或 emoji 做成图标。' },
+  mcpDescription: 'An interactive card that renders a favicon from text/emoji, background, foreground and radius, downloadable as PNG.',
+  category: 'Design', icon: '⭐', tags: ['favicon', 'icon', 'canvas'], status: 'stable',
+  embedPath: '/embed/favicon-generator', pagePath: '/tools/favicon-generator',
+  examples: [{ en: 'Make a favicon from the letter M.', zh: '用字母 M 做一个图标。' }],
+  inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
+}
+
+export const dnsLookupTool: ToolMeta = {
+  id: 'dns-lookup',
+  name: 'DNS Lookup',
+  title: { en: 'DNS Lookup', zh: 'DNS 查询' },
+  description: { en: 'Resolve DNS records over DNS-over-HTTPS.', zh: '通过 DoH 解析 DNS 记录。' },
+  mcpDescription: 'Resolve DNS records. Inputs: `name` (domain) and optional `type` (A/AAAA/CNAME/MX/TXT/NS). Returns the answer records. Use to check DNS.',
+  category: 'Monitoring', icon: '🌐', tags: ['dns', 'network', 'monitoring'], status: 'stable',
+  embedPath: '/embed/dns-lookup', pagePath: '/tools/dns-lookup',
+  examples: [{ en: 'Look up the A records for mcp.gholl.com.', zh: '查询 mcp.gholl.com 的 A 记录。' }],
+  inputSchema: { type: 'object', properties: { name: { type: 'string', default: 'mcp.gholl.com' }, type: { type: 'string', default: 'A' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['name'] },
+}
+
+export const httpInspectorTool: ToolMeta = {
+  id: 'http-inspector',
+  name: 'HTTP Inspector',
+  title: { en: 'HTTP Inspector', zh: 'HTTP 响应检查' },
+  description: { en: 'Fetch a URL and inspect status, redirects and headers.', zh: '请求网址并查看状态、重定向与响应头。' },
+  mcpDescription: 'Fetch a URL server-side and return its HTTP status, the redirect chain and response headers. Input: `url`. Use to debug HTTP responses (which a browser cannot do cross-origin).',
+  category: 'Monitoring', icon: '🔍', tags: ['http', 'headers', 'monitoring'], status: 'stable',
+  embedPath: '/embed/http-inspector', pagePath: '/tools/http-inspector',
+  examples: [{ en: 'Inspect the headers of https://mcp.gholl.com.', zh: '检查 https://mcp.gholl.com 的响应头。' }],
+  inputSchema: { type: 'object', properties: { url: { type: 'string', default: 'https://mcp.gholl.com' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['url'] },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -1134,6 +1230,14 @@ export const TOOLS: ToolMeta[] = [
   textDiffTool,
   reactionTestTool,
   typingTestTool,
+  markdownPreviewTool,
+  csvChartTool,
+  totpGeneratorTool,
+  imageToBase64Tool,
+  imageCompressorTool,
+  faviconGeneratorTool,
+  dnsLookupTool,
+  httpInspectorTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

@@ -59,6 +59,14 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'text-diff': lazy(() => import('./text-diff/index.tsx')),
   'reaction-test': lazy(() => import('./reaction-test/index.tsx')),
   'typing-test': lazy(() => import('./typing-test/index.tsx')),
+  'markdown-preview': lazy(() => import('./markdown-preview/index.tsx')),
+  'csv-chart': lazy(() => import('./csv-chart/index.tsx')),
+  'totp-generator': lazy(() => import('./totp-generator/index.tsx')),
+  'image-to-base64': lazy(() => import('./image-to-base64/index.tsx')),
+  'image-compressor': lazy(() => import('./image-compressor/index.tsx')),
+  'favicon-generator': lazy(() => import('./favicon-generator/index.tsx')),
+  'dns-lookup': lazy(() => import('./dns-lookup/index.tsx')),
+  'http-inspector': lazy(() => import('./http-inspector/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {
