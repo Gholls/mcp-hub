@@ -247,7 +247,67 @@ for (const tool of TOOLS) {
   console.log(`  ✓ dist/tools/${tool.id}/index.html`)
 }
 
-// 2. Home page: inject prerendered content into the existing index.html #root
+// 2. Category pages
+const CATEGORY_DESCRIPTIONS = {
+  Math: 'Interactive math visualizations for middle and high school teaching.',
+  Data: 'Inspect, validate and visualize structured data and charts.',
+  Developer: 'Everyday developer utilities: cron, regex, JWT, hashing and more.',
+  Design: 'Color and design helpers, including WCAG contrast checks.',
+  Monitoring: 'Probe API endpoints and inspect uptime and latency.',
+  Games: 'Play board games against your host AI.',
+  Culture: 'Chinese metaphysics and cultural calculators.',
+  Infrastructure: 'Estimate GPU memory and deployment cost for LLMs.',
+}
+
+for (const category of [...new Set(TOOLS.map((tool) => tool.category))]) {
+  const slug = category.toLowerCase()
+  const tools = TOOLS.filter((tool) => tool.category === category)
+  const cards = tools
+    .map(
+      (t) => `<div class="card"><h3><a href="/tools/${t.id}">${esc(t.title.en)}</a></h3><p>${esc(t.description.en)}</p></div>`,
+    )
+    .join('')
+  const body = `<div class="seo">
+    ${brandHeader()}
+    <nav aria-label="Breadcrumb"><a href="/">Tools</a> / <span>${esc(category)}</span></nav>
+    <main>
+      <h1>${esc(category)}</h1>
+      <p class="lead">${esc(CATEGORY_DESCRIPTIONS[category] ?? '')}</p>
+      <div class="grid">${cards}</div>
+    </main>
+    <footer>
+      <a href="/">All tools</a>
+      <a href="/llms.txt">llms.txt</a>
+      <a href="/.well-known/mcp.json">MCP discovery</a>
+    </footer>
+  </div>`
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: category,
+      url: `${ORIGIN}/${slug}`,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: tools.map((t, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: t.title.en,
+          url: `${ORIGIN}/tools/${t.id}`,
+        })),
+      },
+    },
+  ]
+  const out = resolve(root, `dist/${slug}/index.html`)
+  mkdirSync(dirname(out), { recursive: true })
+  writeFileSync(
+    out,
+    page(head({ title: `${category} · mcp.gholl.com`, description: CATEGORY_DESCRIPTIONS[category] ?? category, path: `/${slug}`, image: '/og/site.png', jsonLd }), body),
+  )
+  console.log(`  ✓ dist/${slug}/index.html`)
+}
+
+// 3. Home page: inject prerendered content into the existing index.html #root
 const homeJsonLd = [
   {
     '@context': 'https://schema.org',

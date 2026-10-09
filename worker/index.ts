@@ -14,6 +14,7 @@ const JSON_HEADERS = {
 
 const EMBED_PATH = /^\/embed\/([a-z0-9-]+)\/?$/
 const TOOL_PATH = /^\/tools\/([a-z0-9-]+)\/?$/
+const CATEGORY_PATH = /^\/([a-z][a-z0-9-]*)\/?$/
 
 /**
  * Cloudflare Worker entrypoint for mcp.gholl.com.
@@ -64,6 +65,15 @@ export default {
         return html || undefined
       }
       return handleMcpRequest(request, resolveAppHtml)
+    }
+
+    // Prerendered category landing page (/math, /developer, ...).
+    const category = CATEGORY_PATH.exec(url.pathname)
+    if (category && (request.method === 'GET' || request.method === 'HEAD')) {
+      const page = await env.ASSETS.fetch(
+        new Request(new URL(`/${category[1]}/index.html`, request.url)),
+      )
+      if (page.status !== 404) return page
     }
 
     if (request.method !== 'GET' && request.method !== 'HEAD') {

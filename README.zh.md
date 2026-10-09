@@ -48,6 +48,7 @@
 | --- | --- |
 | `/` | 工具展厅 + Playground（预渲染） |
 | `/tools/:id` | 单工具 SEO 落地页（预渲染 + SPA） |
+| `/:category` | 分类落地页，如 `/math`、`/developer`（预渲染） |
 | `/embed/:id` | 沙箱化的按组件单文件应用（iframe / MCP Apps） |
 | `/app/:id/index.html` | 原始按组件产物（内部使用） |
 | `/mcp`、`/mcp/sse` | MCP 端点（Streamable HTTP / JSON-RPC） |

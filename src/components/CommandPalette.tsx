@@ -56,7 +56,13 @@ export default function CommandPalette() {
         sub: MCP_URL,
         run: () => void navigator.clipboard?.writeText(MCP_URL).catch(() => undefined),
       },
-      { id: 'mcp-docs', group: 'actions', label: t('action.mcpDocs'), sub: '/mcp', run: () => navigate('/mcp') },
+      {
+        id: 'mcp-docs',
+        group: 'actions',
+        label: t('action.mcpDocs'),
+        sub: '/mcp',
+        run: () => void window.open('/mcp', '_blank', 'noopener'),
+      },
       {
         id: 'host-docs',
         group: 'actions',

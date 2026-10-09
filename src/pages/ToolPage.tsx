@@ -4,6 +4,7 @@ import { TOOLS, getTool } from '@shared/tools.ts'
 import { SITE_ORIGIN, type JsonSchema } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
 import { useSeo } from '../lib/seo.ts'
+import { categoryLabel, categorySlug } from '../lib/categories.ts'
 import { getWidget } from '../widgets/registry.ts'
 import CopyButton from '../components/CopyButton.tsx'
 import ToolCard from '../components/ToolCard.tsx'
@@ -84,6 +85,10 @@ export default function ToolPage() {
       <nav className="mb-6 text-sm text-slate-500">
         <Link to="/" className="hover:text-slate-300">
           {t('nav.tools')}
+        </Link>
+        <span className="mx-2">/</span>
+        <Link to={`/${categorySlug(tool.category)}`} className="hover:text-slate-300">
+          {categoryLabel(tool.category, locale)}
         </Link>
         <span className="mx-2">/</span>
         <span className="text-slate-300">{pick(tool.title)}</span>

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { TOOLS } from '@shared/tools.ts'
 import { SITE_ORIGIN } from '@shared/types.ts'
 import { useI18n } from '../lib/i18n.tsx'
 import { useSeo } from '../lib/seo.ts'
 import { searchTools } from '../lib/search.ts'
-import { categoryLabel, groupByCategory } from '../lib/categories.ts'
+import { categoryLabel, categorySlug, groupByCategory } from '../lib/categories.ts'
 import CopyButton from '../components/CopyButton.tsx'
 import ToolCard from '../components/ToolCard.tsx'
 
@@ -173,7 +173,12 @@ export default function Home() {
             {groups.map(([category, tools]) => (
               <div key={category}>
                 <div className="mb-4 flex items-baseline gap-3">
-                  <h3 className="text-lg font-semibold text-white">{categoryLabel(category, locale)}</h3>
+                  <Link
+                    to={`/${categorySlug(category)}`}
+                    className="text-lg font-semibold text-white hover:text-brand-300"
+                  >
+                    {categoryLabel(category, locale)}
+                  </Link>
                   <span className="text-xs text-slate-500">{tools.length}</span>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

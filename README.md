@@ -54,6 +54,7 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 | --- | --- |
 | `/` | Tool gallery + playground (prerendered) |
 | `/tools/:id` | SEO landing page for one tool (prerendered + SPA) |
+| `/:category` | Category landing page, e.g. `/math`, `/developer` (prerendered) |
 | `/embed/:id` | Sandboxed, per-widget single-file app (iframe / MCP Apps) |
 | `/app/:id/index.html` | Raw per-widget bundle (used internally) |
 | `/mcp`, `/mcp/sse` | MCP endpoint (Streamable HTTP / JSON-RPC) |

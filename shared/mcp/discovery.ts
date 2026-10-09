@@ -83,10 +83,13 @@ export function buildLlmsTxt(): string {
 
 export function buildSitemap(): string {
   const lastmod = new Date().toISOString().slice(0, 10)
+  const categories = [...new Set(TOOLS.map((t) => t.category))].map(
+    (category) => `/${category.toLowerCase()}`,
+  )
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...['/', ...TOOLS.map((t) => t.pagePath)].map(
+    ...[...new Set(['/', ...categories, ...TOOLS.map((t) => t.pagePath)])].map(
       (path) => `  <url><loc>${SITE_ORIGIN}${path}</loc><lastmod>${lastmod}</lastmod></url>`,
     ),
     '</urlset>',

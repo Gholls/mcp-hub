@@ -519,7 +519,7 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
         const m = circleMeasures(radius)
         return {
           summary: `Circle r=${round(m.radius)}: d=${round(m.diameter)}, C=2πr=${round(m.circumference)}, S=πr²=${round(m.area)}.`,
-          structured: { shape, radius: m.radius, ...m },
+          structured: { shape, ...m },
         }
       }
       const pts = parsePoints()
