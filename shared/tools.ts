@@ -839,6 +839,82 @@ export const diceRollerTool: ToolMeta = {
   },
 }
 
+export const worldClockTool: ToolMeta = {
+  id: 'world-clock',
+  name: 'World Clock',
+  title: { en: 'World Clock', zh: '世界时钟' },
+  description: { en: 'Live times across major cities with a day/night indicator.', zh: '多城市实时时间与昼夜指示。' },
+  mcpDescription:
+    'Show the current time in major cities. Optional `zones` (array of timezone ids) limits the list. Returns each city/timezone with its current time and date. Use when a user asks the time somewhere.',
+  category: 'Everyday', icon: '🌍', tags: ['time', 'timezone', 'clock'], status: 'stable',
+  embedPath: '/embed/world-clock', pagePath: '/tools/world-clock',
+  examples: [{ en: 'What time is it in Tokyo and New York?', zh: '东京和纽约现在几点？' }],
+  inputSchema: { type: 'object', properties: { zones: { type: 'array', items: { type: 'string' }, description: 'Optional timezone ids.' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
+}
+
+export const coinFlipTool: ToolMeta = {
+  id: 'coin-flip',
+  name: 'Coin Flip',
+  title: { en: 'Coin Flip', zh: '抛硬币' },
+  description: { en: 'Fair coin flip using the Web Crypto API.', zh: '使用 Web Crypto 的公平抛硬币。' },
+  mcpDescription: 'Flip a fair coin. Returns "heads" or "tails". Use for unbiased random binary decisions the user should trust.',
+  category: 'Games', icon: '🪙', tags: ['random', 'coin', 'game'], status: 'stable',
+  embedPath: '/embed/coin-flip', pagePath: '/tools/coin-flip',
+  examples: [{ en: 'Flip a coin.', zh: '抛个硬币。' }],
+  inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
+}
+
+export const tipSplitTool: ToolMeta = {
+  id: 'tip-split',
+  name: 'Tip & Bill Split',
+  title: { en: 'Tip & Bill Split', zh: '小费与分账' },
+  description: { en: 'Add a tip and split a bill with a visual breakdown.', zh: '加小费并分账，带可视化比例。' },
+  mcpDescription:
+    'Compute a tip and split a bill. Inputs: `total`, `tipPercent`, `people`. Returns tip, grand total and per-person amount.',
+  category: 'Finance', icon: '🧾', tags: ['tip', 'split', 'bill'], status: 'stable',
+  embedPath: '/embed/tip-split', pagePath: '/tools/tip-split',
+  examples: [{ en: 'Split a $200 bill 4 ways with 15% tip.', zh: '200 元账单 4 人分，15% 小费。' }],
+  inputSchema: { type: 'object', properties: { total: { type: 'number', default: 200 }, tipPercent: { type: 'number', default: 15 }, people: { type: 'integer', default: 4 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['total'] },
+}
+
+export const statisticsTool: ToolMeta = {
+  id: 'statistics',
+  name: 'Statistics',
+  title: { en: 'Statistics', zh: '统计' },
+  description: { en: 'Mean, median, standard deviation and a histogram for a data set.', zh: '一组数据的均值、中位数、标准差与直方图。' },
+  mcpDescription:
+    'Describe a data set. Input: `data` (numbers, as an array or a space/comma-separated string). Returns count, sum, mean, median, std, min, max, quartiles and a histogram. Use when a user wants statistics on numbers.',
+  category: 'Data', icon: '📊', tags: ['statistics', 'math', 'data'], status: 'stable',
+  embedPath: '/embed/statistics', pagePath: '/tools/statistics',
+  examples: [{ en: 'Mean and std of 12 15 9 22 18.', zh: '12 15 9 22 18 的均值与标准差。' }],
+  inputSchema: { type: 'object', properties: { data: { type: 'string', description: 'Numbers separated by spaces/commas.' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['data'] },
+}
+
+export const primeFactorTool: ToolMeta = {
+  id: 'prime-factor',
+  name: 'Prime Factorization',
+  title: { en: 'Prime Factorization', zh: '质因数分解' },
+  description: { en: 'Prime factorization, divisors and primality.', zh: '质因数分解、因数与质数判定。' },
+  mcpDescription: 'Factorize an integer into primes. Input: `n`. Returns prime factors with powers, all divisors and whether n is prime.',
+  category: 'Math', icon: '🧮', tags: ['math', 'prime', 'factor'], status: 'stable',
+  embedPath: '/embed/prime-factor', pagePath: '/tools/prime-factor',
+  examples: [{ en: 'Factorize 360.', zh: '把 360 分解质因数。' }],
+  inputSchema: { type: 'object', properties: { n: { type: 'integer', default: 360 }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['n'] },
+}
+
+export const colorPaletteTool: ToolMeta = {
+  id: 'color-palette',
+  name: 'Color Palette',
+  title: { en: 'Color Palette', zh: '调色板' },
+  description: { en: 'Generate a harmonious palette from a base color.', zh: '从基色生成协调配色。' },
+  mcpDescription:
+    'Generate a 5-color harmonious palette from a base color. Input: `color` (hex). Returns the palette hex values. Use when a user needs a color scheme.',
+  category: 'Design', icon: '🎨', tags: ['color', 'palette', 'design'], status: 'stable',
+  embedPath: '/embed/color-palette', pagePath: '/tools/color-palette',
+  examples: [{ en: 'A palette based on #6366f1.', zh: '以 #6366f1 为基色的配色。' }],
+  inputSchema: { type: 'object', properties: { color: { type: 'string', default: '#6366f1' }, locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } }, required: ['color'] },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -870,6 +946,12 @@ export const TOOLS: ToolMeta[] = [
   bmiCalculatorTool,
   httpStatusTool,
   diceRollerTool,
+  worldClockTool,
+  coinFlipTool,
+  tipSplitTool,
+  statisticsTool,
+  primeFactorTool,
+  colorPaletteTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

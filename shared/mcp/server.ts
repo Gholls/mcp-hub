@@ -35,6 +35,12 @@ import { buildBorderRadius, buildBoxShadow, buildGradient, type GradientKind } f
 import { bmi, bmiCategory } from '../calc/bmi.ts'
 import { findStatus } from '../calc/httpstatus.ts'
 import { rollDice, sum } from '../calc/dice.ts'
+import { CLOCK_ZONES, timeInZone } from '../calc/worldclock.ts'
+import { coinFlip } from '../calc/random.ts'
+import { round2, splitTip } from '../calc/tip.ts'
+import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
+import { divisors, factorize } from '../calc/primes.ts'
+import { paletteFrom } from '../calc/palette.ts'
 import {
   circleMeasures,
   classifyQuadrilateral,
@@ -652,6 +658,40 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
         summary: `${values.join(', ')} (total ${sum(values)}).`,
         structured: { count, sides, values, total: sum(values) },
       }
+    }
+    case 'world-clock': {
+      const requested = Array.isArray(args.zones) ? (args.zones as unknown[]).map(String) : null
+      const zones = requested && requested.length
+        ? requested.map((tz) => ({ id: tz, tz }))
+        : CLOCK_ZONES.map((z) => ({ id: z.id, tz: z.tz }))
+      const times = zones.map((z) => ({ zone: z.id, ...timeInZone(z.tz) }))
+      return { summary: times.map((t) => `${t.zone}: ${t.time}`).join(' · '), structured: { times } }
+    }
+    case 'coin-flip': {
+      const result = coinFlip()
+      return { summary: `Coin flip: ${result}.`, structured: { result } }
+    }
+    case 'tip-split': {
+      const s = splitTip(asNumber(args.total, 200), asNumber(args.tipPercent, 15), asNumber(args.people, 4))
+      return { summary: `Per person ${s.perPerson} (total ${s.grandTotal}, tip ${s.tip}).`, structured: s }
+    }
+    case 'statistics': {
+      const numbers = parseNumbers(typeof args.data === 'string' ? args.data : Array.isArray(args.data) ? args.data.join(' ') : '')
+      const stats = describeStats(numbers)
+      if (!stats) throw new McpError(ErrorCode.InvalidParams, 'No numbers provided')
+      return { summary: `n=${stats.count}, mean=${round2(stats.mean)}, median=${round2(stats.median)}, std=${round2(stats.std)}.`, structured: stats }
+    }
+    case 'prime-factor': {
+      const n = Math.max(2, Math.floor(asNumber(args.n, 360)))
+      return {
+        summary: `${n} = ${factorize(n).map((f) => (f.power > 1 ? `${f.factor}^${f.power}` : `${f.factor}`)).join(' × ')}; ${divisors(n).length} divisors.`,
+        structured: { n, factors: factorize(n), divisors: divisors(n) },
+      }
+    }
+    case 'color-palette': {
+      const color = typeof args.color === 'string' ? args.color : '#6366f1'
+      const palette = paletteFrom(color)
+      return { summary: `Palette: ${palette.join(', ')}.`, structured: { base: color, palette } }
     }
     default:
       throw new McpError(ErrorCode.MethodNotFound, `Tool not implemented: ${toolId}`)

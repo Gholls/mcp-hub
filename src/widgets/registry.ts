@@ -39,6 +39,12 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'bmi-calculator': lazy(() => import('./bmi-calculator/index.tsx')),
   'http-status': lazy(() => import('./http-status/index.tsx')),
   'dice-roller': lazy(() => import('./dice-roller/index.tsx')),
+  'world-clock': lazy(() => import('./world-clock/index.tsx')),
+  'coin-flip': lazy(() => import('./coin-flip/index.tsx')),
+  'tip-split': lazy(() => import('./tip-split/index.tsx')),
+  statistics: lazy(() => import('./statistics/index.tsx')),
+  'prime-factor': lazy(() => import('./prime-factor/index.tsx')),
+  'color-palette': lazy(() => import('./color-palette/index.tsx')),
 }
 
 export function getWidget(id: string): WidgetComponent | undefined {
