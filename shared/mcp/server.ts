@@ -29,6 +29,8 @@ import {
 } from '../calc/grapher.ts'
 import { graphLatex, trigFeatures, type AngleUnit, type TrigFunc, type TrigParams } from '../calc/trig.ts'
 import { conicEquation, conicFeatures, type ConicType } from '../calc/conic.ts'
+import { transformJson } from '../calc/jsonfmt.ts'
+import { convertUnits } from '../calc/units.ts'
 import {
   circleMeasures,
   classifyQuadrilateral,
@@ -566,6 +568,35 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           equation: conicEquation(params),
           features: conicFeatures(params).map((f) => ({ label: f.label.en, value: f.latex })),
         },
+      }
+    }
+    case 'json-formatter': {
+      const mode = args.mode === 'minify' ? 'minify' : 'format'
+      const result = transformJson(typeof args.json === 'string' ? args.json : '', mode)
+      if (!result.ok || !result.stats) {
+        return {
+          summary: `Invalid JSON: ${result.error}`,
+          structured: { valid: false, error: result.error, errorLine: result.errorLine ?? null },
+        }
+      }
+      return {
+        summary: `${mode === 'minify' ? 'Minified' : 'Formatted'} JSON — ${result.stats.bytes} bytes, ${result.stats.nodes} nodes, depth ${result.stats.depth}.`,
+        structured: { valid: true, text: result.text, stats: result.stats },
+      }
+    }
+    case 'unit-converter': {
+      const category = typeof args.category === 'string' ? args.category : 'length'
+      const value = asNumber(args.value, 1)
+      const from = typeof args.from === 'string' ? args.from : ''
+      const to = typeof args.to === 'string' ? args.to : ''
+      const result = convertUnits(category, value, from, to)
+      if (result === null) {
+        throw new McpError(ErrorCode.InvalidParams, `Cannot convert ${from} → ${to} in ${category}`)
+      }
+      const rounded = Math.round(result * 1e6) / 1e6
+      return {
+        summary: `${value} ${from} = ${rounded} ${to} (${category}).`,
+        structured: { category, value, from, to, result: rounded },
       }
     }
     default:

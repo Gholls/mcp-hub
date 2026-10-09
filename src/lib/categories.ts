@@ -9,9 +9,28 @@ const LABELS: Record<string, { en: string; zh: string }> = {
   Games: { en: 'Games', zh: '游戏' },
   Culture: { en: 'Culture', zh: '文化' },
   Infrastructure: { en: 'Infrastructure', zh: '基础设施' },
+  Everyday: { en: 'Everyday', zh: '日常' },
+  Text: { en: 'Text', zh: '文本' },
+  Security: { en: 'Security', zh: '安全' },
+  Finance: { en: 'Finance', zh: '财务' },
+  AI: { en: 'AI', zh: 'AI' },
 }
 
-const ORDER = ['Math', 'Data', 'Developer', 'Design', 'Monitoring', 'Games', 'Culture', 'Infrastructure']
+const ORDER = [
+  'Everyday',
+  'Text',
+  'Developer',
+  'Data',
+  'Math',
+  'Design',
+  'Security',
+  'Monitoring',
+  'Finance',
+  'AI',
+  'Games',
+  'Culture',
+  'Infrastructure',
+]
 
 export function categoryLabel(category: string, locale: Locale): string {
   return LABELS[category]?.[locale] ?? category

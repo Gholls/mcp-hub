@@ -41,6 +41,8 @@
 | `trig-lab` | 三角函数实验室 | Math | 可拖动单位圆 + 波形 y=A·sin(ωx+φ)+k（振幅/周期/相位） |
 | `geometry-lab` | 几何实验室 | Math | 拖动三角形/四边形/圆，实时边长、角度、面积与定理验证 |
 | `conic-sections` | 圆锥曲线 | Math | 圆/椭圆/抛物线/双曲线，显示焦点、离心率与渐近线 |
+| `json-formatter` | JSON 格式化 | Developer | 校验、格式化、压缩、键排序，含字节/行数/节点统计 |
+| `unit-converter` | 单位换算 | Everyday | 长度/质量/面积/体积/温度/速度/数据/时间换算 |
 
 ## 路由
 

@@ -662,6 +662,75 @@ export const conicSectionsTool: ToolMeta = {
   },
 }
 
+export const jsonFormatterTool: ToolMeta = {
+  id: 'json-formatter',
+  name: 'JSON Formatter',
+  title: { en: 'JSON Formatter', zh: 'JSON 格式化' },
+  description: {
+    en: 'Validate, pretty-print, minify and sort JSON keys, with byte/line/node stats.',
+    zh: '校验、格式化、压缩并对 JSON 键排序，显示字节/行数/节点统计。',
+  },
+  mcpDescription:
+    'Validate and reformat a JSON string. Inputs: `json` (required) and optional `mode` ("format" pretty-prints with 2-space indent, "minify" compresses). Returns the formatted text plus stats (bytes, lines, nodes, depth). Use when a user pastes JSON and wants it cleaned up, minified or checked.',
+  category: 'Developer',
+  icon: '🧾',
+  tags: ['json', 'format', 'minify', 'validate'],
+  status: 'stable',
+  embedPath: '/embed/json-formatter',
+  pagePath: '/tools/json-formatter',
+  examples: [
+    { en: 'Format this JSON and tell me how many nodes it has.', zh: '把这个 JSON 格式化，并告诉我有多少节点。' },
+    { en: 'Minify this JSON.', zh: '把这个 JSON 压缩成一行。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      json: { type: 'string', description: 'The JSON document as a string.' },
+      mode: { type: 'string', enum: ['format', 'minify'], description: 'Output mode.', default: 'format' },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+    required: ['json'],
+  },
+}
+
+export const unitConverterTool: ToolMeta = {
+  id: 'unit-converter',
+  name: 'Unit Converter',
+  title: { en: 'Unit Converter', zh: '单位换算' },
+  description: {
+    en: 'Convert length, mass, area, volume, temperature, speed, data and time units.',
+    zh: '换算长度、质量、面积、体积、温度、速度、数据与时间单位。',
+  },
+  mcpDescription:
+    'Convert a numeric value between units. Inputs: `value` (number), `from`, `to` (unit ids) and `category` ("length" | "mass" | "area" | "volume" | "temperature" | "speed" | "data" | "time"). Examples: km→mi, c→f, mb→gib. Use whenever a user needs a unit conversion.',
+  category: 'Everyday',
+  icon: '📏',
+  tags: ['unit', 'convert', 'length', 'temperature', '日常'],
+  status: 'stable',
+  embedPath: '/embed/unit-converter',
+  pagePath: '/tools/unit-converter',
+  examples: [
+    { en: 'Convert 10 km to miles.', zh: '把 10 千米换算成英里。' },
+    { en: 'What is 100°C in Fahrenheit?', zh: '100 摄氏度等于多少华氏度？' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      value: { type: 'number', description: 'Numeric value to convert.', default: 1 },
+      from: { type: 'string', description: 'Source unit id (e.g. km, c, mb).', default: 'km' },
+      to: { type: 'string', description: 'Target unit id (e.g. mi, f, gib).', default: 'mi' },
+      category: {
+        type: 'string',
+        enum: ['length', 'mass', 'area', 'volume', 'temperature', 'speed', 'data', 'time'],
+        description: 'Unit category.',
+        default: 'length',
+      },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+    required: ['value', 'from', 'to', 'category'],
+  },
+}
+
 /**
  * The single source of truth for every tool shipped by mcp.gholl.com.
  *
@@ -685,6 +754,8 @@ export const TOOLS: ToolMeta[] = [
   trigLabTool,
   geometryLabTool,
   conicSectionsTool,
+  jsonFormatterTool,
+  unitConverterTool,
 ]
 
 export function getTool(id: string): ToolMeta | undefined {

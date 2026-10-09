@@ -47,6 +47,8 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 | `trig-lab` | Trigonometry Lab | Math | Draggable unit circle + wave y=A·sin(ωx+φ)+k (amplitude/period/phase) |
 | `geometry-lab` | Geometry Lab | Math | Drag triangles, quadrilaterals and circles; live sides/angles/area and theorem checks |
 | `conic-sections` | Conic Sections | Math | Circle/ellipse/parabola/hyperbola with foci, eccentricity and asymptotes |
+| `json-formatter` | JSON Formatter | Developer | Validate, pretty-print, minify and sort JSON with byte/line/node stats |
+| `unit-converter` | Unit Converter | Everyday | Convert length/mass/area/volume/temperature/speed/data/time |
 
 ## Routes
 
