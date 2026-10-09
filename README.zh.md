@@ -25,28 +25,51 @@
 
 ## 工具
 
-> 线上共 **51 张卡片、13 个分类**（数学、数据、开发、设计、安全、监控、财务、文本、
-> 日常、AI、教育、游戏、文化、基础设施）。展厅见 https://mcp.gholl.com ，机器可读
-> 列表见 https://mcp.gholl.com/.well-known/mcp.json 。以下为示例：
+> 线上共 **41 张卡片、13 个分类**（Culture、Data、Design、Developer、Education、Everyday、Finance、Games、Infrastructure、Math、Monitoring、Security、Text）。展厅见 https://mcp.gholl.com ，机器可读列表见 https://mcp.gholl.com/.well-known/mcp.json 。完整列表：
 
 | id | 工具 | 分类 | 作用 |
 | --- | --- | --- | --- |
-| `vram-calc` | GPU 显存与部署预估 | Infrastructure | 估算大模型部署所需显存、推荐 GPU、生成 vLLM / Ollama 命令 |
-| `cron-debugger` | Cron / 正则调试器 | Developer | 把 Cron 翻译成自然语言、列出下次执行时间、实时高亮测试正则 |
-| `schema-viewer` | JSON-LD / Schema 可视化 | Data | 校验并用可折叠树视图浏览 JSON / JSON-LD |
-| `api-uptime` | API 健康度与延迟 | Monitoring | Live Ping 探测 + 24 小时可用率/延迟看板 |
-| `jwt-decoder` | JWT 解析器 | Developer | 解析 header/payload/claims 并判断是否过期 |
-| `hash-generator` | 哈希生成器 | Developer | SHA-1 / SHA-256 / SHA-512 摘要（hex + base64），本地计算 |
-| `color-studio` | 颜色工具与对比度 | Design | hex/RGB/HSL 转换、深浅色阶、WCAG 对比度检查 |
-| `chrono-energy` | 玄学八字与 Chrono 能量盘 | Culture | 四柱八字、五行雷达、大运时间轴（beta） |
-| `gomoku` | 五子棋 · 与 AI 对战 | Games | 与宿主 AI 下五子棋（棋盘与规则在卡片内完成） |
-| `echarts` | ECharts 数据可视化 | Data | 用 ECharts option 渲染交互式图表（折线/柱状/饼图/雷达/桑基…）；点击数据点回传 AI 下钻 |
-| `function-grapher` | 函数图像绘制器 | Math | 一次/反比例/二次/幂/指数/对数函数，滑块实时绘图并显示图像特征 |
-| `trig-lab` | 三角函数实验室 | Math | 可拖动单位圆 + 波形 y=A·sin(ωx+φ)+k（振幅/周期/相位） |
-| `geometry-lab` | 几何实验室 | Math | 拖动三角形/四边形/圆，实时边长、角度、面积与定理验证 |
-| `conic-sections` | 圆锥曲线 | Math | 圆/椭圆/抛物线/双曲线，显示焦点、离心率与渐近线 |
-| `json-formatter` | JSON 格式化 | Developer | 校验、格式化、压缩、键排序，含字节/行数/节点统计 |
-| `unit-converter` | 单位换算 | Everyday | 长度/质量/面积/体积/温度/速度/数据/时间换算 |
+| `chrono-energy` | 玄学八字与 Chrono 能量盘 | Culture | 根据出生年月日时推算八字四柱，可视化五行能量分布与人生大运。 |
+| `csv-chart` | CSV 出图 | Data | 粘贴 CSV 立即出图（柱状/折线）。 |
+| `echarts` | ECharts 数据可视化 | Data | 用标准 ECharts option 渲染交互式图表——折线、柱状、饼图、雷达、散点、桑基图等。 |
+| `schema-viewer` | JSON-LD / Schema 可视化 | Data | 用可折叠树视图检查、校验并浏览结构化 JSON / JSON-LD，提供语法检查与 JSON-LD 识别。 |
+| `statistics` | 统计 | Data | 一组数据的均值、中位数、标准差与直方图。 |
+| `css-effects` | CSS 效果工作室 | Design | 可视化设计渐变、阴影与圆角，实时预览并复制 CSS。 |
+| `qr-generator` | 二维码生成器 | Design | 把文本或链接生成二维码。 |
+| `favicon-generator` | 图标生成器 | Design | 把文字或 emoji 做成图标。 |
+| `image-compressor` | 图片压缩 | Design | 在浏览器内压缩图片。 |
+| `image-to-base64` | 图片转 Base64 | Design | 把图片转成 Data URI / Base64。 |
+| `color-blindness` | 色盲模拟 | Design | 预览色觉异常者看到的颜色。 |
+| `color-palette` | 调色板 | Design | 从基色生成协调配色。 |
+| `color-studio` | 颜色工具与对比度 | Design | 在 hex/RGB/HSL 之间转换，生成深浅色阶，并检查与黑白两色的 WCAG 对比度。 |
+| `cron-debugger` | Cron / 正则调试器 | Developer | 把 Cron 表达式翻译成自然语言，预览未来执行时间，并实时高亮测试正则表达式。 |
+| `jwt-decoder` | JWT 解析器 | Developer | 将 JWT 解析为头部、载荷与声明，并检查是否已过期。 |
+| `bit-visualizer` | 位可视化 | Developer | 以位方块查看整数，附二进制/八进制/十六进制。 |
+| `hash-generator` | 哈希生成器 | Developer | 在浏览器本地计算文本的 SHA-1 / SHA-256 / SHA-512 摘要（hex 与 base64）。 |
+| `quiz` | 测试题 | Education | 万能测试题卡片。题目、选项、每个选项的分值与每页题数都由 AI 设定；卡片只负责渲染并把作答回传。 |
+| `world-clock` | 世界时钟 | Everyday | 多城市实时时间与昼夜指示。 |
+| `unit-converter` | 单位换算 | Everyday | 换算长度、质量、面积、体积、温度、速度、数据与时间单位。 |
+| `resistor-color` | 电阻色环 | Everyday | 由四色环解析电阻阻值。 |
+| `compound-interest` | 复利计算 | Finance | 复利增长预测。 |
+| `loan-calculator` | 贷款计算器 | Finance | 月供、总利息与余额曲线。 |
+| `chinese-money` | 金额大写 | Finance | 以票据样式把金额转成人民币大写。 |
+| `gomoku` | 五子棋 · 与 AI 对战 | Games | 与你的宿主 AI 下五子棋。卡片负责任意棋盘、落子规则与胜负判定。 |
+| `reaction-test` | 反应速度测试 | Games | 交互式测量反应速度。 |
+| `typing-test` | 打字测试 | Games | 测量打字速度与正确率。 |
+| `random-picker` | 随机抽取 | Games | 转盘公平地从列表抽取。 |
+| `dice-roller` | 骰子 | Games | 掷骰子（密码学随机）并显示合计。 |
+| `vram-calc` | GPU 显存与部署成本预估 | Infrastructure | 估算部署大模型所需的显存，给出 GPU 推荐方案，并生成可直接复制的 vLLM / Ollama 启动命令。 |
+| `trig-lab` | 三角函数实验室 | Math | 探索单位圆与三角函数 y = A·sin(ωx+φ)+k，用滑块实时调整振幅、周期与相位。 |
+| `geometry-lab` | 几何实验室 | Math | 拖动三角形、四边形、圆，实时查看边长、角度、面积，并验证勾股定理与正余弦定理。 |
+| `function-grapher` | 函数图像绘制器 | Math | 用滑块实时绘制常见函数图像（一次、反比例、二次、幂、指数、对数），并显示图像特征。 |
+| `conic-sections` | 圆锥曲线 | Math | 用滑块实时绘制圆、椭圆、抛物线、双曲线，显示焦点、离心率与渐近线。 |
+| `matrix-calculator` | 矩阵计算 | Math | 矩阵乘法、转置与行列式。 |
+| `api-uptime` | API 健康度与延迟看板 | Monitoring | 探测 API 接口，测量实时延迟，并查看 24 小时可用率与延迟看板。 |
+| `dns-lookup` | DNS 查询 | Monitoring | 通过 DoH 解析 DNS 记录。 |
+| `http-inspector` | HTTP 响应检查 | Monitoring | 请求网址并查看状态、重定向与响应头。 |
+| `totp-generator` | TOTP 动态口令 | Security | 生成基于时间的动态口令（2FA）。 |
+| `password-strength` | 密码强度 | Security | 评估密码强度与熵。 |
+| `text-diff` | 文本差异 | Text | 逐行对比两段文本。 |
 
 ## 路由
 
