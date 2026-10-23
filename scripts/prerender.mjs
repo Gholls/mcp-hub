@@ -60,6 +60,12 @@ const STYLE = `
 
 const CONFIG = JSON.stringify({ mcpServers: { gholl: { type: 'http', url: `${ORIGIN}/mcp` } } }, null, 2)
 
+// Google AdSense loader. Kept out of the per-widget embeds: they are
+// self-contained MCP Apps (no external requests) rendered inside sandboxes.
+const ADSENSE_CLIENT = 'ca-pub-1400861145058456'
+const ADSENSE_TAGS = `<meta name="google-adsense-account" content="${ADSENSE_CLIENT}" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`
+
 function typeLabel(prop) {
   if (Array.isArray(prop.enum) && prop.enum.length) return prop.enum.join(' | ')
   const type = Array.isArray(prop.type) ? prop.type.join(' | ') : prop.type
@@ -103,6 +109,7 @@ function head({ title, description, path, image, jsonLd }) {
     <meta name="twitter:image" content="${ORIGIN}${image}" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script type="application/ld+json">${json(jsonLd)}</script>
+    ${ADSENSE_TAGS}
     ${assetTags}`
 }
 
