@@ -33,7 +33,7 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 
 ## Tools
 
-> The live catalogue has **41 cards across 13 categories** (Culture, Data, Design, Developer, Education, Everyday, Finance, Games, Infrastructure, Math, Monitoring, Security, Text). See the gallery at https://mcp.gholl.com or the
+> The live catalogue has **42 cards across 13 categories** (Culture, Data, Design, Developer, Education, Everyday, Finance, Games, Infrastructure, Math, Monitoring, Security, Text). See the gallery at https://mcp.gholl.com or the
 > machine-readable list at https://mcp.gholl.com/.well-known/mcp.json. Full list:
 
 | id | Tool | Category | What it does |
@@ -47,6 +47,7 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 | `color-palette` | Color Palette | Design | Generate a harmonious palette from a base color. |
 | `color-studio` | Color Studio & Contrast | Design | Convert between hex/RGB/HSL, generate tints and shades, and check WCAG contrast against black and white. |
 | `css-effects` | CSS Effects Studio | Design | Design gradients, box-shadows and border-radius with live previews and copy-ready CSS. |
+| `icon-generator` | Icon Logo Generator | Design | Upload a logo once and export ready-to-use icons for web, PWA, iOS, macOS, Android, Windows and Linux — all generated locally. |
 | `favicon-generator` | Favicon Generator | Design | Turn text or an emoji into a favicon. |
 | `image-compressor` | Image Compressor | Design | Compress an image in the browser. |
 | `image-to-base64` | Image to Base64 | Design | Convert an image to a data URI / Base64. |

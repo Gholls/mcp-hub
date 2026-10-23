@@ -25,7 +25,7 @@
 
 ## 工具
 
-> 线上共 **41 张卡片、13 个分类**（Culture、Data、Design、Developer、Education、Everyday、Finance、Games、Infrastructure、Math、Monitoring、Security、Text）。展厅见 https://mcp.gholl.com ，机器可读列表见 https://mcp.gholl.com/.well-known/mcp.json 。完整列表：
+> 线上共 **42 张卡片、13 个分类**（Culture、Data、Design、Developer、Education、Everyday、Finance、Games、Infrastructure、Math、Monitoring、Security、Text）。展厅见 https://mcp.gholl.com ，机器可读列表见 https://mcp.gholl.com/.well-known/mcp.json 。完整列表：
 
 | id | 工具 | 分类 | 作用 |
 | --- | --- | --- | --- |
@@ -36,6 +36,7 @@
 | `statistics` | 统计 | Data | 一组数据的均值、中位数、标准差与直方图。 |
 | `css-effects` | CSS 效果工作室 | Design | 可视化设计渐变、阴影与圆角，实时预览并复制 CSS。 |
 | `qr-generator` | 二维码生成器 | Design | 把文本或链接生成二维码。 |
+| `icon-generator` | 图标 Logo 生成器 | Design | 上传一次 Logo，即可导出适配 Web、PWA、iOS、macOS、Android、Windows 与 Linux 的整套图标，全程本地生成。 |
 | `favicon-generator` | 图标生成器 | Design | 把文字或 emoji 做成图标。 |
 | `image-compressor` | 图片压缩 | Design | 在浏览器内压缩图片。 |
 | `image-to-base64` | 图片转 Base64 | Design | 把图片转成 Data URI / Base64。 |

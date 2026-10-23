@@ -81,7 +81,7 @@ function landingPage(origin: string): string {
   <h2>Claude Desktop · Cursor · VS Code · Cline</h2>
   <pre>${htmlEscape(config)}</pre>
 
-  <h2>8 interactive tools</h2>
+  <h2>${TOOLS.length} interactive tools</h2>
   <ul>
       ${toolList}
   </ul>

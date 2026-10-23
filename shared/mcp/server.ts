@@ -45,6 +45,15 @@ import { diffLines, diffStats } from '../calc/difflib.ts'
 import { numericColumnIndexes, parseCsv } from '../calc/csv.ts'
 import { totp } from '../calc/totp.ts'
 import { parseQuiz, scoreQuiz } from '../calc/quiz.ts'
+import {
+  composeIcon,
+  encodePng,
+  resampleRgba,
+  resolveIconTargets,
+  type IconStyle,
+  type RgbaImage,
+} from '../calc/icon.ts'
+import { bytesToBase64, decodeImageBytes } from './image-decode.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
 import { paletteFrom } from '../calc/palette.ts'
 import {
@@ -149,6 +158,87 @@ async function fetchJson(url: string): Promise<unknown> {
   } finally {
     clearTimeout(timer)
   }
+}
+
+const MAX_ICON_TARGETS = 16
+const MAX_ICON_SOURCE_BYTES = 8 * 1024 * 1024
+const MAX_ICON_OUTPUT_BYTES = 6 * 1024 * 1024
+
+function base64ToBytes(value: string): Uint8Array {
+  const binary = atob(value.replace(/\s+/g, ''))
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return bytes
+}
+
+/** Loads an icon source from a data URI or a public image URL. */
+async function loadIconSource(value: unknown): Promise<{ image: RgbaImage; format: 'png' | 'jpeg' } | null> {
+  if (typeof value !== 'string' || value.trim() === '') return null
+  const input = value.trim()
+  let bytes: Uint8Array
+
+  if (input.startsWith('data:')) {
+    const comma = input.indexOf(',')
+    if (comma < 0) throw new McpError(ErrorCode.InvalidParams, 'Invalid data URI: missing comma separator')
+    const meta = input.slice(5, comma)
+    if (!/;base64$/i.test(meta)) {
+      throw new McpError(ErrorCode.InvalidParams, 'Invalid data URI: only ;base64 payloads are supported')
+    }
+    const payload = input.slice(comma + 1)
+    if (payload.length > Math.ceil((MAX_ICON_SOURCE_BYTES * 4) / 3) + 4) {
+      throw new McpError(ErrorCode.InvalidParams, `Image too large (>${MAX_ICON_SOURCE_BYTES / 1024 / 1024} MB)`)
+    }
+    try {
+      bytes = base64ToBytes(payload)
+    } catch {
+      throw new McpError(ErrorCode.InvalidParams, 'Invalid data URI: malformed base64 payload')
+    }
+  } else {
+    const parsed = parsePublicUrl(input)
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 10_000)
+    try {
+      const response = await fetch(parsed.toString(), {
+        signal: controller.signal,
+        redirect: 'follow',
+        headers: { 'User-Agent': PROBE_USER_AGENT, Accept: 'image/png,image/jpeg,image/*;q=0.8' },
+      })
+      if (!response.ok) throw new McpError(ErrorCode.InvalidParams, `Fetch failed: HTTP ${response.status}`)
+      const buffer = await response.arrayBuffer()
+      if (buffer.byteLength > MAX_ICON_SOURCE_BYTES) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          `Image too large (>${MAX_ICON_SOURCE_BYTES / 1024 / 1024} MB)`,
+        )
+      }
+      bytes = new Uint8Array(buffer)
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
+  if (bytes.byteLength > MAX_ICON_SOURCE_BYTES) {
+    throw new McpError(ErrorCode.InvalidParams, `Image too large (>${MAX_ICON_SOURCE_BYTES / 1024 / 1024} MB)`)
+  }
+  try {
+    const decoded = await decodeImageBytes(bytes)
+    return { image: decoded.image, format: decoded.format }
+  } catch (error) {
+    if (error instanceof McpError) throw error
+    const message = error instanceof Error ? error.message : String(error)
+    throw new McpError(ErrorCode.InvalidParams, `Could not decode image: ${message}`)
+  }
+}
+
+function downscaleIconSource(image: RgbaImage, max: number): RgbaImage {
+  const longEdge = Math.max(image.width, image.height)
+  if (longEdge <= max) return image
+  const scale = max / longEdge
+  return resampleRgba(
+    image,
+    Math.max(1, Math.round(image.width * scale)),
+    Math.max(1, Math.round(image.height * scale)),
+  )
 }
 
 /** Server-side computation mirroring the widget logic, so agents get data without rendering. */
@@ -782,6 +872,88 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       const css = `background: ${buildGradient(asNumber(args.angle, 135), String(args.from ?? '#6366f1'), String(args.to ?? '#22d3ee'), kind)};`
       return { summary: css, structured: { tab, css } }
     }
+    case 'icon-generator': {
+      const selection = resolveIconTargets({
+        platforms: args.platforms,
+        targets: args.targets,
+        size: args.size,
+      })
+      const targets = selection.targets.slice(0, MAX_ICON_TARGETS)
+      const style: IconStyle = {
+        background:
+          typeof args.background === 'string' && args.background.trim() ? args.background.trim() : null,
+        padding: asNumber(args.padding, 0),
+        radius: asNumber(args.radius, 0),
+        fit: args.fit === 'cover' ? 'cover' : 'contain',
+      }
+      const targetMeta = targets.map((target) => ({
+        id: target.id,
+        platform: target.platform,
+        filename: target.filename,
+        size: target.size,
+        label: target.label,
+      }))
+      const base = {
+        requestedTargets: selection.targets.length,
+        truncated: selection.targets.length > targets.length,
+        unknown: selection.unknown,
+        targets: targetMeta,
+        style,
+      }
+      const source = await loadIconSource(args.image)
+      if (!source) {
+        return {
+          summary: `Icon generator ready: ${targets.length} target(s) selected${
+            selection.unknown.length ? `, ${selection.unknown.length} unknown id(s) ignored` : ''
+          }. No image was supplied — open the interactive card to upload one, or call again with "image" set to a PNG/JPEG data URI or a public https image URL.`,
+          structured: { ...base, imageProvided: false },
+        }
+      }
+      const maxTarget = Math.max(...targets.map((target) => target.size), 1)
+      const prepared = downscaleIconSource(source.image, Math.min(1024, Math.max(maxTarget, 256)))
+      const generated: {
+        mimeType: 'image/png'
+        data: string
+        filename: string
+        size: number
+        platform: string
+      }[] = []
+      let total = 0
+      for (const target of targets) {
+        const png = await encodePng(composeIcon(prepared, target, style))
+        if (generated.length > 0 && total + png.byteLength > MAX_ICON_OUTPUT_BYTES) break
+        generated.push({
+          mimeType: 'image/png',
+          data: bytesToBase64(png),
+          filename: target.filename,
+          size: target.size,
+          platform: target.platform,
+        })
+        total += png.byteLength
+      }
+      return {
+        summary: `Generated ${generated.length} ${source.format.toUpperCase()} source icon(s): ${generated
+          .map((item) => `${item.filename} (${item.size}×${item.size})`)
+          .join(', ')}${
+          generated.length < selection.targets.length
+            ? ` — ${selection.targets.length - generated.length} skipped (limit ${MAX_ICON_TARGETS} / ${
+                MAX_ICON_OUTPUT_BYTES / 1024 / 1024
+              } MB)`
+            : ''
+        }.`,
+        structured: {
+          ...base,
+          imageProvided: true,
+          sourceFormat: source.format,
+          generated: generated.map((item) => ({
+            filename: item.filename,
+            size: item.size,
+            platform: item.platform,
+          })),
+        },
+        images: generated.map((item) => ({ mimeType: item.mimeType, data: item.data })),
+      }
+    }
     default:
       throw new McpError(ErrorCode.MethodNotFound, `Tool not implemented: ${toolId}`)
   }
@@ -847,8 +1019,17 @@ export function createMcpServer(
 
     // The UI HTML is served via `resources/read` (the MCP Apps / @mcp-ui v7 flow)
     // rather than inlined here, which keeps tool results small.
+    const content: Array<
+      | { type: 'text'; text: string }
+      | { type: 'image'; data: string; mimeType: string }
+    > = [{ type: 'text', text: result.summary }]
+    if ('images' in result && Array.isArray(result.images)) {
+      for (const image of result.images) {
+        content.push({ type: 'image', data: image.data, mimeType: image.mimeType })
+      }
+    }
     return {
-      content: [{ type: 'text', text: result.summary }],
+      content,
       structuredContent: result.structured,
       _meta: { ui: { resourceUri: resourceUri(tool.id) } },
     }

@@ -970,6 +970,42 @@ export const imageCompressorTool: ToolMeta = {
   inputSchema: { type: 'object', properties: { locale: { type: 'string', enum: ['en', 'zh'], default: 'en' } } },
 }
 
+export const iconGeneratorTool: ToolMeta = {
+  id: 'icon-generator',
+  name: 'Icon Logo Generator',
+  title: { en: 'Icon Logo Generator', zh: '图标 Logo 生成器' },
+  description: {
+    en: 'Upload a logo once and export ready-to-use icons for web, PWA, iOS, macOS, Android, Windows and Linux — all generated locally.',
+    zh: '上传一次 Logo，即可导出适配 Web、PWA、iOS、macOS、Android、Windows 与 Linux 的整套图标，全程本地生成。',
+  },
+  mcpDescription:
+    'Generate platform-ready app icons from one logo. Inputs: `image` — a PNG or JPEG data URI (e.g. "data:image/png;base64,...") or a public https image URL; omit it to open the interactive upload card. Optional: `platforms` (any of web, ios, macos, android, windows, linux, or "all"; default web), `targets` (exact ids such as "ios-1024" or "web-favicon-32" for one or more specific icons; overrides platforms), `size` (16–2048 px shortcut that returns a single square PNG), `background` (CSS color, or "transparent"; iOS/App Store icons become opaque white when transparent), `padding` (0–40 percent), `radius` (0–50 percent) and `fit` ("contain" or "cover"). Returns one or many PNG icons as MCP image content plus structured metadata (filename, platform, pixel size). Use when a user wants a favicon, Apple touch icon, app icon, PWA icons, or a complete multi-platform icon set from a logo.',
+  category: 'Design',
+  icon: '🧩',
+  tags: ['icon', 'logo', 'favicon', 'app-icon', 'pwa', 'ios', 'android'],
+  status: 'stable',
+  embedPath: '/embed/icon-generator',
+  pagePath: '/tools/icon-generator',
+  examples: [
+    { en: 'Turn this logo into a full web and PWA icon set.', zh: '把这个 Logo 做成一整套 Web 与 PWA 图标。' },
+    { en: 'Generate just a 1024 px iOS app icon from https://example.com/logo.png.', zh: '用 https://example.com/logo.png 只生成一张 1024 px 的 iOS 应用图标。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      image: { type: 'string', description: 'PNG/JPEG data URI (data:image/png;base64,...) or a public https image URL. Omit to open the upload card.' },
+      platforms: { type: 'array', items: { type: 'string', enum: ['web', 'ios', 'macos', 'android', 'windows', 'linux'] }, description: 'Platform sets to generate. Defaults to web.' },
+      targets: { type: 'array', items: { type: 'string' }, description: 'Exact target ids, e.g. ["ios-1024","web-favicon-32"]. Overrides platforms.' },
+      size: { type: 'integer', minimum: 16, maximum: 2048, description: 'Shortcut: return a single square PNG at this pixel size.' },
+      background: { type: 'string', description: 'CSS background color, or "transparent". Default transparent.' },
+      padding: { type: 'number', minimum: 0, maximum: 40, description: 'Padding around the logo, percent. Default 0.' },
+      radius: { type: 'number', minimum: 0, maximum: 50, description: 'Corner radius, percent. Default 0.' },
+      fit: { type: 'string', enum: ['contain', 'cover'], description: 'How the logo fills its content box. Default contain.' },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+  },
+}
+
 export const faviconGeneratorTool: ToolMeta = {
   id: 'favicon-generator',
   name: 'Favicon Generator',
@@ -1148,6 +1184,7 @@ export const TOOLS: ToolMeta[] = [
   totpGeneratorTool,
   imageToBase64Tool,
   imageCompressorTool,
+  iconGeneratorTool,
   faviconGeneratorTool,
   dnsLookupTool,
   httpInspectorTool,
