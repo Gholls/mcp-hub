@@ -13,6 +13,17 @@ const JSON_HEADERS = {
 }
 
 const EMBED_PATH = /^\/embed\/([a-z0-9-]+)\/?$/
+
+// Glama connector-claim document (served statically; same dot-directory
+// rationale as /.well-known/mcp.json — see vite.config.ts).
+const GLAMA_CLAIM = JSON.stringify(
+  {
+    $schema: 'https://glama.ai/mcp/schemas/connector.json',
+    claim: 'glama_claim__0FvHtZ-Avdk0QruMWt6Yo-el8ChWOzR',
+  },
+  null,
+  2,
+)
 const TOOL_PATH = /^\/tools\/([a-z0-9-]+)\/?$/
 const CATEGORY_PATH = /^\/([a-z][a-z0-9-]*)\/?$/
 
@@ -23,6 +34,7 @@ const CATEGORY_PATH = /^\/([a-z][a-z0-9-]*)\/?$/
  * binding; this worker handles the dynamic routes:
  *   - `/mcp` and `/mcp/sse` → MCP Streamable HTTP
  *   - `/.well-known/mcp.json` → agent discovery document
+ *   - `/.well-known/glama.json` → Glama connector claim document
  *   - `/embed/:id` → pre-built, single-widget HTML (also used by MCP resources)
  *   - `/tools/:id` → prerendered, crawler-visible landing page (SPA-enhanced)
  */
@@ -32,6 +44,10 @@ export default {
 
     if (url.pathname === '/.well-known/mcp.json') {
       return new Response(JSON.stringify(buildDiscoveryDocument(), null, 2), { headers: JSON_HEADERS })
+    }
+
+    if (url.pathname === '/.well-known/glama.json') {
+      return new Response(GLAMA_CLAIM, { headers: JSON_HEADERS })
     }
 
     // Per-widget single-file build; falls back to the SPA shell if missing.
