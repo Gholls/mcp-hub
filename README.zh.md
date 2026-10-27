@@ -4,6 +4,7 @@
 
 [![CI](https://github.com/Gholls/mcp-hub/actions/workflows/ci.yml/badge.svg)](https://github.com/Gholls/mcp-hub/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![mcp-ui MCP connector – tool definition quality and endpoint health on Glama](https://glama.ai/mcp/connectors/com.gholl.mcp/mcp-ui/badges/score.svg)](https://glama.ai/mcp/connectors/com.gholl.mcp/mcp-ui)
 
 面向**人类**与 **AI Agent** 的交互式微型工具集，部署于
 [`mcp.gholl.com`](https://mcp.gholl.com)。
