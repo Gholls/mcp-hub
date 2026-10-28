@@ -1,0 +1,16 @@
+version: 1
+# scope 与 repowiki 同步策略使用默认值（如后续构建需要限制范围再补充 include/excluded）
+
+notes:
+  - id: knowledge-build-scope
+    type: language
+    content: 知识卡与 wiki 正文使用简体中文撰写；代码标识符、路径、配置键保持英文原文。
+    strong: true
+  - id: knowledge-focus
+    type: boundary
+    content: 知识模块划分以 shared（工具注册表 + MCP 服务层）、src（前端 SPA 与 widgets）、worker + scripts（部署与构建）、tests（质量门禁）为一级边界；不要将 CI/workflows 与运行时代码混入同一模块。
+    strong: true
+  - id: knowledge-conventions
+    type: convention
+    content: 记录约定时必须与代码现状核对：单一工具定义 shared/tools.ts 驱动四个表面（gallery / SEO 落地页 / embed / MCP），dot 目录发现文档由 worker 动态提供而非静态文件。
+    strong: false
