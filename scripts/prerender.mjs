@@ -97,6 +97,7 @@ function head({ title, description, path, image, jsonLd }) {
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="mcp.gholl.com" />
     <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_CN" />
     <meta property="og:title" content="${esc(title)}" />
     <meta property="og:description" content="${esc(description)}" />
     <meta property="og:url" content="${ORIGIN}${path}" />
@@ -220,8 +221,10 @@ for (const tool of TOOLS) {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
       name: tool.name,
+      alternateName: tool.title.zh,
       applicationCategory: 'DeveloperApplication',
       operatingSystem: 'Any',
+      inLanguage: ['en', 'zh'],
       description: tool.mcpDescription,
       url: `${ORIGIN}${tool.pagePath}`,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
@@ -322,8 +325,16 @@ const homeJsonLd = [
     name: 'mcp.gholl.com',
     url: `${ORIGIN}/`,
     description: 'Interactive micro-tools for humans and AI agents, served over the Model Context Protocol.',
-    inLanguage: 'en',
-    publisher: { '@type': 'Organization', name: 'gholl.com', url: 'https://gholl.com' },
+    inLanguage: ['en', 'zh'],
+    publisher: {
+      '@type': 'Organization',
+      name: 'gholl.com',
+      url: 'https://gholl.com',
+      sameAs: [
+        'https://github.com/Gholls/mcp-hub',
+        'https://glama.ai/mcp/connectors/com.gholl.mcp/mcp-ui',
+      ],
+    },
   },
   {
     '@context': 'https://schema.org',
