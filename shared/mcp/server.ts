@@ -643,10 +643,15 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       }
     }
     case 'conic-sections': {
-      const type: ConicType =
-        args.type === 'circle' || args.type === 'parabola' || args.type === 'hyperbola'
-          ? args.type
-          : 'ellipse'
+      const requested = typeof args.type === 'string' ? args.type : ''
+      const conicTypes: ConicType[] = ['circle', 'ellipse', 'parabola', 'hyperbola']
+      if (!conicTypes.includes(requested as ConicType)) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          `Unknown conic type "${requested}" — expected one of ${conicTypes.join(', ')}`,
+        )
+      }
+      const type: ConicType = requested as ConicType
       const params = {
         type,
         a: Math.max(0.1, asNumber(args.a, 3)),
