@@ -21,3 +21,55 @@ jobs:
       - run: pnpm typecheck:functions
       - run: pnpm test
       - run: pnpm build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+
+  # Publishes the verified build to Cloudflare. `wrangler deploy` uploads ./dist
+  # as assets plus the worker, so the artifact is the exact tree CI just built.
+  # No build-time secrets are involved (neither ads nor the analytics beacon are
+  # compiled in). Without CLOUDFLARE_API_TOKEN configured the job still compiles
+  # the Worker and then succeeds as a no-op.
+  deploy:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-mcp-hub
+      cancel-in-progress: false
+    steps:
+      - name: Cloudflare credentials present
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: echo "enabled=$([ -n "$TOKEN" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Fetch verified build
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Compile Worker (no upload)
+        run: pnpm exec wrangler deploy --dry-run
+
+      - name: Publish
+        if: steps.creds.outputs.enabled == 'true'
+        run: pnpm exec wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Skip notice
+        if: steps.creds.outputs.enabled != 'true'
+        run: echo "::notice::CLOUDFLARE_API_TOKEN is not configured — skipping deploy"
