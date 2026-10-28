@@ -1,5 +1,5 @@
 import { handleMcpRequest } from '../shared/mcp/handler.ts'
-import { buildDiscoveryDocument } from '../shared/mcp/discovery.ts'
+import { buildDiscoveryDocument, buildSecurityTxt } from '../shared/mcp/discovery.ts'
 import type { AppHtmlResolver } from '../shared/mcp/server.ts'
 
 interface Env {
@@ -35,6 +35,7 @@ const CATEGORY_PATH = /^\/([a-z][a-z0-9-]*)\/?$/
  *   - `/mcp` and `/mcp/sse` → MCP Streamable HTTP
  *   - `/.well-known/mcp.json` → agent discovery document
  *   - `/.well-known/glama.json` → Glama connector claim document
+ *   - `/.well-known/security.txt` → RFC 9116 vulnerability-reporting channel
  *   - `/embed/:id` → pre-built, single-widget HTML (also used by MCP resources)
  *   - `/tools/:id` → prerendered, crawler-visible landing page (SPA-enhanced)
  */
@@ -48,6 +49,16 @@ export default {
 
     if (url.pathname === '/.well-known/glama.json') {
       return new Response(GLAMA_CLAIM, { headers: JSON_HEADERS })
+    }
+
+    if (url.pathname === '/.well-known/security.txt') {
+      return new Response(buildSecurityTxt(), {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'public, max-age=3600',
+        },
+      })
     }
 
     // Per-widget single-file build; falls back to the SPA shell if missing.

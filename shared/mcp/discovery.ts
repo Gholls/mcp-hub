@@ -3,11 +3,17 @@ import { SITE_ORIGIN } from '../types.ts'
 
 export const RESOURCE_MIME_TYPE = 'text/html;profile=mcp-app'
 
+/** Where the server is listed publicly; used by discovery + `llms.txt`. */
+export const DIRECTORY_LISTINGS = {
+  glama: 'https://glama.ai/mcp/connectors/com.gholl.mcp/mcp-ui',
+} as const
+
 /** Discovery document served at `/.well-known/mcp.json`. */
 export function buildDiscoveryDocument() {
   const tools = TOOLS.map((tool) => ({
     name: tool.id,
     title: tool.name,
+    titleZh: tool.title.zh,
     description: tool.mcpDescription,
     category: tool.category,
     tags: tool.tags,
@@ -25,6 +31,8 @@ export function buildDiscoveryDocument() {
       'Interactive micro-tools for humans and AI agents. Each tool renders a sandboxed UI card.',
     version: '0.1.0',
     homepage: SITE_ORIGIN,
+    languages: ['en', 'zh'],
+    directoryListings: DIRECTORY_LISTINGS,
     protocol: 'mcp',
     protocolVersion: '2025-06-18',
     transport: 'streamable-http',
@@ -47,18 +55,27 @@ export function buildLlmsTxt(): string {
       })
       .join(', ')
 
+  const categories = [...new Set(TOOLS.map((t) => t.category))].map((category) => ({
+    category,
+    count: TOOLS.filter((t) => t.category === category).length,
+    url: `${SITE_ORIGIN}/${category.toLowerCase()}`,
+  }))
+
   return [
     '# mcp.gholl.com',
     '',
     '> Interactive micro-tools for humans and AI agents. Every tool renders a sandboxed UI card inside MCP-compatible clients and works standalone in the browser.',
+    '> 面向人类与 AI Agent 的交互式微型工具：每个工具既可在 MCP 客户端中渲染为沙箱 UI 卡片，也可在浏览器中独立使用。',
     '',
     '## Key facts',
     '',
     `- ${tools.length} free micro-tools. No login, no API key.`,
     `- MCP server (Streamable HTTP / JSON-RPC): ${SITE_ORIGIN}/mcp`,
+    '- Languages: English and Chinese — pass `{"locale": "zh"}` to any tool to get the Chinese UI card.',
     `- Discovery document: ${SITE_ORIGIN}/.well-known/mcp.json`,
     '- UI delivered as MCP Apps resources (`text/html;profile=mcp-app`) via `resources/read`.',
     `- Source code: https://github.com/Gholls/mcp-hub`,
+    `- Directory listing: ${DIRECTORY_LISTINGS.glama}`,
     '',
     '## MCP server',
     '',
@@ -66,11 +83,28 @@ export function buildLlmsTxt(): string {
     '- Tool results include a text summary plus `structuredContent`.',
     '- Host implementation checklist: https://github.com/Gholls/mcp-hub/blob/main/docs/host-integration.md',
     '',
+    '## Call a tool',
+    '',
+    '```json',
+    '{"jsonrpc":"2.0","id":1,"method":"tools/call",',
+    ' "params":{"name":"vram-calc","arguments":{"modelParamsB":70,"precision":"int4"}}}',
+    '```',
+    '',
+    `POST that to ${SITE_ORIGIN}/mcp with \`Content-Type: application/json\` and \`Accept: application/json, text/event-stream\`.`,
+    '',
+    '## Categories',
+    '',
+    ...categories.map(
+      (c) =>
+        `- ${c.category} (${c.count} tool${c.count === 1 ? '' : 's'}): ${c.url}`,
+    ),
+    '',
     '## Tools',
     '',
     ...tools.flatMap((tool) => [
       `### ${tool.title}`,
       `- id: \`${tool.name}\``,
+      `- 中文名称: ${tool.titleZh}`,
       `- category: ${tool.category}`,
       `- page: ${tool.ui.pageUrl}`,
       `- embed: ${tool.ui.embedUrl}`,
@@ -78,6 +112,22 @@ export function buildLlmsTxt(): string {
       `- parameters: ${params(tool.inputSchema)}`,
       '',
     ]),
+  ].join('\n')
+}
+
+/**
+ * `/.well-known/security.txt` (RFC 9116). The contact channel is GitHub private
+ * vulnerability reporting, matching SECURITY.md; `Expires` is refreshed on every
+ * build so the file never advertises a stale channel.
+ */
+export function buildSecurityTxt(now = new Date()): string {
+  const expires = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000)
+  return [
+    'Contact: https://github.com/Gholls/mcp-hub/security/advisories/new',
+    'Acknowledgment: https://github.com/Gholls/mcp-hub/blob/main/SECURITY.md',
+    'Preferred-Languages: en, zh',
+    `Expires: ${expires.toISOString()}`,
+    '',
   ].join('\n')
 }
 
