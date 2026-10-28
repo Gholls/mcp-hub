@@ -54,6 +54,7 @@ import {
   type RgbaImage,
 } from '../calc/icon.ts'
 import { bytesToBase64, decodeImageBytes } from './image-decode.ts'
+import { fetchPublic, parsePublicUrl } from './ssrf.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
 import { paletteFrom } from '../calc/palette.ts'
 import {
@@ -116,35 +117,15 @@ function asEnum<T extends string>(value: unknown, allowed: T[], fallback: T): T 
   return typeof value === 'string' && (allowed as string[]).includes(value) ? (value as T) : fallback
 }
 
-const PRIVATE_HOST =
-  /^(localhost|127\.|0\.0\.0\.0|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.|\[?::1\]?)/i
-
 const PROBE_USER_AGENT = 'gholl-mcp-hub/0.1 (+https://mcp.gholl.com/mcp)'
 
-function parsePublicUrl(url: string): URL {
-  let parsed: URL
-  try {
-    parsed = new URL(url)
-  } catch {
-    throw new McpError(ErrorCode.InvalidParams, `Invalid URL: ${url}`)
-  }
-  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-    throw new McpError(ErrorCode.InvalidParams, 'Only http(s) URLs are supported')
-  }
-  if (PRIVATE_HOST.test(parsed.hostname)) {
-    throw new McpError(ErrorCode.InvalidParams, 'Private/loopback hosts are not allowed')
-  }
-  return parsed
-}
-
 async function fetchJson(url: string): Promise<unknown> {
-  const parsed = parsePublicUrl(url)
+  const parsed = await parsePublicUrl(url)
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 5000)
   try {
-    const response = await fetch(parsed.toString(), {
+    const response = await fetchPublic(parsed, {
       signal: controller.signal,
-      redirect: 'follow',
       headers: { Accept: 'application/ld+json, application/json', 'User-Agent': PROBE_USER_AGENT },
     })
     if (!response.ok) throw new McpError(ErrorCode.InternalError, `Fetch failed: HTTP ${response.status}`)
@@ -194,13 +175,12 @@ async function loadIconSource(value: unknown): Promise<{ image: RgbaImage; forma
       throw new McpError(ErrorCode.InvalidParams, 'Invalid data URI: malformed base64 payload')
     }
   } else {
-    const parsed = parsePublicUrl(input)
+    const parsed = await parsePublicUrl(input)
     const controller = new AbortController()
     const timer = setTimeout(() => controller.abort(), 10_000)
     try {
-      const response = await fetch(parsed.toString(), {
+      const response = await fetchPublic(parsed, {
         signal: controller.signal,
-        redirect: 'follow',
         headers: { 'User-Agent': PROBE_USER_AGENT, Accept: 'image/png,image/jpeg,image/*;q=0.8' },
       })
       if (!response.ok) throw new McpError(ErrorCode.InvalidParams, `Fetch failed: HTTP ${response.status}`)
@@ -322,7 +302,7 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
     case 'api-uptime': {
       const endpoint = typeof args.endpoint === 'string' ? args.endpoint : ''
       const method = args.method === 'GET' ? 'GET' : 'HEAD'
-      const target = parsePublicUrl(endpoint)
+      const target = await parsePublicUrl(endpoint)
 
       const controller = new AbortController()
       const timer = setTimeout(() => controller.abort(), 8000)
@@ -330,10 +310,9 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       let reachable = false
       let status = 0
       try {
-        const response = await fetch(target.toString(), {
+        const response = await fetchPublic(target, {
           method,
           signal: controller.signal,
-          redirect: 'follow',
           headers: { 'User-Agent': PROBE_USER_AGENT, Accept: '*/*' },
         })
         status = response.status
@@ -822,18 +801,18 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       return { summary: `${answers.length} ${type} record(s) for ${name}.`, structured: { name, type, answers } }
     }
     case 'http-inspector': {
-      const target = parsePublicUrl(typeof args.url === 'string' ? args.url : '')
+      let target = await parsePublicUrl(typeof args.url === 'string' ? args.url : '')
       const controller = new AbortController()
       const timer = setTimeout(() => controller.abort(), 8000)
       try {
-        let current = target.toString()
         const chain: string[] = []
         for (let hop = 0; hop < 6; hop++) {
-          const response = await fetch(current, { method: 'GET', redirect: 'manual', signal: controller.signal })
-          chain.push(current)
+          const response = await fetch(target.toString(), { method: 'GET', redirect: 'manual', signal: controller.signal })
+          chain.push(target.toString())
           const location = response.headers.get('location')
           if (response.status >= 300 && response.status < 400 && location) {
-            current = new URL(location, current).toString()
+            // Re-validate every hop: a public URL must not bounce us into private space.
+            target = await parsePublicUrl(new URL(location, target).toString())
             continue
           }
           const headers: Record<string, string> = {}

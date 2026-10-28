@@ -78,4 +78,18 @@ describe('MCP server', () => {
     const { client } = await setup(withHtml)
     await expect(client.callTool({ name: 'nope', arguments: {} })).rejects.toThrow()
   })
+
+  it('rejects private-IP URLs on every network-capable tool', async () => {
+    const { client } = await setup(withHtml)
+    const metadata = 'http://169.254.169.254/latest/meta-data/'
+    for (const [tool, key] of [
+      ['http-inspector', 'url'],
+      ['schema-viewer', 'url'],
+      ['api-uptime', 'endpoint'],
+    ] as const) {
+      await expect(client.callTool({ name: tool, arguments: { [key]: metadata } })).rejects.toThrow(
+        /Private|not allowed/i,
+      )
+    }
+  })
 })
