@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import * as echarts from 'echarts'
+import { init, type ECharts } from '../../lib/echarts-full.ts'
 import type { Locale } from '@shared/types.ts'
 import {
   ECHARTS_TEMPLATES,
+  SUPPORTED_ECHARTS_TYPES,
   parseOption,
+  unsupportedChartTypes,
   withDarkTheme,
   type EChartsOption,
 } from '@shared/calc/echarts.ts'
@@ -20,6 +22,8 @@ const T: Record<Locale, Dict> = {
     title: 'ECharts Visualization',
     noOption: 'No ECharts `option` was provided.',
     invalid: 'Invalid option',
+    unsupported: 'Unsupported series type',
+    supportedOnly: 'Supported types:',
     empty: 'The option has no `series` to render.',
     copy: 'Copy option',
     export: 'Export image',
@@ -32,6 +36,8 @@ const T: Record<Locale, Dict> = {
     title: 'ECharts 数据可视化',
     noOption: '未提供 ECharts `option`。',
     invalid: 'option 无效',
+    unsupported: '不支持的系列类型',
+    supportedOnly: '支持的类型：',
     empty: 'option 中没有可渲染的 `series`。',
     copy: '复制 option',
     export: '导出图片',
@@ -54,7 +60,7 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
   const d = T[locale] ?? T.en
   const mcp = useMcp()
   const containerRef = useRef<HTMLDivElement>(null)
-  const chartRef = useRef<echarts.ECharts | null>(null)
+  const chartRef = useRef<ECharts | null>(null)
   const [sent, setSent] = useState(false)
 
   const title = readString(initial, 'title', '')
@@ -73,6 +79,10 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
 
   const activeTemplate = ECHARTS_TEMPLATES.find((t) => t.id === mode)
   const activeOption = mode === 'ai' ? provided : activeTemplate?.option
+  const unsupported = useMemo(
+    () => (activeOption ? unsupportedChartTypes(activeOption) : []),
+    [activeOption],
+  )
   const hasSeries = Boolean(
     activeOption && ((activeOption.series as unknown[] | undefined)?.length ?? 0) > 0,
   )
@@ -102,7 +112,7 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
-    const chart = echarts.init(el, undefined, { renderer: 'canvas' })
+    const chart = init(el, undefined, { renderer: 'canvas' })
     chartRef.current = chart
     chart.on('click', (params: unknown) => {
       const handler = handlersRef.current
@@ -156,6 +166,13 @@ export default function EChartsWidget({ locale, initial }: WidgetProps) {
         {parsed.error ? (
           <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300">
             {d.invalid}: {parsed.error}
+          </div>
+        ) : null}
+
+        {unsupported.length > 0 ? (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-300">
+            {d.unsupported}: {unsupported.join(', ')}. {d.supportedOnly}{' '}
+            {SUPPORTED_ECHARTS_TYPES.join(', ')}.
           </div>
         ) : null}
 

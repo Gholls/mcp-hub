@@ -3,10 +3,30 @@ import {
   ECHARTS_DEFAULT_OPTION,
   ECHARTS_OPTION_GUIDE,
   ECHARTS_TEMPLATES,
+  SUPPORTED_ECHARTS_TYPES,
   parseOption,
   summarizeOption,
+  unsupportedChartTypes,
   withDarkTheme,
 } from '../shared/calc/echarts.ts'
+
+describe('supported chart types', () => {
+  it('renders every template with a supported series type', () => {
+    for (const template of ECHARTS_TEMPLATES) {
+      expect(unsupportedChartTypes(template.option), template.id).toEqual([])
+    }
+  })
+
+  it('flags series types the renderer cannot draw', () => {
+    expect(
+      unsupportedChartTypes({ series: [{ type: 'heatmap' }, { type: 'line' }] } as never),
+    ).toEqual(['heatmap'])
+  })
+
+  it('advertises the supported set in the agent guide', () => {
+    expect(ECHARTS_OPTION_GUIDE).toContain(SUPPORTED_ECHARTS_TYPES.join(', '))
+  })
+})
 
 describe('ECHARTS_TEMPLATES', () => {
   it('has unique ids and every template renders a series', () => {

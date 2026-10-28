@@ -20,7 +20,12 @@ import { decodeJwt } from '../calc/jwt.ts'
 import { HASH_ALGORITHMS, hashText, type HashAlgorithm } from '../calc/hash.ts'
 import { analyzeColor, parseColor, scaleColor } from '../calc/color.ts'
 import { boardToText, gameState, rcToCoord } from '../calc/gomoku.ts'
-import { parseOption, summarizeOption } from '../calc/echarts.ts'
+import {
+  SUPPORTED_ECHARTS_TYPES,
+  parseOption,
+  summarizeOption,
+  unsupportedChartTypes,
+} from '../calc/echarts.ts'
 import {
   defaultParams,
   features as graphFeatures,
@@ -522,16 +527,21 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
       }
       const info = summarizeOption(parsed.option)
       const types = info.chartTypes.join(', ') || 'unknown'
+      const unsupported = unsupportedChartTypes(parsed.option)
       return {
         summary:
           `ECharts chart (${types}) with ${info.seriesCount} series and ${info.points} data points.` +
-          (info.title ? ` Title: "${info.title}".` : ''),
+          (info.title ? ` Title: "${info.title}".` : '') +
+          (unsupported.length
+            ? ` Warning: ${unsupported.join(', ')} cannot render — supported types are ${SUPPORTED_ECHARTS_TYPES.join(', ')}.`
+            : ''),
         structured: {
           title: typeof args.title === 'string' ? args.title : (info.title ?? null),
           subtitle: typeof args.subtitle === 'string' ? args.subtitle : null,
           insights: typeof args.insights === 'string' ? args.insights : null,
           enableInteractivity: args.enableInteractivity !== false,
           chartTypes: info.chartTypes,
+          unsupportedChartTypes: unsupported,
           seriesCount: info.seriesCount,
           points: info.points,
           option: parsed.option,

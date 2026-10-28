@@ -3,6 +3,22 @@
 export type EChartsOption = Record<string, unknown>
 
 /**
+ * Chart types the visualization actually registers. The embed bundles only this
+ * set (tree-shaken echarts), so any other `series[].type` would silently fail
+ * to render — both the agent guide and the widget surface it as an error.
+ */
+export const SUPPORTED_ECHARTS_TYPES = [
+  'line',
+  'bar',
+  'pie',
+  'radar',
+  'scatter',
+  'sankey',
+  'funnel',
+  'gauge',
+] as const
+
+/**
  * Cheat-sheet injected into the tool schema so an LLM can produce a valid
  * ECharts `option` in one shot. Keep it compact but concrete.
  */
@@ -21,6 +37,7 @@ export const ECHARTS_OPTION_GUIDE = [
   'funnel: {"tooltip":{"trigger":"item"},"series":[{"type":"funnel","data":[{"name":"Visit","value":100},{"name":"Signup","value":45},{"name":"Buy","value":12}]}]}',
   'gauge:  {"series":[{"type":"gauge","min":0,"max":100,"data":[{"value":72,"name":"Score"}]}]}',
   '',
+  `Supported series types: ${SUPPORTED_ECHARTS_TYPES.join(', ')}. Any other type will not render.`,
   'Notes: category x-axis needs "data": [...]; pie/radar/sankey/funnel/gauge need no xAxis/yAxis.',
   'Keep series[].data as a plain array; use objects only for pie/funnel/radar named items.',
   'Dark theme, axis colors, legend and tooltip styling are auto-applied — omit styling unless needed.',
@@ -303,6 +320,12 @@ export function summarizeOption(option: EChartsOption): OptionSummary {
     points,
     title: typeof title?.text === 'string' ? title.text : undefined,
   }
+}
+
+/** Series types in `option` that the renderer cannot draw (see SUPPORTED_ECHARTS_TYPES). */
+export function unsupportedChartTypes(option: EChartsOption): string[] {
+  const supported: readonly string[] = SUPPORTED_ECHARTS_TYPES
+  return summarizeOption(option).chartTypes.filter((type) => !supported.includes(type))
 }
 
 /**
