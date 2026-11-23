@@ -1006,6 +1006,50 @@ export const iconGeneratorTool: ToolMeta = {
   },
 }
 
+export const linkNavTool: ToolMeta = {
+  id: 'link-nav',
+  name: 'Link Directory',
+  title: { en: 'Link Directory', zh: '网址导航' },
+  description: {
+    en: 'Turn a list of sites into a beautiful, clickable link directory.',
+    zh: '把网站列表变成美观、可点击的网址导航。',
+  },
+  mcpDescription:
+    'Render a website navigation / bookmark directory. Pass `sites`: an array of `{ name, url, description?, icon?, category? }`. `icon` may be an emoji (recommended), an image URL, or a `data:image/...` URI; image URLs depend on the host CSP, so emoji or data URIs always render. When omitted the card shows a letter avatar. Optional `title` and `subtitle`. The card groups sites by category, supports search, and opens each link in a new tab. Use when a user asks for a link list, bookmark page, resource directory, or "网址导航".',
+  category: 'Everyday', icon: '🧭', tags: ['links', 'bookmarks', 'navigation', 'directory', '网址导航'], status: 'stable',
+  embedPath: '/embed/link-nav', pagePath: '/tools/link-nav',
+  examples: [
+    { en: 'Make a link directory of my favorite developer tools.', zh: '把我常用的开发工具整理成一个网址导航。' },
+    { en: 'Build a resources page for learning TypeScript.', zh: '做一个 TypeScript 学习资源导航页。' },
+  ],
+  inputSchema: {
+    type: 'object',
+    properties: {
+      title: { type: 'string', description: 'Directory heading.' },
+      subtitle: { type: 'string', description: 'Optional one-line description under the heading.' },
+      sites: {
+        type: 'array',
+        description: 'Sites to display, in display order.',
+        maxItems: 120,
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Site name.' },
+            url: { type: 'string', description: 'Full URL; bare domains such as "github.com" are accepted.' },
+            description: { type: 'string', description: 'One-line description of the site.' },
+            icon: { type: 'string', description: 'Emoji, image URL, or data:image URI. Optional.' },
+            category: { type: 'string', description: 'Optional group label; sites with the same label are grouped.' },
+          },
+          required: ['name', 'url'],
+          additionalProperties: false,
+        },
+      },
+      locale: { type: 'string', enum: ['en', 'zh'], description: 'UI language for the rendered card.', default: 'en' },
+    },
+    required: ['sites'],
+  },
+}
+
 export const faviconGeneratorTool: ToolMeta = {
   id: 'favicon-generator',
   name: 'Favicon Generator',
@@ -1185,6 +1229,7 @@ export const TOOLS: ToolMeta[] = [
   imageToBase64Tool,
   imageCompressorTool,
   iconGeneratorTool,
+  linkNavTool,
   faviconGeneratorTool,
   dnsLookupTool,
   httpInspectorTool,

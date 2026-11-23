@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Link Directory** (`link-nav`): turn a site list into a searchable, clickable navigation card — icons (emoji, image URL or data URI), names, descriptions and optional category groups, with a matching MCP tool.
 - **Icon Logo Generator** (`icon-generator`): upload one logo and export a complete, platform-ready icon set (web/PWA, iOS, macOS, Android, Windows, Linux) with per-icon and ZIP downloads, plus an MCP path that returns one or many PNG icons from an image data URI or URL.
 
 ## [0.1.0] - 2026-09-30

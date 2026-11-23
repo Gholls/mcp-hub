@@ -26,7 +26,7 @@
 
 ## 工具
 
-> 线上共 **42 张卡片、13 个分类**（Culture、Data、Design、Developer、Education、Everyday、Finance、Games、Infrastructure、Math、Monitoring、Security、Text）。展厅见 https://mcp.gholl.com ，机器可读列表见 https://mcp.gholl.com/.well-known/mcp.json 。完整列表：
+> 线上共 **43 张卡片、13 个分类**（Culture、Data、Design、Developer、Education、Everyday、Finance、Games、Infrastructure、Math、Monitoring、Security、Text）。展厅见 https://mcp.gholl.com ，机器可读列表见 https://mcp.gholl.com/.well-known/mcp.json 。完整列表：
 
 | id | 工具 | 分类 | 作用 |
 | --- | --- | --- | --- |
@@ -50,6 +50,7 @@
 | `hash-generator` | 哈希生成器 | Developer | 在浏览器本地计算文本的 SHA-1 / SHA-256 / SHA-512 摘要（hex 与 base64）。 |
 | `quiz` | 测试题 | Education | 万能测试题卡片。题目、选项、每个选项的分值与每页题数都由 AI 设定；卡片只负责渲染并把作答回传。 |
 | `world-clock` | 世界时钟 | Everyday | 多城市实时时间与昼夜指示。 |
+| `link-nav` | 网址导航 | Everyday | 把网站列表变成美观、可点击的网址导航。 |
 | `unit-converter` | 单位换算 | Everyday | 换算长度、质量、面积、体积、温度、速度、数据与时间单位。 |
 | `resistor-color` | 电阻色环 | Everyday | 由四色环解析电阻阻值。 |
 | `compound-interest` | 复利计算 | Finance | 复利增长预测。 |

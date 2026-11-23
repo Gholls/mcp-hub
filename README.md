@@ -34,7 +34,7 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 
 ## Tools
 
-> The live catalogue has **42 cards across 13 categories** (Culture, Data, Design, Developer, Education, Everyday, Finance, Games, Infrastructure, Math, Monitoring, Security, Text). See the gallery at https://mcp.gholl.com or the
+> The live catalogue has **43 cards across 13 categories** (Culture, Data, Design, Developer, Education, Everyday, Finance, Games, Infrastructure, Math, Monitoring, Security, Text). See the gallery at https://mcp.gholl.com or the
 > machine-readable list at https://mcp.gholl.com/.well-known/mcp.json. Full list:
 
 | id | Tool | Category | What it does |
@@ -61,6 +61,7 @@ SEO landing page, the sandboxed embed, and the MCP server + discovery document.
 | `resistor-color` | Resistor Color Code | Everyday | Decode a 4-band resistor into ohms. |
 | `unit-converter` | Unit Converter | Everyday | Convert length, mass, area, volume, temperature, speed, data and time units. |
 | `world-clock` | World Clock | Everyday | Live times across major cities with a day/night indicator. |
+| `link-nav` | Link Directory | Everyday | Turn a list of sites into a beautiful, clickable link directory. |
 | `chinese-money` | Amount in Chinese | Finance | Render an amount in Chinese capital numerals, like a receipt. |
 | `compound-interest` | Compound Interest | Finance | Project compound growth over time. |
 | `loan-calculator` | Loan Calculator | Finance | Monthly payment, total interest and a balance chart. |

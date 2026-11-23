@@ -58,6 +58,7 @@ import {
   type IconStyle,
   type RgbaImage,
 } from '../calc/icon.ts'
+import { normalizeNavDirectory } from '../calc/links.ts'
 import { bytesToBase64, decodeImageBytes } from './image-decode.ts'
 import { fetchPublic, parsePublicUrl } from './ssrf.ts'
 import { describe as describeStats, parseNumbers } from '../calc/stats.ts'
@@ -946,6 +947,27 @@ async function runTool(toolId: string, args: Record<string, unknown>) {
           })),
         },
         images: generated.map((item) => ({ mimeType: item.mimeType, data: item.data })),
+      }
+    }
+    case 'link-nav': {
+      const directory = normalizeNavDirectory(args)
+      if (directory.sites.length === 0) {
+        return {
+          summary:
+            'Link directory is empty — pass `sites` as [{ "name": "GitHub", "url": "https://github.com", "description": "Code hosting", "icon": "🐙" }].',
+          structured: directory,
+        }
+      }
+      const count = directory.sites.length
+      const categoryText = directory.categories.length
+        ? ` in ${directory.categories.length} categor${directory.categories.length === 1 ? 'y' : 'ies'}`
+        : ''
+      const preview = directory.sites.slice(0, 4).map((site) => site.name).join(', ')
+      return {
+        summary: `Link directory ready: ${count} site${count === 1 ? '' : 's'}${categoryText} — ${preview}${
+          count > 4 ? ', …' : ''
+        }. The card supports search and opens links in a new tab.`,
+        structured: directory,
       }
     }
     default:

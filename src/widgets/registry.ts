@@ -55,6 +55,7 @@ export const WIDGETS: Record<string, WidgetComponent> = {
   'image-to-base64': lazy(() => import('./image-to-base64/index.tsx')),
   'image-compressor': lazy(() => import('./image-compressor/index.tsx')),
   'icon-generator': lazy(() => import('./icon-generator/index.tsx')),
+  'link-nav': lazy(() => import('./link-nav/index.tsx')),
   'favicon-generator': lazy(() => import('./favicon-generator/index.tsx')),
   'dns-lookup': lazy(() => import('./dns-lookup/index.tsx')),
   'http-inspector': lazy(() => import('./http-inspector/index.tsx')),

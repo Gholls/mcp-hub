@@ -67,6 +67,7 @@ const VALID_CASES: Array<[string, Record<string, unknown>]> = [
   ['image-to-base64', {}],
   ['image-compressor', {}],
   ['icon-generator', { size: 512 }],
+  ['link-nav', { title: 'Dev links', sites: [{ name: 'GitHub', url: 'github.com', description: 'Code hosting', icon: '🐙', category: 'Dev' }, { name: 'MDN', url: 'developer.mozilla.org', category: 'Docs' }] }],
   ['favicon-generator', {}],
   ['dns-lookup', { name: 'example.com', type: 'A' }],
   ['http-inspector', { url: 'https://example.com/' }],
