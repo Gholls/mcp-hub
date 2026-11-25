@@ -95,6 +95,45 @@ Method: Streamable HTTP
 
 ---
 
+
+## Embedding a widget in a plain HTML page
+
+An ordinary website can use `/embed/<tool-id>` without an MCP client. For example:
+
+```html
+<iframe
+  src="https://mcp.gholl.com/embed/vram-calc"
+  title="GPU VRAM calculator"
+  sandbox="allow-scripts"
+  loading="lazy"
+  style="width: 100%; height: 640px; border: 0;"
+></iframe>
+
+<iframe
+  src="https://mcp.gholl.com/embed/cron-debugger"
+  title="Cron expression debugger"
+  sandbox="allow-scripts"
+  loading="lazy"
+  style="width: 100%; height: 640px; border: 0;"
+></iframe>
+```
+
+`allow-scripts` lets the widget's JavaScript run while keeping the iframe's
+other sandbox restrictions. These local calculators do not need forms, popups or
+top-level navigation. Add extra sandbox permissions only for an action your host
+intentionally supports; do not remove the sandbox to enable a feature.
+
+Each URL serves a self-contained widget. Choose a height that fits your layout;
+a plain HTML host does not automatically resize the iframe. The iframe titles
+provide accessible names.
+
+When embedded, the card attempts the MCP Apps handshake over `postMessage`.
+A plain page can use the widgets' local calculations without implementing that
+protocol, but conversation messages, host tool calls and other host capabilities
+require a compatible MCP host. See [Host implementation checklist](host-integration.md#4-l2--the-mcp-apps-postmessage-bridge)
+for the bridge, message validation and resize notifications. A bare iframe tag
+does not implement the bridge.
+
 ## Available tools
 
 | id | What it does |
